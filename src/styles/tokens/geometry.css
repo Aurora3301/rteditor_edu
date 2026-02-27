@@ -1,0 +1,17 @@
+/* ================================================================
+   GEOMETRY — Border radius values
+   ================================================================
+   Per design spec:
+     Buttons, inputs   →  6px  (--rte-radius)
+     Main container    →  8px  (--rte-radius-lg)
+     Modals, popovers  → 12px  (--rte-radius-xl)
+   ================================================================ */
+
+.rte-root {
+  --rte-radius-sm:    4px;
+  --rte-radius:       6px;       /* buttons, inputs               */
+  --rte-radius-lg:    8px;       /* main container, code blocks   */
+  --rte-radius-xl:    12px;      /* modals, popovers              */
+  --rte-radius-full:  9999px;    /* pills, circular elements      */
+}
+

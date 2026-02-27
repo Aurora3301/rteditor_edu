@@ -1,0 +1,54 @@
+/* ================================================================
+   COLOR PICKER — 8×N swatch grid (used in popover)
+   ================================================================
+   A grid of small color circles.
+   Active swatch shows a ring around it.
+
+   HTML:
+   <div class="rte-color-grid">
+     <button
+       class="rte-color-grid__swatch"
+       style="background: #ef4444"
+       aria-label="Red"
+     ></button>
+     <button
+       class="rte-color-grid__swatch rte-color-grid__swatch--active"
+       style="background: #3b82f6"
+       aria-label="Blue"
+     ></button>
+   </div>
+   ================================================================ */
+
+.rte-color-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  padding: var(--rte-sp-2);
+}
+
+.rte-color-grid__swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--rte-radius-sm);
+  border: 1px solid var(--rte-border);
+  cursor: pointer;
+  padding: 0;
+  transition: transform var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-color-grid__swatch:hover {
+  transform: scale(1.15);
+}
+
+.rte-color-grid__swatch:focus-visible {
+  outline: none;
+  box-shadow: var(--rte-ring);
+}
+
+/* Currently selected swatch */
+.rte-color-grid__swatch--active {
+  box-shadow:
+    0 0 0 2px var(--rte-bg),
+    0 0 0 4px var(--rte-accent);
+}
+

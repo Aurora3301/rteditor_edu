@@ -1,0 +1,41 @@
+/* ================================================================
+   ROOT — Main .rte-root container layout
+   ================================================================
+
+   HTML structure:
+   ┌── .rte-root ──────────────────────────────────────────┐
+   │  ┌── .rte-toolbar ─────────────────────────────────┐  │
+   │  │  [B] [I] [U] │ [↶] [↷] │ ...                   │  │
+   │  └─────────────────────────────────────────────────┘  │
+   │  ┌── .rte-root__body ──────────────────────────────┐  │
+   │  │  ┌── .rte-editor-wrapper ──┐  ┌── .rte-sidebar ┐│  │
+   │  │  │   .rte-editor           │  │  (comments/AI) ││  │
+   │  │  │   .ProseMirror          │  │                ││  │
+   │  │  └─────────────────────────┘  └────────────────┘│  │
+   │  └─────────────────────────────────────────────────┘  │
+   └───────────────────────────────────────────────────────┘
+   ================================================================ */
+
+.rte-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  font-family: var(--rte-font-sans);
+  font-size: var(--rte-text-base);        /* 14px for UI chrome */
+  line-height: var(--rte-leading);
+  color: var(--rte-text);
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);    /* #e2e8f0 */
+  border-radius: var(--rte-radius-lg);    /* 8px */
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;   /* contain z-index — prevents leakage */
+}
+
+/* Body area: editor + optional sidebar side by side */
+.rte-root__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;        /* allow flex child to scroll */
+}
+

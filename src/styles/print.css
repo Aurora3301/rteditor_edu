@@ -1,0 +1,37 @@
+/* ================================================================
+   PRINT — Styles applied when printing
+   ================================================================
+   Hides toolbar and sidebar.
+   Links show their URL in parentheses after the text.
+   ================================================================ */
+
+@media print {
+  .rte-toolbar,
+  .rte-sidebar {
+    display: none !important;
+  }
+
+  .rte-root {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .rte-editor {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .rte-editor .ProseMirror a {
+    text-decoration: underline;
+    color: inherit;
+  }
+
+  /* Show URL after link text when printing */
+  .rte-editor .ProseMirror a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: gray;
+  }
+}
+

@@ -1,0 +1,15 @@
+/* ================================================================
+   BLOCKQUOTE — Left-bordered quote block
+   ================================================================ */
+
+.rte-editor .ProseMirror blockquote {
+  margin: var(--rte-sp-4) 0;
+  padding: var(--rte-sp-1) var(--rte-sp-4);
+  border-left: 3px solid var(--rte-border-strong);
+  color: var(--rte-text-secondary);
+}
+
+.rte-editor .ProseMirror blockquote p:last-child {
+  margin-bottom: 0;
+}
+

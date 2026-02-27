@@ -1,0 +1,23 @@
+/* ================================================================
+   MEDIA — Images + horizontal rules inside editor
+   ================================================================
+   Basic styling only.
+   Phase 4 adds ImageNodeView with resize handles + progress overlay.
+   ================================================================ */
+
+/* Images */
+.rte-editor .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--rte-radius);
+  display: block;
+  margin: var(--rte-sp-4) 0;
+}
+
+/* Horizontal rule */
+.rte-editor .ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--rte-border);
+  margin: var(--rte-sp-6) 0;
+}
+

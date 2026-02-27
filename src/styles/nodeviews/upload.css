@@ -1,0 +1,39 @@
+/* ================================================================
+   UPLOAD — Progress overlay for image/file uploads
+   ================================================================
+   Shown over the image while uploading.
+   Semi-transparent white overlay with a thin progress bar.
+
+   HTML:
+   <div class="rte-upload-overlay">
+     <div class="rte-upload-progress">
+       <div class="rte-upload-progress__bar" style="width: 65%"></div>
+     </div>
+   </div>
+   ================================================================ */
+
+.rte-upload-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--rte-radius);
+}
+
+.rte-upload-progress {
+  width: 60%;
+  height: 4px;
+  background: var(--rte-bg-muted);
+  border-radius: var(--rte-radius-full);
+  overflow: hidden;
+}
+
+.rte-upload-progress__bar {
+  height: 100%;
+  background: var(--rte-accent);
+  border-radius: var(--rte-radius-full);
+  transition: width var(--rte-duration-base) var(--rte-ease);
+}
+

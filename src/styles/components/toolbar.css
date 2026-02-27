@@ -1,0 +1,55 @@
+/* ================================================================
+   TOOLBAR — Top bar layout, groups, separators
+   ================================================================
+   The toolbar is a horizontal flex container.
+   Buttons are organized in GROUPS separated by thin vertical lines.
+   On small screens it scrolls horizontally (no wrap).
+
+   HTML:
+   <div class="rte-toolbar" role="toolbar" aria-label="Formatting">
+     <div class="rte-toolbar__group">
+       <button class="rte-toolbar__button">...</button>
+       <button class="rte-toolbar__button">...</button>
+     </div>
+     <div class="rte-toolbar__separator" role="separator"></div>
+     <div class="rte-toolbar__group">...</div>
+   </div>
+   ================================================================ */
+
+.rte-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--rte-sp-1);                /* 4px between items */
+  padding: var(--rte-sp-1h) var(--rte-sp-2);   /* 6px 8px */
+  background: var(--rte-bg-subtle);
+  border-bottom: 1px solid var(--rte-border);
+  z-index: var(--rte-z-toolbar);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /* Hide scrollbar but allow scroll */
+  scrollbar-width: none;
+}
+.rte-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Button group ── */
+.rte-toolbar__group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;              /* tight gap between buttons in same group */
+  flex-shrink: 0;
+}
+
+/* ── Vertical separator between groups ── */
+.rte-toolbar__separator {
+  width: 1px;
+  height: 16px;
+  margin: 0 var(--rte-sp-1h);   /* 6px left/right breathing room */
+  background: var(--rte-border);
+  flex-shrink: 0;
+  align-self: center;
+}
+

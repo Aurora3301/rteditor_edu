@@ -1,0 +1,17 @@
+/* ================================================================
+   MOTION — Transition durations and easing
+   ================================================================
+   Note: all motion is disabled when user has
+   prefers-reduced-motion set (see accessibility.css)
+   ================================================================ */
+
+.rte-root {
+  --rte-duration-fast:  100ms;   /* hover states         */
+  --rte-duration-base:  150ms;   /* most transitions     */
+  --rte-duration-slow:  250ms;   /* popover open/close   */
+
+  --rte-ease:           cubic-bezier(0.4, 0, 0.2, 1);   /* default         */
+  --rte-ease-in:        cubic-bezier(0.4, 0, 1, 1);     /* exit animations */
+  --rte-ease-out:       cubic-bezier(0, 0, 0.2, 1);     /* enter animations*/
+}
+

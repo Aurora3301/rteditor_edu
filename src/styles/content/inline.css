@@ -1,0 +1,22 @@
+/* ================================================================
+   INLINE — Bold, italic, underline, strikethrough
+   ================================================================ */
+
+.rte-editor .ProseMirror strong {
+  font-weight: var(--rte-weight-semibold);
+}
+
+.rte-editor .ProseMirror em {
+  font-style: italic;
+}
+
+.rte-editor .ProseMirror u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rte-editor .ProseMirror s {
+  text-decoration: line-through;
+  color: var(--rte-text-muted);
+}
+

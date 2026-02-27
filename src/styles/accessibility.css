@@ -1,0 +1,39 @@
+/* ================================================================
+   ACCESSIBILITY — Screen reader, reduced motion, high contrast
+   ================================================================ */
+
+/* Screen reader only — visually hidden but accessible to AT */
+.rte-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Respect user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .rte-root,
+  .rte-root *,
+  .rte-root *::before,
+  .rte-root *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Windows High Contrast Mode */
+@media (forced-colors: active) {
+  .rte-toolbar__button--active {
+    outline: 2px solid ButtonText;
+  }
+  .rte-editor .ProseMirror .ProseMirror-selectednode {
+    outline: 2px solid Highlight;
+  }
+}
+

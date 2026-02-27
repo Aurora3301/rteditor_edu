@@ -1,0 +1,65 @@
+/* ================================================================
+   PALETTE — Color tokens
+   ================================================================
+   Edit here to change the color scheme across the entire editor.
+
+   STRUCTURE:
+     1. Raw palette  → actual hex values (Slate gray + Indigo accent)
+     2. Semantic      → what each color MEANS (bg, text, border, etc.)
+
+   TO REBRAND: change the accent from Indigo to your brand color.
+   The host app can also override any variable on .rte-root.
+   ================================================================ */
+
+.rte-root {
+
+  /* ── Raw Palette: Slate (neutral gray) ── */
+  --rte-slate-50:  #f8fafc;
+  --rte-slate-100: #f1f5f9;
+  --rte-slate-200: #e2e8f0;
+  --rte-slate-300: #cbd5e1;
+  --rte-slate-400: #94a3b8;
+  --rte-slate-500: #64748b;
+  --rte-slate-600: #475569;
+  --rte-slate-700: #334155;
+  --rte-slate-800: #1e293b;
+  --rte-slate-900: #0f172a;
+  --rte-slate-950: #020617;
+
+  /* ── Raw Palette: Indigo (accent) ── */
+  --rte-indigo-50:  #eef2ff;
+  --rte-indigo-100: #e0e7ff;
+  --rte-indigo-400: #818cf8;
+  --rte-indigo-500: #6366f1;
+  --rte-indigo-600: #4f46e5;
+
+  /* ── Semantic: Surfaces ── */
+  --rte-bg:             #ffffff;
+  --rte-bg-subtle:      var(--rte-slate-50);      /* toolbar, sidebar    */
+  --rte-bg-muted:       var(--rte-slate-100);      /* hover state         */
+  --rte-bg-active:      var(--rte-slate-100);      /* pressed / toggled   */
+  --rte-bg-overlay:     rgba(0, 0, 0, 0.45);       /* behind modals       */
+
+  /* ── Semantic: Text ── */
+  --rte-text:           var(--rte-slate-900);       /* primary text        */
+  --rte-text-secondary: var(--rte-slate-600);       /* toolbar icons       */
+  --rte-text-muted:     var(--rte-slate-400);       /* disabled, hints     */
+  --rte-text-inverse:   #ffffff;                     /* on dark backgrounds */
+  --rte-text-placeholder: var(--rte-slate-400);
+
+  /* ── Semantic: Borders ── */
+  --rte-border:         var(--rte-slate-200);       /* #e2e8f0 default     */
+  --rte-border-strong:  var(--rte-slate-300);       /* emphasis borders    */
+  --rte-border-focus:   var(--rte-indigo-500);
+
+  /* ── Semantic: Interactive / Accent ── */
+  --rte-accent:         var(--rte-indigo-500);
+  --rte-accent-hover:   var(--rte-indigo-600);
+  --rte-accent-subtle:  var(--rte-indigo-50);       /* light tint          */
+
+  /* ── Semantic: Status ── */
+  --rte-success:  #22c55e;
+  --rte-warning:  #eab308;
+  --rte-error:    #ef4444;
+}
+

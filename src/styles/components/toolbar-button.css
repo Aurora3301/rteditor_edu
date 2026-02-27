@@ -1,0 +1,120 @@
+/* ================================================================
+   TOOLBAR BUTTON — Ghost-style button with 6 states
+   ================================================================
+
+   STATES:
+     Default   →  transparent background, muted icon
+     :hover    →  light gray background (#f1f5f9)
+     :focus    →  2px indigo focus ring (accessibility)
+     --active  →  tinted background + accent color icon
+     :disabled →  faded out, no pointer
+     --loading →  spinner overlay
+
+   HTML:
+   <button
+     class="rte-toolbar__button"
+     aria-pressed="false"
+     aria-label="Bold"
+     title="Bold"
+   >
+     <svg>...</svg>
+   </button>
+   ================================================================ */
+
+/* ── Base ── */
+.rte-toolbar__button {
+  /* Reset browser defaults */
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+
+  /* Size: 30×30 square */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  flex-shrink: 0;
+
+  /* Visual */
+  color: var(--rte-text-secondary);
+  border-radius: var(--rte-radius);      /* 6px */
+  transition:
+    background-color var(--rte-duration-fast) var(--rte-ease),
+    color            var(--rte-duration-fast) var(--rte-ease),
+    border-color     var(--rte-duration-fast) var(--rte-ease);
+}
+
+/* Icon sizing */
+.rte-toolbar__button svg,
+.rte-toolbar__button .rte-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ── Hover ── */
+.rte-toolbar__button:hover:not(:disabled):not(.rte-toolbar__button--active) {
+  background: var(--rte-bg-muted);       /* #f1f5f9 */
+  color: var(--rte-text);
+}
+
+/* ── Focus — 2px offset indigo ring ── */
+.rte-toolbar__button:focus-visible {
+  outline: none;
+  box-shadow: var(--rte-ring);
+  z-index: 1;    /* lift above neighbors so ring isn't clipped */
+}
+
+/* ── Active / toggled ON (e.g. Bold is active) ── */
+.rte-toolbar__button--active,
+.rte-toolbar__button[aria-pressed="true"] {
+  background: var(--rte-bg-active);      /* #f1f5f9 */
+  color: var(--rte-accent);              /* indigo-500 */
+}
+.rte-toolbar__button--active:hover,
+.rte-toolbar__button[aria-pressed="true"]:hover {
+  background: var(--rte-bg-muted);
+  color: var(--rte-accent);
+}
+
+/* ── Disabled ── */
+.rte-toolbar__button:disabled,
+.rte-toolbar__button[aria-disabled="true"] {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Loading ── */
+.rte-toolbar__button--loading {
+  position: relative;
+  color: transparent !important;
+}
+.rte-toolbar__button--loading::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--rte-border-strong);
+  border-top-color: var(--rte-accent);
+  border-radius: var(--rte-radius-full);
+  animation: rte-spin 0.6s linear infinite;
+}
+@keyframes rte-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Wider button with text label (e.g. "Insert") ── */
+.rte-toolbar__button--text {
+  width: auto;
+  padding: 0 var(--rte-sp-2);
+  gap: var(--rte-sp-1);
+  font-size: var(--rte-text-sm);
+  font-weight: var(--rte-weight-medium);
+}
+

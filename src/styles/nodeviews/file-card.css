@@ -1,0 +1,64 @@
+/* ================================================================
+   FILE CARD — Attachment display card
+   ================================================================
+   Rendered by FileNodeView for file attachment nodes.
+
+   ┌──────────────────────────────────────┐
+   │  📄  report.pdf            (2.3 MB) │
+   │       [Download ⬇]  [Delete 🗑]      │
+   └──────────────────────────────────────┘
+
+   HTML:
+   <div class="rte-file-card">
+     <div class="rte-file-card__icon">📄</div>
+     <div class="rte-file-card__info">
+       <div class="rte-file-card__name">report.pdf</div>
+       <div class="rte-file-card__meta">2.3 MB · PDF</div>
+     </div>
+   </div>
+   ================================================================ */
+
+.rte-file-card {
+  display: flex;
+  align-items: center;
+  gap: var(--rte-sp-3);
+  padding: var(--rte-sp-3) var(--rte-sp-4);
+  margin: var(--rte-sp-3) 0;
+  background: var(--rte-bg-subtle);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-lg);
+  cursor: default;
+}
+
+.rte-file-card__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rte-bg-muted);
+  border-radius: var(--rte-radius);
+  color: var(--rte-text-secondary);
+  font-size: var(--rte-text-lg);
+}
+
+.rte-file-card__info {
+  flex: 1;
+  min-width: 0;                          /* allow text truncation */
+}
+
+.rte-file-card__name {
+  font-size: var(--rte-text-sm);
+  font-weight: var(--rte-weight-medium);
+  color: var(--rte-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rte-file-card__meta {
+  font-size: var(--rte-text-xs);
+  color: var(--rte-text-muted);
+}
+

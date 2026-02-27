@@ -1,0 +1,71 @@
+/* ================================================================
+   POPOVER — Dropdown menus, color picker containers
+   ================================================================
+   Minimalist shadow:  0 4px 6px -1px rgb(0 0 0 / 0.1)
+   Appears with a subtle scale-in animation.
+
+   HTML:
+   <div class="rte-popover rte-popover--open">
+     <button class="rte-popover__item">Option 1</button>
+     <button class="rte-popover__item">Option 2</button>
+   </div>
+   ================================================================ */
+
+.rte-popover {
+  position: absolute;
+  z-index: var(--rte-z-popover);
+  min-width: 180px;
+  padding: var(--rte-sp-1);
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-xl);   /* 12px */
+  box-shadow: var(--rte-shadow);
+
+  /* Hidden by default */
+  opacity: 0;
+  transform: translateY(-4px) scale(0.97);
+  transition:
+    opacity   var(--rte-duration-base) var(--rte-ease),
+    transform var(--rte-duration-base) var(--rte-ease);
+  pointer-events: none;
+}
+
+/* Open state */
+.rte-popover--open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* ── Menu item ── */
+.rte-popover__item {
+  display: flex;
+  align-items: center;
+  gap: var(--rte-sp-2);
+  width: 100%;
+  padding: var(--rte-sp-1h) var(--rte-sp-2);
+  font-size: var(--rte-text-sm);
+  color: var(--rte-text);
+  background: transparent;
+  border: none;
+  border-radius: var(--rte-radius);
+  cursor: pointer;
+  transition: background-color var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-popover__item:hover {
+  background: var(--rte-bg-muted);
+}
+
+.rte-popover__item:focus-visible {
+  outline: none;
+  box-shadow: var(--rte-ring);
+}
+
+/* ── Divider between popover sections ── */
+.rte-popover__divider {
+  height: 1px;
+  margin: var(--rte-sp-1) 0;
+  background: var(--rte-border);
+}
+

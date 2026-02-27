@@ -1,0 +1,68 @@
+/* ================================================================
+   DIALOG / MODAL — Link insert, formula editor, etc.
+   ================================================================
+   Centered modal with dark overlay backdrop.
+
+   HTML:
+   <div class="rte-overlay">
+     <div class="rte-dialog">
+       <h2 class="rte-dialog__title">Insert Link</h2>
+       <button class="rte-dialog__close">✕</button>
+       ...content...
+     </div>
+   </div>
+   ================================================================ */
+
+/* Backdrop overlay */
+.rte-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--rte-z-overlay);
+  background: var(--rte-bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dialog card */
+.rte-dialog {
+  position: relative;
+  z-index: var(--rte-z-modal);
+  width: 90%;
+  max-width: 460px;
+  padding: var(--rte-sp-6);
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-xl);   /* 12px */
+  box-shadow: var(--rte-shadow-lg);
+}
+
+/* Title */
+.rte-dialog__title {
+  font-size: var(--rte-text-lg);
+  font-weight: var(--rte-weight-semibold);
+  color: var(--rte-text);
+  margin-bottom: var(--rte-sp-4);
+}
+
+/* Close button (top-right corner) */
+.rte-dialog__close {
+  position: absolute;
+  top: var(--rte-sp-3);
+  right: var(--rte-sp-3);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--rte-radius);
+  color: var(--rte-text-muted);
+  cursor: pointer;
+  transition: background-color var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-dialog__close:hover        { background: var(--rte-bg-muted); }
+.rte-dialog__close:focus-visible { outline: none; box-shadow: var(--rte-ring); }
+

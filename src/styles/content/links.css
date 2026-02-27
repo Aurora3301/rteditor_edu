@@ -1,0 +1,16 @@
+/* ================================================================
+   LINKS — Anchor tag styling inside editor
+   ================================================================ */
+
+.rte-editor .ProseMirror a {
+  color: var(--rte-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--rte-indigo-400);
+  transition: color var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-editor .ProseMirror a:hover {
+  color: var(--rte-accent-hover);
+}
+

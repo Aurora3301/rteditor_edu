@@ -1,0 +1,37 @@
+/* ================================================================
+   ELEVATION — Box shadows
+   ================================================================
+   Minimalist shadows — no heavy gradients.
+
+     --rte-shadow-xs  →  subtle lift (toolbar buttons)
+     --rte-shadow-sm  →  light card
+     --rte-shadow     →  dropdowns, popovers  ← main one
+     --rte-shadow-lg  →  modals
+
+   FOCUS RING:
+     2px width, 2px offset, soft indigo.
+     Applied via box-shadow so it works on all elements.
+   ================================================================ */
+
+.rte-root {
+
+  /* ── Shadows ── */
+  --rte-shadow-xs:    0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --rte-shadow-sm:    0 1px 3px 0 rgb(0 0 0 / 0.08),
+                      0 1px 2px -1px rgb(0 0 0 / 0.08);
+  --rte-shadow:       0 4px 6px -1px rgb(0 0 0 / 0.1),
+                      0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --rte-shadow-lg:    0 10px 15px -3px rgb(0 0 0 / 0.1),
+                      0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* ── Focus Ring ── */
+  --rte-ring-width:   2px;
+  --rte-ring-offset:  2px;
+  --rte-ring-color:   var(--rte-indigo-400);
+
+  /*  Usage:  box-shadow: var(--rte-ring);
+      Creates: [2px white gap] [2px indigo ring]  */
+  --rte-ring:         0 0 0 var(--rte-ring-offset) var(--rte-bg),
+                      0 0 0 calc(var(--rte-ring-offset) + var(--rte-ring-width)) var(--rte-ring-color);
+}
+

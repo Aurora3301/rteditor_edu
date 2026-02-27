@@ -1,0 +1,70 @@
+/* ================================================================
+   MATH — Formula display + edit mode
+   ================================================================
+   Display mode: KaTeX rendered output (read-only)
+   Edit mode:    LaTeX textarea + live preview
+
+   HTML (display):
+   <div class="rte-math">
+     <span class="katex">...</span>       ← KaTeX output
+   </div>
+
+   HTML (editing):
+   <div class="rte-math rte-math--editing">
+     <textarea class="rte-math__input">x^2 + \frac{1}{2}</textarea>
+     <div class="rte-math__preview">...</div>
+   </div>
+   ================================================================ */
+
+.rte-math {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rte-sp-3) var(--rte-sp-4);
+  margin: var(--rte-sp-3) 0;
+  background: var(--rte-bg-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--rte-radius);
+  cursor: pointer;
+  transition: border-color var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-math:hover {
+  border-color: var(--rte-border);
+}
+
+/* Editing state */
+.rte-math--editing {
+  flex-direction: column;
+  gap: var(--rte-sp-2);
+  border-color: var(--rte-accent);
+  background: var(--rte-bg);
+  cursor: default;
+}
+
+/* LaTeX textarea */
+.rte-math__input {
+  width: 100%;
+  font-family: var(--rte-font-mono);
+  font-size: var(--rte-text-sm);
+  padding: var(--rte-sp-2);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius);
+  background: var(--rte-bg);
+  color: var(--rte-text);
+  resize: vertical;
+  outline: none;
+}
+
+.rte-math__input:focus {
+  border-color: var(--rte-accent);
+}
+
+/* Live preview area below textarea */
+.rte-math__preview {
+  padding: var(--rte-sp-2);
+  text-align: center;
+  min-height: 2em;
+  color: var(--rte-text-secondary);
+}
+

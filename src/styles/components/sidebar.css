@@ -1,0 +1,45 @@
+/* ================================================================
+   SIDEBAR — Comments panel + AI chatbox panel (future)
+   ================================================================
+   280px panel on the right side of the editor.
+   Has a header bar + scrollable body area.
+
+   HTML:
+   <aside class="rte-sidebar">
+     <div class="rte-sidebar__header">
+       <span>Comments</span>
+       <button class="rte-dialog__close">✕</button>
+     </div>
+     <div class="rte-sidebar__body">
+       ...comment cards or AI chat...
+     </div>
+   </aside>
+   ================================================================ */
+
+.rte-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--rte-border);
+  background: var(--rte-bg-subtle);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.rte-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--rte-sp-3) var(--rte-sp-4);
+  border-bottom: 1px solid var(--rte-border);
+  font-size: var(--rte-text-sm);
+  font-weight: var(--rte-weight-semibold);
+  color: var(--rte-text);
+}
+
+.rte-sidebar__body {
+  flex: 1;
+  padding: var(--rte-sp-3);
+  overflow-y: auto;
+}
+

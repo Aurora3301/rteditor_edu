@@ -1,0 +1,40 @@
+/* ================================================================
+   BUTTON — Action buttons (used in dialogs, forms)
+   ================================================================
+   Two variants:
+     .rte-btn           →  Primary (filled, accent color)
+     .rte-btn--ghost    →  Ghost (transparent, text color)
+
+   HTML:
+   <button class="rte-btn">Apply</button>
+   <button class="rte-btn rte-btn--ghost">Cancel</button>
+   ================================================================ */
+
+.rte-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rte-sp-1);
+  height: 34px;
+  padding: 0 var(--rte-sp-4);
+  font-family: var(--rte-font-sans);
+  font-size: var(--rte-text-sm);
+  font-weight: var(--rte-weight-medium);
+  color: var(--rte-text-inverse);
+  background: var(--rte-accent);
+  border: none;
+  border-radius: var(--rte-radius);      /* 6px */
+  cursor: pointer;
+  transition: background-color var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-btn:hover           { background: var(--rte-accent-hover); }
+.rte-btn:focus-visible   { outline: none; box-shadow: var(--rte-ring); }
+
+/* Ghost variant */
+.rte-btn--ghost {
+  color: var(--rte-text);
+  background: transparent;
+}
+.rte-btn--ghost:hover    { background: var(--rte-bg-muted); }
+

@@ -1,0 +1,76 @@
+/* ================================================================
+   RTE v3 — Main Stylesheet Entry Point
+   ================================================================
+
+   HOW THIS FILE WORKS:
+   --------------------
+   This is the ONLY file you import in your app.
+   It pulls in all partials in the correct order.
+
+   EDITING GUIDE:
+   --------------------
+   Need to change a color?      → tokens/palette.css
+   Need to change spacing?      → tokens/spacing.css
+   Need to change the toolbar?  → components/toolbar.css
+   Need to change how h1 looks? → content/headings.css
+   Need to add dark mode vars?  → themes/dark.css
+   Need to tweak mobile?        → responsive.css
+
+   FILE NAMING:
+   --------------------
+   tokens/      = Design tokens (CSS variables only, no selectors)
+   base/        = Reset + root container
+   components/  = Toolbar, buttons, popover, dialog, input, sidebar
+   content/     = How text looks INSIDE the editor (prose styling)
+   themes/      = Dark mode + auto-detect overrides
+   ================================================================ */
+
+/* ── 1. Design Tokens (variables only) ── */
+@import './tokens/palette.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/geometry.css';
+@import './tokens/elevation.css';
+@import './tokens/motion.css';
+@import './tokens/z-index.css';
+
+/* ── 2. Base ── */
+@import './base/reset.css';
+@import './base/root.css';
+
+/* ── 3. Components ── */
+@import './components/toolbar.css';
+@import './components/toolbar-button.css';
+@import './components/tooltip.css';
+@import './components/popover.css';
+@import './components/dialog.css';
+@import './components/input.css';
+@import './components/button.css';
+@import './components/sidebar.css';
+@import './components/color-picker.css';
+
+/* ── 4. Content (prose — inside editor) ── */
+@import './content/editor.css';
+@import './content/paragraphs.css';
+@import './content/headings.css';
+@import './content/inline.css';
+@import './content/code.css';
+@import './content/lists.css';
+@import './content/blockquote.css';
+@import './content/links.css';
+@import './content/media.css';
+
+/* ── 5. Node Views (custom ProseMirror nodes) ── */
+@import './nodeviews/upload.css';
+@import './nodeviews/file-card.css';
+@import './nodeviews/math.css';
+@import './nodeviews/comment-highlight.css';
+
+/* ── 6. Themes ── */
+@import './themes/dark.css';
+
+/* ── 7. Responsive + Accessibility + Print ── */
+@import './responsive.css';
+@import './accessibility.css';
+@import './print.css';
+

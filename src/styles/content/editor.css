@@ -1,0 +1,63 @@
+/* ================================================================
+   EDITOR — The main editing area (ProseMirror mountpoint)
+   ================================================================
+   This is the contentEditable area where users type.
+
+   KEY STYLING:
+     Font: 16px (--rte-text-body) — larger than toolbar (14px)
+     Padding: 20px
+     Focus: subtle inset border tint
+   ================================================================ */
+
+.rte-editor-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rte-editor {
+  flex: 1;
+  padding: var(--rte-sp-5);             /* 20px */
+  background: var(--rte-bg);
+  overflow-y: auto;
+  min-height: 200px;
+}
+
+/* ProseMirror's own container */
+.rte-editor .ProseMirror {
+  outline: none;                         /* we provide our own focus style */
+  min-height: 100%;
+  font-family: var(--rte-font-sans);
+  font-size: var(--rte-text-body);       /* 16px */
+  line-height: var(--rte-leading);       /* 1.6 */
+  color: var(--rte-text);
+}
+
+/* Focus indicator on the editor wrapper */
+.rte-editor:focus-within {
+  box-shadow: inset 0 0 0 1px var(--rte-accent);
+}
+
+/* ── Placeholder text (shown when editor is empty) ── */
+.rte-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--rte-text-placeholder);
+  pointer-events: none;
+  height: 0;
+  float: left;
+}
+
+/* ── Text selection highlight ── */
+.rte-editor .ProseMirror ::selection {
+  background: var(--rte-indigo-100);
+}
+
+/* ── Selected node outline (images, code blocks, etc.) ── */
+.rte-editor .ProseMirror .ProseMirror-selectednode {
+  outline: 2px solid var(--rte-accent);
+  outline-offset: 2px;
+  border-radius: var(--rte-radius-sm);
+}
+

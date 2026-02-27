@@ -1,0 +1,21 @@
+/* ================================================================
+   RESET — Scoped reset (only inside .rte-root)
+   ================================================================
+   This will NOT affect the host app.
+   Everything is scoped under .rte-root.
+   ================================================================ */
+
+.rte-root {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.rte-root *,
+.rte-root *::before,
+.rte-root *::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+

@@ -1,0 +1,51 @@
+/* ================================================================
+   RESPONSIVE — Breakpoint adaptations
+   ================================================================
+
+   Breakpoints:
+     Desktop  ≥ 1024px  →  default (no media query needed)
+     Tablet   768–1023  →  narrower sidebar
+     Mobile   < 768px   →  stacked layout, larger touch targets
+   ================================================================ */
+
+/* ── Tablet ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .rte-sidebar {
+    width: 220px;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+
+  /* Stack editor + sidebar vertically */
+  .rte-root__body {
+    flex-direction: column;
+  }
+
+  /* Sidebar goes below editor */
+  .rte-sidebar {
+    width: 100%;
+    max-height: 50vh;
+    border-left: none;
+    border-top: 1px solid var(--rte-border);
+  }
+
+  /* Larger touch targets (36px instead of 30px) */
+  .rte-toolbar__button {
+    width: 36px;
+    height: 36px;
+  }
+  .rte-toolbar__button svg,
+  .rte-toolbar__button .rte-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Tighter editor padding */
+  .rte-editor {
+    padding: var(--rte-sp-3);
+    min-height: 150px;
+  }
+}
+

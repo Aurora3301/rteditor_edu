@@ -1,0 +1,12 @@
+/* ================================================================
+   PARAGRAPHS — Spacing between text blocks
+   ================================================================ */
+
+.rte-editor .ProseMirror p {
+  margin: 0 0 var(--rte-sp-3) 0;        /* 12px bottom gap */
+}
+
+.rte-editor .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+

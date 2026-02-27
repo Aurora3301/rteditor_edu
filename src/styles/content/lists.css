@@ -1,0 +1,26 @@
+/* ================================================================
+   LISTS — Bullet lists, ordered lists, nested lists
+   ================================================================ */
+
+.rte-editor .ProseMirror ul,
+.rte-editor .ProseMirror ol {
+  margin: 0 0 var(--rte-sp-3) 0;
+  padding-left: var(--rte-sp-6);         /* 24px indent */
+}
+
+.rte-editor .ProseMirror li {
+  margin-bottom: var(--rte-sp-1);        /* 4px between items */
+}
+
+.rte-editor .ProseMirror li p {
+  margin-bottom: 0;                      /* no extra gap inside list items */
+}
+
+/* Bullet styles */
+.rte-editor .ProseMirror ul             { list-style-type: disc; }
+.rte-editor .ProseMirror ol             { list-style-type: decimal; }
+
+/* Nested bullets change style */
+.rte-editor .ProseMirror ul ul          { list-style-type: circle; }
+.rte-editor .ProseMirror ul ul ul       { list-style-type: square; }
+

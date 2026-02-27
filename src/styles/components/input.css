@@ -1,0 +1,43 @@
+/* ================================================================
+   INPUT — Text input field
+   ================================================================
+   Used in: link dialog (URL input), color hex input, search.
+
+   HTML:
+   <input class="rte-input" placeholder="https://..." />
+   <input class="rte-input rte-input--error" />
+   ================================================================ */
+
+.rte-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--rte-sp-3);
+  font-family: var(--rte-font-sans);
+  font-size: var(--rte-text-sm);
+  color: var(--rte-text);
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius);      /* 6px */
+  outline: none;
+  transition:
+    border-color var(--rte-duration-fast) var(--rte-ease),
+    box-shadow   var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-input::placeholder  { color: var(--rte-text-placeholder); }
+.rte-input:hover          { border-color: var(--rte-border-strong); }
+.rte-input:focus          { border-color: var(--rte-accent); box-shadow: var(--rte-ring); }
+
+/* Error state */
+.rte-input--error         { border-color: var(--rte-error); }
+.rte-input--error:focus   { --rte-ring-color: var(--rte-error); }
+
+/* Label above input */
+.rte-label {
+  display: block;
+  margin-bottom: var(--rte-sp-1h);
+  font-size: var(--rte-text-sm);
+  font-weight: var(--rte-weight-medium);
+  color: var(--rte-text);
+}
+

@@ -1,0 +1,23 @@
+/* ================================================================
+   COMMENT HIGHLIGHT — Yellow highlight over commented text
+   ================================================================
+   Applied as ProseMirror Decorations (not schema marks).
+   Clicking highlighted text opens the comment in the sidebar.
+   ================================================================ */
+
+.rte-comment-highlight {
+  background: rgba(253, 224, 71, 0.25);             /* yellow-300 / 25% */
+  border-bottom: 2px solid rgba(253, 224, 71, 0.6);
+  cursor: pointer;
+  transition: background-color var(--rte-duration-fast) var(--rte-ease);
+}
+
+.rte-comment-highlight:hover {
+  background: rgba(253, 224, 71, 0.4);
+}
+
+/* Currently focused comment */
+.rte-comment-highlight--active {
+  background: rgba(253, 224, 71, 0.5);
+}
+

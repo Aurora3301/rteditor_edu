@@ -1,0 +1,66 @@
+/* ================================================================
+   DARK THEME — Override semantic tokens for dark mode
+   ================================================================
+   Activated by:
+     <div class="rte-root" data-theme="dark">     ← manual
+     <div class="rte-root rte-theme-dark">         ← class-based
+     <div class="rte-root" data-theme="auto">      ← system preference
+
+   ONLY semantic tokens are overridden here.
+   Raw palette values (--rte-slate-*) remain unchanged.
+   ================================================================ */
+
+/* Manual dark mode */
+.rte-root[data-theme="dark"],
+.rte-root.rte-theme-dark {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --rte-bg:               var(--rte-slate-900);
+  --rte-bg-subtle:        var(--rte-slate-800);
+  --rte-bg-muted:         var(--rte-slate-700);
+  --rte-bg-active:        var(--rte-slate-700);
+
+  /* Text */
+  --rte-text:             var(--rte-slate-50);
+  --rte-text-secondary:   var(--rte-slate-300);
+  --rte-text-muted:       var(--rte-slate-500);
+  --rte-text-placeholder: var(--rte-slate-500);
+
+  /* Borders */
+  --rte-border:           var(--rte-slate-700);
+  --rte-border-strong:    var(--rte-slate-600);
+
+  /* Accent tint (lower opacity for dark backgrounds) */
+  --rte-accent-subtle:    rgba(99, 102, 241, 0.15);
+
+  /* Shadows are darker in dark mode */
+  --rte-shadow-xs:        0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --rte-shadow-sm:        0 1px 3px 0 rgb(0 0 0 / 0.3),
+                          0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --rte-shadow:           0 4px 6px -1px rgb(0 0 0 / 0.35),
+                          0 2px 4px -2px rgb(0 0 0 / 0.35);
+}
+
+/* Auto-detect system preference */
+@media (prefers-color-scheme: dark) {
+  .rte-root[data-theme="auto"] {
+    color-scheme: dark;
+
+    --rte-bg:               var(--rte-slate-900);
+    --rte-bg-subtle:        var(--rte-slate-800);
+    --rte-bg-muted:         var(--rte-slate-700);
+    --rte-bg-active:        var(--rte-slate-700);
+
+    --rte-text:             var(--rte-slate-50);
+    --rte-text-secondary:   var(--rte-slate-300);
+    --rte-text-muted:       var(--rte-slate-500);
+    --rte-text-placeholder: var(--rte-slate-500);
+
+    --rte-border:           var(--rte-slate-700);
+    --rte-border-strong:    var(--rte-slate-600);
+
+    --rte-accent-subtle:    rgba(99, 102, 241, 0.15);
+  }
+}
+

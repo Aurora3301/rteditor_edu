@@ -1,0 +1,26 @@
+/* ================================================================
+   Z-INDEX — Stacking order scale
+   ================================================================
+   All z-index values are scoped inside .rte-root
+   which has `isolation: isolate` — so these will
+   NEVER conflict with the host app's z-index values.
+
+   Scale:
+     toolbar   10   (sticky toolbar)
+     dropdown  100  (menus)
+     popover   200  (color picker, link tooltip)
+     tooltip   300  (hover labels)
+     overlay   400  (modal backdrop)
+     modal     500  (dialogs on top of overlay)
+   ================================================================ */
+
+.rte-root {
+  --rte-z-base:     1;
+  --rte-z-toolbar:  10;
+  --rte-z-dropdown: 100;
+  --rte-z-popover:  200;
+  --rte-z-tooltip:  300;
+  --rte-z-overlay:  400;
+  --rte-z-modal:    500;
+}
+

@@ -1,0 +1,55 @@
+/* ================================================================
+   TOOLTIP — Hover labels for toolbar buttons
+   ================================================================
+
+   Shows button name + keyboard shortcut on hover.
+   Dark background, small text, appears below the button.
+
+   Example:  "Bold  ⌘B"
+
+   HTML:
+   <div class="rte-tooltip rte-tooltip--visible">
+     Bold <span class="rte-tooltip__shortcut">⌘B</span>
+   </div>
+   ================================================================ */
+
+.rte-tooltip {
+  position: absolute;
+  z-index: var(--rte-z-tooltip);
+  max-width: 220px;
+  padding: var(--rte-sp-1h) var(--rte-sp-2);    /* 6px 8px */
+  font-size: var(--rte-text-xs);                  /* 11px */
+  line-height: 1.4;
+  color: var(--rte-text-inverse);
+  background: var(--rte-slate-800);
+  border-radius: var(--rte-radius);
+  box-shadow: var(--rte-shadow);
+  pointer-events: none;
+  white-space: nowrap;
+
+  /* Hidden by default — fade in */
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity   var(--rte-duration-fast) var(--rte-ease),
+    transform var(--rte-duration-fast) var(--rte-ease);
+}
+
+/* Visible state */
+.rte-tooltip--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Keyboard shortcut badge */
+.rte-tooltip__shortcut {
+  display: inline-block;
+  margin-left: var(--rte-sp-2);
+  padding: 1px 4px;
+  font-size: 10px;
+  font-family: var(--rte-font-mono);
+  color: var(--rte-slate-400);
+  background: var(--rte-slate-700);
+  border-radius: 3px;
+}
+

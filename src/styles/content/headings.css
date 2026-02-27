@@ -1,0 +1,38 @@
+/* ================================================================
+   HEADINGS — h1, h2, h3 styling
+   ================================================================
+   Sizes:
+     h1  →  30px, bold,     tight leading, letter-spacing -0.025em
+     h2  →  24px, semibold, tight leading, letter-spacing -0.02em
+     h3  →  18px, semibold, snug leading
+   ================================================================ */
+
+.rte-editor .ProseMirror h1 {
+  font-size: var(--rte-text-2xl);          /* 30px */
+  font-weight: var(--rte-weight-bold);
+  line-height: var(--rte-leading-tight);   /* 1.25 */
+  letter-spacing: -0.025em;
+  margin: var(--rte-sp-8) 0 var(--rte-sp-4) 0;
+  color: var(--rte-text);
+}
+.rte-editor .ProseMirror h1:first-child {
+  margin-top: 0;
+}
+
+.rte-editor .ProseMirror h2 {
+  font-size: var(--rte-text-xl);           /* 24px */
+  font-weight: var(--rte-weight-semibold);
+  line-height: var(--rte-leading-tight);
+  letter-spacing: -0.02em;
+  margin: var(--rte-sp-6) 0 var(--rte-sp-3) 0;
+  color: var(--rte-text);
+}
+
+.rte-editor .ProseMirror h3 {
+  font-size: var(--rte-text-lg);           /* 18px */
+  font-weight: var(--rte-weight-semibold);
+  line-height: var(--rte-leading-snug);    /* 1.375 */
+  margin: var(--rte-sp-5) 0 var(--rte-sp-2) 0;
+  color: var(--rte-text);
+}
+
