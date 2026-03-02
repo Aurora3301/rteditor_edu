@@ -118,3 +118,50 @@
   font-weight: var(--rte-weight-medium);
 }
 
+
+
+/* ── Select (dropdown) — matches toolbar button style ── */
+.rte-toolbar__select {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 var(--rte-sp-2);
+  flex-shrink: 0;
+
+  color: var(--rte-text-secondary);
+  border-radius: var(--rte-radius);
+  font-size: var(--rte-text-sm);
+  font-family: inherit;
+  transition:
+    background-color var(--rte-duration-fast) var(--rte-ease),
+    color            var(--rte-duration-fast) var(--rte-ease),
+    border-color     var(--rte-duration-fast) var(--rte-ease);
+
+  /* Dropdown arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  padding-right: 22px;
+}
+.rte-toolbar__select:hover {
+  background-color: var(--rte-bg-muted);
+  color: var(--rte-text);
+}
+.rte-toolbar__select:focus-visible {
+  outline: none;
+  box-shadow: var(--rte-ring);
+  z-index: 1;
+}
+.rte-toolbar__select--size {
+  width: 72px;
+}
+.rte-toolbar__select option {
+  color: var(--rte-text);
+  background: var(--rte-bg);
+}

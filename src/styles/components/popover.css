@@ -69,3 +69,102 @@
   background: var(--rte-border);
 }
 
+/* ── Bubble Menu ── */
+.rte-bubble-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius);
+  box-shadow: var(--rte-shadow-lg);
+  transform: translateX(-50%) translateY(-100%);
+  white-space: nowrap;
+  animation: rte-bubble-in 0.15s var(--rte-ease);
+}
+
+@keyframes rte-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%) scale(1);
+  }
+}
+
+.rte-bubble-menu__btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--rte-radius);
+  color: var(--rte-text-secondary);
+  font-size: 13px;
+  transition: background-color 0.1s, color 0.1s;
+}
+.rte-bubble-menu__btn:hover {
+  background: var(--rte-bg-muted);
+  color: var(--rte-text);
+}
+.rte-bubble-menu__btn--active {
+  background: var(--rte-bg-active);
+  color: var(--rte-accent);
+}
+.rte-bubble-menu__btn--primary {
+  color: var(--rte-accent);
+  font-weight: bold;
+}
+
+.rte-bubble-menu__separator {
+  width: 1px;
+  height: 20px;
+  background: var(--rte-border);
+  margin: 0 4px;
+}
+
+.rte-bubble-menu__link-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rte-bubble-menu__link-url {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--rte-accent);
+  text-decoration: underline;
+  padding: 0 6px;
+}
+
+.rte-bubble-menu__link-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rte-bubble-menu__input {
+  width: 220px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius);
+  font-size: 13px;
+  color: var(--rte-text);
+  background: var(--rte-bg);
+  outline: none;
+}
+.rte-bubble-menu__input:focus {
+  border-color: var(--rte-accent);
+  box-shadow: 0 0 0 2px var(--rte-ring-color, rgba(99, 102, 241, 0.2));
+}
+
