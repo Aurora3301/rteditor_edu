@@ -11,7 +11,7 @@ export function toJSON(doc: ProseMirrorNode): Record<string, any> {
 
 /**
  * Parse a JSON object back into a ProseMirror document.
- * Returns null if the JSON is invalid (instead of crashing).
+ * Throws if the JSON is invalid — caller should handle the error.
  */
 export function fromJSON(json: Record<string, any>): ProseMirrorNode {
   try {

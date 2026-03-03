@@ -92,8 +92,8 @@ export const marks: Record<string, MarkSpec> = {
       },
     }],
     toDOM(mark: Mark) {
-      // Sanitize font family to prevent CSS injection
-      const family = mark.attrs.family.replace(/[;{}\\<>]/g, '')
+      // Allowlist: only alphanumerics, spaces, commas, hyphens, apostrophes
+      const family = mark.attrs.family.replace(/[^a-zA-Z0-9\s,'"-]/g, '').trim()
       return ['span', { style: `font-family: ${family}` }, 0]
     },
   } as MarkSpec,
@@ -150,8 +150,9 @@ export const marks: Record<string, MarkSpec> = {
       },
     }],
     toDOM(mark: Mark) {
-      // Validate color value (hex, rgb, named) to prevent injection
-      const color = mark.attrs.color.replace(/[;{}\\<>"']/g, '')
+      const colorRegex = /^(#[0-9a-fA-F]{3,8}|rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+[\s,\d.]*\)|hsla?\([^)]+\)|[a-zA-Z]+)$/
+      const raw = String(mark.attrs.color).trim()
+      const color = colorRegex.test(raw) ? raw : 'inherit'
       return ['span', { style: `color: ${color}` }, 0]
     },
   } as MarkSpec,
@@ -165,7 +166,9 @@ export const marks: Record<string, MarkSpec> = {
       },
     }],
     toDOM(mark: Mark) {
-      const color = mark.attrs.color.replace(/[;{}\\<>"']/g, '')
+      const colorRegex = /^(#[0-9a-fA-F]{3,8}|rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+[\s,\d.]*\)|hsla?\([^)]+\)|[a-zA-Z]+)$/
+      const raw = String(mark.attrs.color).trim()
+      const color = colorRegex.test(raw) ? raw : 'transparent'
       return ['span', { style: `background-color: ${color}` }, 0]
     },
   } as MarkSpec,

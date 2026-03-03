@@ -55,9 +55,7 @@ function serializeNode(node: ProseMirrorNode, context?: string): string {
 }
 
 function serializeListItem(node: ProseMirrorNode, prefix: string): string {
-  const content = children(node)
-    .map((child, i) => i === 0 ? serializeNode(child) : serializeNode(child))
-    .join('\n')
+  const content = children(node).map(child => serializeNode(child)).join('\n')
   return content.split('\n').map((line, i) => i === 0 ? prefix + line : '  ' + line).join('\n')
 }
 
@@ -93,7 +91,10 @@ function serializeTable(table: ProseMirrorNode): string {
   const rows: string[][] = []
   table.forEach(row => {
     const cells: string[] = []
-    row.forEach(cell => { cells.push(serializeInline(cell.firstChild!).trim()) })
+    row.forEach(cell => {
+      const cellContent = cell.firstChild ? serializeInline(cell.firstChild).trim() : ''
+      cells.push(cellContent)
+    })
     rows.push(cells)
   })
   if (rows.length === 0) return ''

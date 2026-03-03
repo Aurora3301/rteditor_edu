@@ -17,7 +17,8 @@ export const nodes: Record<string, NodeSpec> = {
     }],
     toDOM(node: ProseMirrorNode) {
       const attrs: Record<string, string> = {}
-      if (node.attrs.textAlign) {
+      const validAligns = ['left', 'center', 'right', 'justify']
+      if (node.attrs.textAlign && validAligns.includes(node.attrs.textAlign)) {
         attrs.style = `text-align: ${node.attrs.textAlign}`
       }
       return ['p', attrs, 0]
@@ -40,7 +41,8 @@ export const nodes: Record<string, NodeSpec> = {
     })),
     toDOM(node: ProseMirrorNode) {
       const attrs: Record<string, string> = {}
-      if (node.attrs.textAlign) {
+      const validAligns = ['left', 'center', 'right', 'justify']
+      if (node.attrs.textAlign && validAligns.includes(node.attrs.textAlign)) {
         attrs.style = `text-align: ${node.attrs.textAlign}`
       }
       return [`h${node.attrs.level}`, attrs, 0]

@@ -245,7 +245,7 @@ export function useEditor(options: UseEditorOptions) {
     if (!v) return
     cmd(v.state, v.dispatch)
     v.focus()
-    updateActiveState(v.state)
+    // updateActiveState is already called via onTransaction — no double call needed
   }
 
   const commands = {

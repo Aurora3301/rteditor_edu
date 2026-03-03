@@ -1,5 +1,6 @@
 import { keymap } from 'prosemirror-keymap'
-import { EditorState, Plugin, Transaction } from 'prosemirror-state'
+import { EditorState, Transaction } from 'prosemirror-state'
+import type { Plugin } from 'prosemirror-state'
 import {
   chainCommands, exitCode, joinBackward, selectNodeBackward,
   joinForward, selectNodeForward, deleteSelection,
@@ -63,7 +64,7 @@ function deleteTableAfter(state: EditorState, dispatch?: (tr: Transaction) => vo
   return true
 }
 
-export function buildKeymap(): Plugin {
+export function buildKeymap(): Plugin<any> {
   const bindings: Record<string, any> = {}
 
   // ── Mark toggles ──
