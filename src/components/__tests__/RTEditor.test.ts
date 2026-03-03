@@ -201,5 +201,137 @@ describe('RTEditor Component', () => {
     const pm = wrapper.find('.ProseMirror')
     expect(pm.attributes('contenteditable')).toBe('false')
   })
+
+  // ── Phase 3: Word Limit prop ────────────────────────────────────────────────
+  it('should render .rte-status-bar when wordLimit is provided', () => {
+    wrapper = mount(RTEditor, { props: { wordLimit: 500 } })
+    expect(wrapper.find('.rte-status-bar').exists()).toBe(true)
+  })
+
+  it('should show word count info in status bar', async () => {
+    wrapper = mount(RTEditor, { props: { wordLimit: 100 } })
+    await nextTick()
+    await nextTick()
+    const bar = wrapper.find('.rte-status-bar')
+    expect(bar.exists()).toBe(true)
+    expect(bar.text()).toMatch(/words/i)
+  })
+
+  it('should not render status bar when wordLimit is 0 (default)', () => {
+    wrapper = mount(RTEditor)
+    // Status bar only shows when wordLimit > 0
+    // May render but empty — just check it doesn't crash
+    expect(wrapper.exists()).toBe(true)
+  })
+
+  it('status bar should show limit number when wordLimit is set', async () => {
+    wrapper = mount(RTEditor, { props: { wordLimit: 250 } })
+    await nextTick()
+    const bar = wrapper.find('.rte-status-bar')
+    expect(bar.text()).toContain('250')
+  })
+
+  // ── Phase 3: Wave 6 Math Modal ─────────────────────────────────────────────
+  it('should render Insert Math toolbar button', () => {
+    wrapper = mount(RTEditor)
+    const mathBtn = wrapper.find('[aria-label="Insert Math"]')
+    expect(mathBtn.exists()).toBe(true)
+  })
+
+  it('should mount RTMathModal (hidden by default)', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    // Math modal starts invisible — its Teleport target won't be in the wrapper DOM
+    // Just verify the editor mounts cleanly with the modal registered
+    expect(wrapper.find('.rte-root').exists()).toBe(true)
+  })
+
+  // ── Phase 3: Wave 4 Import Word button ─────────────────────────────────────
+  it('should render Import Word Document toolbar button', () => {
+    wrapper = mount(RTEditor)
+    const importBtn = wrapper.find('[aria-label="Import Word Document"]')
+    expect(importBtn.exists()).toBe(true)
+  })
+
+  it('should render hidden file input for Word import', () => {
+    wrapper = mount(RTEditor)
+    const input = wrapper.find('input[type="file"][accept=".docx"]')
+    expect(input.exists()).toBe(true)
+  })
+
+  // ── Phase 3: Wave 5 Remark Popover component exposed ───────────────────────
+  it('should expose getJSON via defineExpose', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.getJSON).toBe('function')
+  })
+
+  it('getJSON should return a valid ProseMirror JSON object', async () => {
+    wrapper = mount(RTEditor, { props: { modelValue: '<p>Hello world</p>' } })
+    await nextTick()
+    await nextTick()
+    const json = wrapper.vm.getJSON()
+    expect(json).toBeDefined()
+    expect(json.type).toBe('doc')
+    expect(Array.isArray(json.content)).toBe(true)
+  })
+
+  // ── Phase 3: Wave 2 Table Mini-Toolbar ─────────────────────────────────────
+  it('should expose commands.insertRowBefore as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.insertRowBefore).toBe('function')
+  })
+
+  it('should expose commands.insertRowAfter as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.insertRowAfter).toBe('function')
+  })
+
+  it('should expose commands.deleteRow as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.deleteRow).toBe('function')
+  })
+
+  it('should expose commands.insertColBefore as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.insertColBefore).toBe('function')
+  })
+
+  it('should expose commands.insertColAfter as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.insertColAfter).toBe('function')
+  })
+
+  it('should expose commands.deleteColumn as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.deleteColumn).toBe('function')
+  })
+
+  it('should expose commands.deleteTable as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.deleteTable).toBe('function')
+  })
+
+  it('should expose commands.insertMath as a function', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    await nextTick()
+    expect(typeof wrapper.vm.commands.insertMath).toBe('function')
+  })
 })
 

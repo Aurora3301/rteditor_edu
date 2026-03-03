@@ -8,8 +8,14 @@ import {
   undo, redo,
   setTextColor, removeTextColor, getActiveTextColor,
   setHighlight, removeHighlight, getActiveHighlight,
-  insertTable,
+  insertTable, insertMath,
 } from '../formatting'
+import {
+  addRowAfter, addRowBefore, deleteRow,
+  addColumnAfter, addColumnBefore, deleteColumn, deleteTable,
+} from 'prosemirror-tables'
+import { tableEditing } from 'prosemirror-tables'
+import { cleanPastedHTML } from '../../utils/pasteCleanup'
 
 // Helper: create a state with simple text content
 function createState(content?: string) {
@@ -282,5 +288,209 @@ describe('Table Commands', () => {
       }
     })
     expect(firstRowHasHeaders).toBe(true)
+  })
+})
+
+// ─── Phase 3: Math Commands ──────────────────────────────────────────────────
+describe('Math Commands — insertMath', () => {
+  it('insertMath should return true (is applicable)', () => {
+    const state = createState('Hello')
+    expect(insertMath('x^2')(state)).toBe(true)
+  })
+
+  it('insertMath should insert a math_inline node', () => {
+    const state = createState('Before')
+    let newState: EditorState | null = null
+    insertMath('\\pi')(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    expect(newState).not.toBeNull()
+    let hasMath = false
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'math_inline') hasMath = true
+    })
+    expect(hasMath).toBe(true)
+  })
+
+  it('insertMath should store the latex expression on the node', () => {
+    const state = createState('')
+    let newState: EditorState | null = null
+    insertMath('E=mc^2')(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    let latex = ''
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'math_inline') latex = node.attrs.latex
+    })
+    expect(latex).toBe('E=mc^2')
+  })
+
+  it('insertMath with empty latex still inserts a node', () => {
+    const state = createState('Text')
+    let newState: EditorState | null = null
+    insertMath('')(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    let hasMath = false
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'math_inline') hasMath = true
+    })
+    expect(hasMath).toBe(true)
+  })
+})
+
+// ─── Phase 3: Table Operation Commands ───────────────────────────────────────
+describe('Table Operation Commands (prosemirror-tables)', () => {
+  /** Build a state with tableEditing plugin + cursor inside first cell */
+  function createTableState(rows: number, cols: number) {
+    const cell = () => schema.node('table_cell', null, [schema.node('paragraph')])
+    const row = () => schema.node('table_row', null, Array.from({ length: cols }, cell))
+    const table = schema.node('table', null, Array.from({ length: rows }, row))
+    const doc = schema.node('doc', null, [schema.node('paragraph'), table])
+    const state = EditorState.create({ doc, schema, plugins: [tableEditing()] })
+    // Position cursor inside the first table cell (after doc > paragraph > table > row > cell > paragraph)
+    // doc(0) > paragraph(1..2) > table(3) > row(4) > cell(5) > paragraph(6) = pos 6
+    const cellParagraphPos = 6
+    const tr = state.tr.setSelection(TextSelection.create(state.doc, cellParagraphPos))
+    return state.apply(tr)
+  }
+
+  it('addRowAfter should add a row after current row', () => {
+    const state = createTableState(2, 2)
+    let newState: EditorState | null = null
+    addRowAfter(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let tableNode: any = null
+    newState!.doc.descendants(n => { if (n.type.name === 'table') tableNode = n })
+    expect(tableNode.childCount).toBe(3) // was 2, now 3
+  })
+
+  it('addRowBefore should add a row before current row', () => {
+    const state = createTableState(2, 2)
+    let newState: EditorState | null = null
+    addRowBefore(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let tableNode: any = null
+    newState!.doc.descendants(n => { if (n.type.name === 'table') tableNode = n })
+    expect(tableNode.childCount).toBe(3)
+  })
+
+  it('deleteRow should remove the current row', () => {
+    const state = createTableState(3, 2)
+    let newState: EditorState | null = null
+    deleteRow(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let tableNode: any = null
+    newState!.doc.descendants(n => { if (n.type.name === 'table') tableNode = n })
+    expect(tableNode.childCount).toBe(2) // was 3, now 2
+  })
+
+  it('addColumnAfter should add a column', () => {
+    const state = createTableState(2, 2)
+    let newState: EditorState | null = null
+    addColumnAfter(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let firstRowCells = 0
+    newState!.doc.descendants(n => {
+      if (n.type.name === 'table_row' && firstRowCells === 0) firstRowCells = n.childCount
+    })
+    expect(firstRowCells).toBe(3) // was 2, now 3
+  })
+
+  it('addColumnBefore should add a column before current', () => {
+    const state = createTableState(2, 2)
+    let newState: EditorState | null = null
+    addColumnBefore(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let firstRowCells = 0
+    newState!.doc.descendants(n => {
+      if (n.type.name === 'table_row' && firstRowCells === 0) firstRowCells = n.childCount
+    })
+    expect(firstRowCells).toBe(3)
+  })
+
+  it('deleteColumn should remove the current column', () => {
+    const state = createTableState(2, 3)
+    let newState: EditorState | null = null
+    deleteColumn(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let firstRowCells = 0
+    newState!.doc.descendants(n => {
+      if (n.type.name === 'table_row' && firstRowCells === 0) firstRowCells = n.childCount
+    })
+    expect(firstRowCells).toBe(2) // was 3, now 2
+  })
+
+  it('deleteTable should remove the entire table', () => {
+    const state = createTableState(2, 2)
+    let newState: EditorState | null = null
+    deleteTable(state, (tr: Transaction) => { newState = state.apply(tr) })
+    expect(newState).not.toBeNull()
+    let hasTable = false
+    newState!.doc.descendants(n => { if (n.type.name === 'table') hasTable = true })
+    expect(hasTable).toBe(false)
+  })
+})
+
+// ─── Phase 3: Paste Cleanup ──────────────────────────────────────────────────
+describe('cleanPastedHTML — Word / Google Docs cleanup', () => {
+  it('should return a string', () => {
+    expect(typeof cleanPastedHTML('<p>Hello</p>')).toBe('string')
+  })
+
+  it('should strip mso- inline styles', () => {
+    const input = '<p style="mso-line-height-rule:exactly">Text</p>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('mso-')
+  })
+
+  it('should strip class="Mso*" attributes', () => {
+    const input = '<p class="MsoNormal">Text</p>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('MsoNormal')
+  })
+
+  it('should strip all style attributes', () => {
+    const input = '<span style="font-size:12pt;color:red">Text</span>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('style=')
+  })
+
+  it('should strip o: namespace tags (Word meta)', () => {
+    const input = '<p>Text</p><o:p></o:p>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('<o:p>')
+  })
+
+  it('should strip data-* attributes (Google Docs)', () => {
+    const input = '<p data-google-id="abc123">Text</p>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('data-google-id')
+  })
+
+  it('should strip Google Docs internal IDs', () => {
+    const input = '<span id="docs-internal-guid-xyz">Text</span>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('docs-internal-guid')
+  })
+
+  it('should preserve plain text content', () => {
+    const input = '<p>Keep this text</p>'
+    const result = cleanPastedHTML(input)
+    expect(result).toContain('Keep this text')
+  })
+
+  it('should preserve href attributes on links', () => {
+    const input = '<a href="https://example.com" style="color:blue">Link</a>'
+    const result = cleanPastedHTML(input)
+    expect(result).toContain('href="https://example.com"')
+    expect(result).not.toContain('style=')
+  })
+
+  it('should strip Word XML conditional comments', () => {
+    const input = '<!--[if gte mso 9]><xml><w:WordDocument></w:WordDocument></xml><![endif]--><p>Hello</p>'
+    const result = cleanPastedHTML(input)
+    expect(result).not.toContain('[if gte mso')
+    expect(result).toContain('Hello')
   })
 })

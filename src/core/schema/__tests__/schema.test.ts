@@ -205,6 +205,131 @@ describe('Phase 2 Nodes', () => {
   })
 })
 
+// ─── Phase 3 Nodes ──────────────────────────────────────────────────────────
+describe('Phase 3 Nodes — math_inline', () => {
+  it('should have a math_inline node', () => {
+    expect(schema.nodes.math_inline).toBeDefined()
+  })
+
+  it('math_inline should be inline and atomic', () => {
+    expect(schema.nodes.math_inline.spec.inline).toBe(true)
+    expect(schema.nodes.math_inline.spec.atom).toBe(true)
+  })
+
+  it('math_inline should have a latex attr defaulting to empty string', () => {
+    const node = schema.node('math_inline', { latex: '' })
+    expect(node.attrs.latex).toBe('')
+  })
+
+  it('math_inline should store latex expression', () => {
+    const node = schema.node('math_inline', { latex: 'x^2 + y^2 = z^2' })
+    expect(node.attrs.latex).toBe('x^2 + y^2 = z^2')
+  })
+
+  it('math_inline toDOM should produce span with data-math attr', () => {
+    const node = schema.node('math_inline', { latex: '\\pi' })
+    const [tag, attrs] = node.type.spec.toDOM!(node) as [string, any, string]
+    expect(tag).toBe('span')
+    expect(attrs['data-math']).toBe('\\pi')
+  })
+
+  it('math_inline should be placeable inside a paragraph', () => {
+    const math = schema.node('math_inline', { latex: 'E=mc^2' })
+    const text = schema.text('Before ')
+    const p = schema.node('paragraph', null, [text, math])
+    expect(p.childCount).toBe(2)
+    expect(p.child(1).type.name).toBe('math_inline')
+  })
+})
+
+describe('Phase 3 Nodes — image (float + caption)', () => {
+  it('image node should have float attr defaulting to null', () => {
+    const node = schema.node('image', { src: 'x.png' })
+    expect(node.attrs.float).toBeNull()
+  })
+
+  it('image node should have caption attr defaulting to empty string', () => {
+    const node = schema.node('image', { src: 'x.png' })
+    expect(node.attrs.caption).toBe('')
+  })
+
+  it('image node should store float=left', () => {
+    const node = schema.node('image', { src: 'x.png', float: 'left' })
+    expect(node.attrs.float).toBe('left')
+  })
+
+  it('image node should store caption text', () => {
+    const node = schema.node('image', { src: 'x.png', caption: 'A photo' })
+    expect(node.attrs.caption).toBe('A photo')
+  })
+
+  it('image toDOM should emit style float and data-float when float is set', () => {
+    const node = schema.node('image', { src: 'x.png', float: 'right' })
+    const [tag, attrs] = node.type.spec.toDOM!(node) as [string, any]
+    expect(tag).toBe('img')
+    expect(attrs['data-float']).toBe('right')
+    expect(attrs.style).toContain('float:right')
+  })
+
+  it('image toDOM should emit data-caption when caption is set', () => {
+    const node = schema.node('image', { src: 'x.png', caption: 'Test caption' })
+    const [, attrs] = node.type.spec.toDOM!(node) as [string, any]
+    expect(attrs['data-caption']).toBe('Test caption')
+  })
+
+  it('image toDOM should NOT emit data-float/style when float is null', () => {
+    const node = schema.node('image', { src: 'x.png', float: null })
+    const [, attrs] = node.type.spec.toDOM!(node) as [string, any]
+    expect(attrs['data-float']).toBeUndefined()
+    expect(attrs.style).toBeUndefined()
+  })
+})
+
+// ─── Phase 3 Marks ──────────────────────────────────────────────────────────
+describe('Phase 3 Marks — comment', () => {
+  it('should have a comment mark', () => {
+    expect(schema.marks.comment).toBeDefined()
+  })
+
+  it('comment mark should have id, text, author, timestamp attrs', () => {
+    const mark = schema.mark('comment', { id: 'c1', text: 'Nice work', author: 'Teacher', timestamp: '2026-01-01' })
+    expect(mark.attrs.id).toBe('c1')
+    expect(mark.attrs.text).toBe('Nice work')
+    expect(mark.attrs.author).toBe('Teacher')
+    expect(mark.attrs.timestamp).toBe('2026-01-01')
+  })
+
+  it('comment mark text attr should default to empty string', () => {
+    const mark = schema.mark('comment', { id: 'c2', text: '' })
+    expect(mark.attrs.text).toBe('')
+  })
+
+  it('comment mark should be non-inclusive (does not extend to adjacent typed text)', () => {
+    expect(schema.marks.comment.spec.inclusive).toBe(false)
+  })
+
+  it('comment toDOM should produce span.rte-comment with data-comment-id', () => {
+    const mark = schema.mark('comment', { id: 'c3', text: 'Good point', author: 'Teacher', timestamp: '' })
+    const [tag, attrs] = mark.type.spec.toDOM!(mark, false) as [string, any, any]
+    expect(tag).toBe('span')
+    expect(attrs.class).toBe('rte-comment')
+    expect(attrs['data-comment-id']).toBe('c3')
+    expect(attrs['data-comment-text']).toBe('Good point')
+  })
+
+  it('comment mark can be applied to text in a paragraph', () => {
+    const commentMark = schema.mark('comment', { id: 'cx', text: 'See me', author: 'T', timestamp: '' })
+    const text = schema.text('Student essay text', [commentMark])
+    const p = schema.node('paragraph', null, [text])
+    expect(p.firstChild?.marks[0].type.name).toBe('comment')
+    expect(p.firstChild?.marks[0].attrs.id).toBe('cx')
+  })
+
+  it('comment mark excludes should be empty string (non-exclusive — allows stacking)', () => {
+    expect(schema.marks.comment.spec.excludes).toBe('')
+  })
+})
+
 describe('Phase 2 Marks', () => {
   it('should have textColor and highlight marks', () => {
     expect(schema.marks.textColor).toBeDefined()

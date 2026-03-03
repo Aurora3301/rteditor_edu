@@ -393,6 +393,134 @@ describe('Word Count Utility', () => {
   })
 })
 
+// ─── Phase 3 Serializer Tests ────────────────────────────────────────────────
+describe('HTML Serializer — Phase 3 (image float/caption)', () => {
+  it('toHTML should serialize image with float=left', () => {
+    const img = schema.node('image', { src: 'photo.jpg', float: 'left', caption: '' })
+    const doc = schema.node('doc', null, [schema.node('paragraph', null, [img])])
+    const html = toHTML(doc)
+    // Browser may serialize as "float: left" or "float:left"
+    expect(html.toLowerCase()).toContain('float')
+    expect(html).toContain('left')
+    expect(html).toContain('data-float="left"')
+  })
+
+  it('toHTML should serialize image with data-caption', () => {
+    const img = schema.node('image', { src: 'photo.jpg', caption: 'A beautiful sunset', float: null })
+    const doc = schema.node('doc', null, [schema.node('paragraph', null, [img])])
+    const html = toHTML(doc)
+    expect(html).toContain('data-caption="A beautiful sunset"')
+  })
+
+  it('fromHTML should parse image with data-float', () => {
+    const html = '<p><img src="photo.jpg" data-float="right" style="float:right;margin:4px" /></p>'
+    const doc = fromHTML(html)
+    let imgNode: any = null
+    doc.descendants(n => { if (n.type.name === 'image') imgNode = n })
+    expect(imgNode).not.toBeNull()
+    expect(imgNode.attrs.float).toBe('right')
+  })
+
+  it('fromHTML should parse image with data-caption', () => {
+    const html = '<p><img src="photo.jpg" data-caption="Caption text" /></p>'
+    const doc = fromHTML(html)
+    let imgNode: any = null
+    doc.descendants(n => { if (n.type.name === 'image') imgNode = n })
+    expect(imgNode).not.toBeNull()
+    expect(imgNode.attrs.caption).toBe('Caption text')
+  })
+
+  it('image without float: no float style in output', () => {
+    const img = schema.node('image', { src: 'photo.jpg', float: null, caption: '' })
+    const doc = schema.node('doc', null, [schema.node('paragraph', null, [img])])
+    const html = toHTML(doc)
+    expect(html).not.toContain('float:')
+  })
+})
+
+describe('HTML Serializer — Phase 3 (comment mark)', () => {
+  it('toHTML should serialize comment mark with data-comment-id', () => {
+    const commentMark = schema.mark('comment', {
+      id: 'c1', text: 'Well argued!', author: 'Teacher', timestamp: '2026-01-01',
+    })
+    const doc = schema.node('doc', null, [
+      schema.node('paragraph', null, [schema.text('Great essay', [commentMark])])
+    ])
+    const html = toHTML(doc)
+    expect(html).toContain('data-comment-id="c1"')
+    expect(html).toContain('rte-comment')
+    expect(html).toContain('Great essay')
+  })
+
+  it('toHTML should include comment text in data-comment-text', () => {
+    const commentMark = schema.mark('comment', {
+      id: 'c2', text: 'Check citation', author: 'Teacher', timestamp: '',
+    })
+    const doc = schema.node('doc', null, [
+      schema.node('paragraph', null, [schema.text('This claim', [commentMark])])
+    ])
+    const html = toHTML(doc)
+    expect(html).toContain('data-comment-text="Check citation"')
+  })
+
+  it('fromHTML should parse span[data-comment-id] as comment mark', () => {
+    const html = '<p><span data-comment-id="c3" data-comment-text="See me" data-comment-author="Teacher" data-comment-ts="" class="rte-comment">Text</span></p>'
+    const doc = fromHTML(html)
+    let commentMark: any = null
+    doc.descendants(node => {
+      node.marks.forEach(m => { if (m.type.name === 'comment') commentMark = m })
+    })
+    expect(commentMark).not.toBeNull()
+    expect(commentMark.attrs.id).toBe('c3')
+    expect(commentMark.attrs.text).toBe('See me')
+  })
+
+  it('comment mark JSON round-trip should preserve all attrs', () => {
+    const commentMark = schema.mark('comment', {
+      id: 'cx', text: 'Revise', author: 'Prof', timestamp: '2026-03-01',
+    })
+    const original = schema.node('doc', null, [
+      schema.node('paragraph', null, [schema.text('Some text', [commentMark])])
+    ])
+    const json = toJSON(original)
+    const restored = fromJSON(json)
+    let mark: any = null
+    restored.descendants(n => { n.marks.forEach(m => { if (m.type.name === 'comment') mark = m }) })
+    expect(mark.attrs.id).toBe('cx')
+    expect(mark.attrs.text).toBe('Revise')
+    expect(mark.attrs.author).toBe('Prof')
+  })
+})
+
+describe('HTML Serializer — Phase 3 (math_inline)', () => {
+  it('toHTML should serialize math_inline with data-math attr', () => {
+    const math = schema.node('math_inline', { latex: 'x^2' })
+    const doc = schema.node('doc', null, [schema.node('paragraph', null, [math])])
+    const html = toHTML(doc)
+    expect(html).toContain('data-math="x^2"')
+  })
+
+  it('fromHTML should parse span[data-math] as math_inline node', () => {
+    const html = '<p><span data-math="\\pi" class="rte-math-inline">\\pi</span></p>'
+    const doc = fromHTML(html)
+    let mathNode: any = null
+    doc.descendants(n => { if (n.type.name === 'math_inline') mathNode = n })
+    expect(mathNode).not.toBeNull()
+    expect(mathNode.attrs.latex).toBe('\\pi')
+  })
+
+  it('math_inline JSON round-trip should preserve latex', () => {
+    const math = schema.node('math_inline', { latex: '\\frac{1}{2}' })
+    const original = schema.node('doc', null, [schema.node('paragraph', null, [math])])
+    const json = toJSON(original)
+    const restored = fromJSON(json)
+    let mathNode: any = null
+    restored.descendants(n => { if (n.type.name === 'math_inline') mathNode = n })
+    expect(mathNode).not.toBeNull()
+    expect(mathNode.attrs.latex).toBe('\\frac{1}{2}')
+  })
+})
+
 describe('CKEditor 4 Import', () => {
   it('importFromCKEditor4 should return a string', () => {
     const result = importFromCKEditor4('<p>Hello</p>')
