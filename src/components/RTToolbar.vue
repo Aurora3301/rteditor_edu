@@ -120,48 +120,69 @@
     <div class="rte-toolbar__separator" role="separator"></div>
 
     <!-- Group: Text Color + Highlight -->
-    <div class="rte-toolbar__group" style="position: relative">
+    <div class="rte-toolbar__group">
+      <!-- Text Color trigger -->
       <button
+        ref="textColorBtnRef"
         type="button"
         class="rte-toolbar__button"
         aria-label="Text Color"
         title="Text Color"
-        @click="showTextColorPicker = !showTextColorPicker; showHighlightPicker = false"
+        @click="openTextColorPicker"
       >
         <span style="display:flex;flex-direction:column;align-items:center;gap:1px">
           <strong style="font-size:13px;line-height:1">A</strong>
           <span :style="activeTextColor ? `background:${activeTextColor}` : 'background:currentColor'" style="width:14px;height:3px;border-radius:1px;display:block"></span>
         </span>
       </button>
-      <RTColorPicker
-        v-if="showTextColorPicker"
-        :model-value="activeTextColor"
-        label="Text Color"
-        style="position: absolute; top: 100%; left: 0; z-index: 100"
-        @update:model-value="(c) => { commands.setTextColor(c); showTextColorPicker = false }"
-        @remove="commands.removeTextColor(); showTextColorPicker = false"
-      />
+
+      <!-- Highlight Color trigger -->
       <button
+        ref="highlightBtnRef"
         type="button"
         class="rte-toolbar__button"
         aria-label="Highlight Color"
         title="Highlight Color"
-        @click="showHighlightPicker = !showHighlightPicker; showTextColorPicker = false"
+        @click="openHighlightPicker"
       >
         <span style="display:flex;flex-direction:column;align-items:center;gap:1px">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l-6 6v3h3l6-6"/><path d="M22 5.5a2.121 2.121 0 0 0-3-3l-6.5 6.5 3 3L22 5.5z"/></svg>
           <span :style="activeHighlight ? `background:${activeHighlight}` : 'background:#ffff00'" style="width:14px;height:3px;border-radius:1px;display:block"></span>
         </span>
       </button>
-      <RTColorPicker
-        v-if="showHighlightPicker"
-        :model-value="activeHighlight"
-        label="Highlight Color"
-        style="position: absolute; top: 100%; left: 40px; z-index: 100"
-        @update:model-value="(c) => { commands.setHighlight(c); showHighlightPicker = false }"
-        @remove="commands.removeHighlight(); showHighlightPicker = false"
-      />
     </div>
+
+    <!-- Text Color picker — Teleported to body, always above every layer -->
+    <Teleport to="body">
+      <div
+        v-if="showTextColorPicker"
+        ref="textColorPickerRef"
+        :style="{ position: 'fixed', top: textColorPos.top + 'px', left: textColorPos.left + 'px', zIndex: 2147483645 }"
+      >
+        <RTColorPicker
+          :model-value="activeTextColor"
+          label="Text Color"
+          @update:model-value="(c) => { commands.setTextColor(c); showTextColorPicker = false }"
+          @remove="commands.removeTextColor(); showTextColorPicker = false"
+        />
+      </div>
+    </Teleport>
+
+    <!-- Highlight picker — Teleported to body, always above every layer -->
+    <Teleport to="body">
+      <div
+        v-if="showHighlightPicker"
+        ref="highlightPickerRef"
+        :style="{ position: 'fixed', top: highlightPos.top + 'px', left: highlightPos.left + 'px', zIndex: 2147483645 }"
+      >
+        <RTColorPicker
+          :model-value="activeHighlight"
+          label="Highlight Color"
+          @update:model-value="(c) => { commands.setHighlight(c); showHighlightPicker = false }"
+          @remove="commands.removeHighlight(); showHighlightPicker = false"
+        />
+      </div>
+    </Teleport>
 
     <!-- Row break -->
     <div class="rte-toolbar__break"></div>
@@ -461,7 +482,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import RTColorPicker from './RTColorPicker.vue'
 import RTExportMenu from './RTExportMenu.vue'
 import type { EditorActiveState } from '../composables/useEditor'
@@ -515,6 +536,53 @@ const showTextColorPicker = ref(false)
 const showHighlightPicker = ref(false)
 const activeTextColor = computed(() => props.activeState.textColor)
 const activeHighlight = computed(() => props.activeState.highlight)
+
+// Refs to the trigger buttons — used for getBoundingClientRect when opening pickers
+const textColorBtnRef  = ref<HTMLElement | null>(null)
+const highlightBtnRef  = ref<HTMLElement | null>(null)
+// Refs to the picker panels — used by the outside-click guard
+const textColorPickerRef = ref<HTMLElement | null>(null)
+const highlightPickerRef = ref<HTMLElement | null>(null)
+
+// Computed fixed positions for each picker (set when the picker opens)
+const textColorPos  = ref({ top: 0, left: 0 })
+const highlightPos  = ref({ top: 0, left: 0 })
+
+function openTextColorPicker() {
+  const rect = textColorBtnRef.value?.getBoundingClientRect()
+  if (rect) textColorPos.value = { top: rect.bottom + 4, left: rect.left }
+  showTextColorPicker.value = !showTextColorPicker.value
+  showHighlightPicker.value = false
+}
+function openHighlightPicker() {
+  const rect = highlightBtnRef.value?.getBoundingClientRect()
+  if (rect) highlightPos.value = { top: rect.bottom + 4, left: rect.left }
+  showHighlightPicker.value = !showHighlightPicker.value
+  showTextColorPicker.value = false
+}
+function closeAllPickers() {
+  showTextColorPicker.value = false
+  showHighlightPicker.value = false
+}
+
+// Close all pickers on any outside click
+function onDocMouseDown(e: MouseEvent) {
+  const t = e.target as Node
+  const insideText      = textColorBtnRef.value?.contains(t)  || textColorPickerRef.value?.contains(t)
+  const insideHighlight = highlightBtnRef.value?.contains(t)  || highlightPickerRef.value?.contains(t)
+  if (!insideText && !insideHighlight) closeAllPickers()
+}
+// Close all pickers on any scroll (same pattern as comment tooltip)
+function onScrollClosePickers() { closeAllPickers() }
+
+onMounted(() => {
+  document.addEventListener('mousedown', onDocMouseDown)
+  window.addEventListener('scroll', onScrollClosePickers, true)
+})
+onUnmounted(() => {
+  document.removeEventListener('mousedown', onDocMouseDown)
+  window.removeEventListener('scroll', onScrollClosePickers, true)
+})
 
 // Line spacing: maps preset value → [lineHeight, paragraphGap]
 const spacingPresets: Record<string, [string, string]> = {

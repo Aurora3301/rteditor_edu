@@ -24,6 +24,10 @@
   padding: var(--rte-sp-1h) var(--rte-sp-2);   /* 6px 8px */
   background: var(--rte-bg-subtle);
   border-bottom: 1px solid var(--rte-border);
+  /* position:relative activates z-index so the toolbar stacking context sits
+     above .rte-root__body (which follows in DOM order).
+     Dropdowns/pickers additionally use Teleport+fixed for maximum safety. */
+  position: relative;
   z-index: var(--rte-z-toolbar);
 }
 
