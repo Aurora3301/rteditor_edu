@@ -50,8 +50,6 @@ export const toggleItalic: Command = toggleMark(schema.marks.italic)
 export const toggleUnderline: Command = toggleMark(schema.marks.underline)
 /** Toggle ~~strikethrough~~ mark on the current selection */
 export const toggleStrike: Command = toggleMark(schema.marks.strike)
-/** Toggle `inline code` mark on the current selection */
-export const toggleCode: Command = toggleMark(schema.marks.code)
 /** Toggle subscript mark on the current selection */
 export const toggleSubscript: Command = toggleMark(schema.marks.subscript)
 /** Toggle superscript mark on the current selection */

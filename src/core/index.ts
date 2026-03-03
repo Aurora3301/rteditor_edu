@@ -11,7 +11,7 @@ export { activateDrag, deactivateDrag, isDragActive, dragHandleKey } from './plu
 
 // Commands
 export {
-  toggleBold, toggleItalic, toggleUnderline, toggleStrike, toggleCode,
+  toggleBold, toggleItalic, toggleUnderline, toggleStrike,
   toggleSubscript, toggleSuperscript,
   setFontFamily, setFontSize,
   setHeading, setParagraph,

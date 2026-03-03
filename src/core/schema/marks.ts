@@ -61,14 +61,6 @@ export const marks: Record<string, MarkSpec> = {
     },
   },
 
-  code: {
-    excludes: '_',
-    parseDOM: [{ tag: 'code' }],
-    toDOM() {
-      return ['code', 0]
-    },
-  },
-
   subscript: {
     excludes: 'superscript',
     parseDOM: [{ tag: 'sub' }],

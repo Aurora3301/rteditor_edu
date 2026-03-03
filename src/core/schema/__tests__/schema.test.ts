@@ -123,8 +123,8 @@ describe('Nodes', () => {
 })
 
 describe('Marks', () => {
-  it('should have all 5 required marks', () => {
-    const requiredMarks = ['bold', 'italic', 'underline', 'strike', 'code']
+  it('should have all 4 required marks', () => {
+    const requiredMarks = ['bold', 'italic', 'underline', 'strike']
     for (const name of requiredMarks) {
       expect(schema.marks[name], `Mark "${name}" should exist`).toBeDefined()
     }
@@ -148,15 +148,6 @@ describe('Marks', () => {
   it('should create strike mark', () => {
     const strike = schema.mark('strike')
     expect(strike.type.name).toBe('strike')
-  })
-
-  it('should create code mark', () => {
-    const code = schema.mark('code')
-    expect(code.type.name).toBe('code')
-  })
-
-  it('code mark should exclude other marks', () => {
-    expect(schema.marks.code.spec.excludes).toBe('_')
   })
 
   it('should apply marks to text', () => {

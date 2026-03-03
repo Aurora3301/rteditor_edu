@@ -6,7 +6,7 @@ import { toHTML, fromHTML } from '../core/serializers/html'
 import { toJSON, fromJSON } from '../core/serializers/json'
 import { schema } from '../core/schema'
 import {
-  toggleBold, toggleItalic, toggleUnderline, toggleStrike, toggleCode,
+  toggleBold, toggleItalic, toggleUnderline, toggleStrike,
   toggleSubscript, toggleSuperscript, setFontFamily, setFontSize,
   setHeading, setParagraph, setTextAlign, toggleBulletList, toggleOrderedList,
   toggleBlockquote, insertHorizontalRule, insertImage, clearFormatting, undo, redo,
@@ -61,7 +61,6 @@ export interface EditorActiveState {
   italic: boolean
   underline: boolean
   strike: boolean
-  code: boolean
   subscript: boolean
   superscript: boolean
   heading1: boolean
@@ -107,7 +106,6 @@ export function useEditor(options: UseEditorOptions) {
     italic: false,
     underline: false,
     strike: false,
-    code: false,
     subscript: false,
     superscript: false,
     heading1: false,
@@ -148,7 +146,6 @@ export function useEditor(options: UseEditorOptions) {
     activeState.italic = isMarkActive(schema.marks.italic)(state)
     activeState.underline = isMarkActive(schema.marks.underline)(state)
     activeState.strike = isMarkActive(schema.marks.strike)(state)
-    activeState.code = isMarkActive(schema.marks.code)(state)
     activeState.heading1 = isBlockActive(schema.nodes.heading, { level: 1 })(state)
     activeState.heading2 = isBlockActive(schema.nodes.heading, { level: 2 })(state)
     activeState.heading3 = isBlockActive(schema.nodes.heading, { level: 3 })(state)
@@ -253,7 +250,6 @@ export function useEditor(options: UseEditorOptions) {
     toggleItalic: () => execCommand(toggleItalic),
     toggleUnderline: () => execCommand(toggleUnderline),
     toggleStrike: () => execCommand(toggleStrike),
-    toggleCode: () => execCommand(toggleCode),
     setHeading: (level: 1 | 2 | 3) => execCommand(setHeading(level)),
     setParagraph: () => execCommand(setParagraph),
     toggleBulletList: () => execCommand(toggleBulletList),

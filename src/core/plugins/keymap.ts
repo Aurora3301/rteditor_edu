@@ -4,13 +4,13 @@ import type { Plugin } from 'prosemirror-state'
 import {
   chainCommands, exitCode, joinBackward, selectNodeBackward,
   joinForward, selectNodeForward, deleteSelection,
-  newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock,
+  createParagraphNear, liftEmptyBlock, splitBlock,
 } from 'prosemirror-commands'
 import { undoInputRule } from 'prosemirror-inputrules'
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list'
 import { schema } from '../schema'
 import {
-  toggleBold, toggleItalic, toggleUnderline, toggleStrike, toggleCode,
+  toggleBold, toggleItalic, toggleUnderline, toggleStrike,
   undo, redo
 } from '../commands/formatting'
 
@@ -72,7 +72,6 @@ export function buildKeymap(): Plugin<any> {
   bindings['Mod-i'] = toggleItalic
   bindings['Mod-u'] = toggleUnderline
   bindings['Mod-Shift-x'] = toggleStrike    // Matches Google Docs
-  bindings['Mod-e'] = toggleCode            // Matches VS Code
 
   // ── History ──
   bindings['Mod-z'] = undo
@@ -82,7 +81,6 @@ export function buildKeymap(): Plugin<any> {
   // ── Enter ──
   bindings['Enter'] = chainCommands(
     splitListItem(schema.nodes.list_item),
-    newlineInCode,
     createParagraphNear,
     liftEmptyBlock,
     splitBlock,

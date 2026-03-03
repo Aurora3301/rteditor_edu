@@ -4,7 +4,6 @@ export {
   toggleItalic,
   toggleUnderline,
   toggleStrike,
-  toggleCode,
   toggleSubscript,
   toggleSuperscript,
 

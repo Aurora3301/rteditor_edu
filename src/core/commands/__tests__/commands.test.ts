@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { EditorState, Transaction, TextSelection } from 'prosemirror-state'
 import { schema } from '../../schema'
 import {
-  toggleBold, toggleItalic, toggleUnderline, toggleStrike, toggleCode,
+  toggleBold, toggleItalic, toggleUnderline, toggleStrike,
   setHeading, setParagraph, toggleBlockquote, insertHorizontalRule,
   isMarkActive, isBlockActive, canUndo, canRedo,
   undo, redo,
@@ -52,11 +52,6 @@ describe('Mark Commands', () => {
   it('toggleStrike should be applicable on text', () => {
     const state = createStateWithSelection('Hello')
     expect(toggleStrike(state)).toBe(true)
-  })
-
-  it('toggleCode should be applicable on text', () => {
-    const state = createStateWithSelection('Hello')
-    expect(toggleCode(state)).toBe(true)
   })
 
   it('toggleBold should apply bold mark when dispatched', () => {
