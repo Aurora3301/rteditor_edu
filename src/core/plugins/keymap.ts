@@ -64,6 +64,24 @@ function deleteTableAfter(state: EditorState, dispatch?: (tr: Transaction) => vo
   return true
 }
 
+/**
+ * When Enter is pressed inside an empty task_item (no text), exit the
+ * checklist — identical behaviour to Enter in an empty ordered-list item.
+ * Guards precisely: only fires when the paragraph inside the task_item is
+ * empty, so splitListItem(task_item) always gets the first crack at
+ * non-empty items.
+ */
+function exitEmptyTaskItem(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { $from, empty } = state.selection
+  if (!empty) return false
+  // Parent paragraph must be empty
+  if ($from.parent.content.size > 0) return false
+  // Grandparent must be a task_item
+  if ($from.depth < 2 || $from.node($from.depth - 1).type !== schema.nodes.task_item) return false
+  // Delegate to liftListItem — lifts the item's content out of the task_list
+  return liftListItem(schema.nodes.task_item)(state, dispatch)
+}
+
 export function buildKeymap(): Plugin {
   const bindings: Record<string, any> = {}
 
@@ -82,9 +100,15 @@ export function buildKeymap(): Plugin {
   bindings['Mod-Shift-z'] = redo
   bindings['Mod-y'] = redo                  // Windows convention
 
-  // ── Enter: new checklist item → new list item → normal split ──
+  // ── Enter ──────────────────────────────────────────────────────────────
+  // Order matters:
+  //   1. splitListItem(task_item)  — Enter WITH text → new unchecked checkbox
+  //   2. exitEmptyTaskItem         — Enter on EMPTY item → exit checklist to paragraph
+  //   3. splitListItem(list_item)  — Enter in bullet/ordered list
+  //   4. normal prosemirror splits
   bindings['Enter'] = chainCommands(
     splitListItem(schema.nodes.task_item),
+    exitEmptyTaskItem,
     splitListItem(schema.nodes.list_item),
     newlineInCode,
     createParagraphNear,
@@ -92,9 +116,12 @@ export function buildKeymap(): Plugin {
     splitBlock,
   )
 
-  // ── Backspace in empty task_item: lift out to paragraph ──
+  // ── Backspace ──────────────────────────────────────────────────────────
+  // exitEmptyTaskItem on Backspace: when the task_item paragraph is empty,
+  // backspace exits the checklist (same guard as Enter — precise, not greedy).
+  // Then fall through to table-delete and standard ProseMirror handlers.
   bindings['Backspace'] = chainCommands(
-    liftListItem(schema.nodes.task_item),
+    exitEmptyTaskItem,
     deleteTableBefore,
     undoInputRule,
     deleteSelection,
