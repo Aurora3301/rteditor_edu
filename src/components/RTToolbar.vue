@@ -197,6 +197,24 @@
 
     <div class="rte-toolbar__separator" role="separator"></div>
 
+    <!-- Line spacing picker -->
+    <div class="rte-toolbar__group">
+      <select
+        class="rte-toolbar__spacing-select"
+        :value="currentSpacing"
+        aria-label="Line spacing"
+        title="Line & paragraph spacing"
+        @change="onSpacingChange"
+      >
+        <option value="1.0">Single (1.0)</option>
+        <option value="1.15">1.15</option>
+        <option value="1.5">1.5</option>
+        <option value="2.0">Double (2.0)</option>
+      </select>
+    </div>
+
+    <div class="rte-toolbar__separator" role="separator"></div>
+
     <!-- Group: Checklist + Table -->
     <div class="rte-toolbar__group">
       <button
@@ -470,12 +488,29 @@ const emit = defineEmits<{
   'export-pdf': []
   'export-markdown': []
   'emoji-open': []
+  'spacing-change': [lineHeight: string, paraSpacing: string]
 }>()
 
 const showTextColorPicker = ref(false)
 const showHighlightPicker = ref(false)
 const activeTextColor = computed(() => props.activeState.textColor)
 const activeHighlight = computed(() => props.activeState.highlight)
+
+// Line spacing: maps preset value → [lineHeight, paragraphGap]
+const spacingPresets: Record<string, [string, string]> = {
+  '1.0':  ['1.0',  '0px'],
+  '1.15': ['1.15', '4px'],
+  '1.5':  ['1.5',  '6px'],
+  '2.0':  ['2.0',  '10px'],
+}
+const currentSpacing = ref('1.5')
+
+function onSpacingChange(e: Event) {
+  const val = (e.target as HTMLSelectElement).value
+  currentSpacing.value = val
+  const [lh, ps] = spacingPresets[val] ?? ['1.5', '6px']
+  emit('spacing-change', lh, ps)
+}
 
 const imageInput = ref<HTMLInputElement | null>(null)
 

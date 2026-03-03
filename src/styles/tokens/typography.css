@@ -28,9 +28,13 @@
   --rte-text-2xl:   1.875rem;    /* 30px — h1                       */
 
   /* ── Line Heights ── */
-  --rte-leading:        1.6;     /* body text — comfortable reading */
-  --rte-leading-tight:  1.25;    /* headings                        */
-  --rte-leading-snug:   1.375;   /* h3 and subheadings              */
+  --rte-leading:        1.5;     /* body text — default (user can override via --rte-content-leading) */
+  --rte-leading-tight:  1.2;     /* headings                        */
+  --rte-leading-snug:   1.35;    /* h3 and subheadings              */
+
+  /* ── Content spacing (user-adjustable via line-spacing picker) ── */
+  --rte-content-leading:    1.5;  /* line height inside editor — set by spacing picker */
+  --rte-para-spacing:       4px;  /* paragraph gap — set by spacing picker */
 
   /* ── Font Weights ── */
   --rte-weight-normal:    400;

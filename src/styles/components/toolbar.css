@@ -77,3 +77,25 @@
   background: var(--rte-bg-subtle);
 }
 
+/* ── Line spacing picker ── */
+.rte-toolbar__spacing-select {
+  height: 28px;
+  padding: 0 var(--rte-sp-2);
+  min-width: 110px;
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-sm);
+  background: var(--rte-bg);
+  color: var(--rte-text);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  appearance: auto;
+}
+
+.rte-toolbar__spacing-select:focus {
+  border-color: var(--rte-accent);
+}
+
+.rte-toolbar__spacing-select:hover {
+  background: var(--rte-bg-subtle);
+}

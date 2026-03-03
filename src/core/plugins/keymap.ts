@@ -82,8 +82,9 @@ export function buildKeymap(): Plugin {
   bindings['Mod-Shift-z'] = redo
   bindings['Mod-y'] = redo                  // Windows convention
 
-  // ── Enter: try splitListItem first, then fall back to normal split ──
+  // ── Enter: new checklist item → new list item → normal split ──
   bindings['Enter'] = chainCommands(
+    splitListItem(schema.nodes.task_item),
     splitListItem(schema.nodes.list_item),
     newlineInCode,
     createParagraphNear,
@@ -91,8 +92,9 @@ export function buildKeymap(): Plugin {
     splitBlock,
   )
 
-  // ── Backspace: delete table before cursor, then undo input rule, then normal delete ──
+  // ── Backspace in empty task_item: lift out to paragraph ──
   bindings['Backspace'] = chainCommands(
+    liftListItem(schema.nodes.task_item),
     deleteTableBefore,
     undoInputRule,
     deleteSelection,
@@ -113,9 +115,15 @@ export function buildKeymap(): Plugin {
     selectNodeForward,
   )
 
-  // ── List indent/outdent ──
-  bindings['Tab'] = sinkListItem(schema.nodes.list_item)
-  bindings['Shift-Tab'] = liftListItem(schema.nodes.list_item)
+  // ── List indent/outdent (also applies to task_item) ──
+  bindings['Tab'] = chainCommands(
+    sinkListItem(schema.nodes.task_item),
+    sinkListItem(schema.nodes.list_item),
+  )
+  bindings['Shift-Tab'] = chainCommands(
+    liftListItem(schema.nodes.task_item),
+    liftListItem(schema.nodes.list_item),
+  )
 
   // ── Hard break (Shift+Enter) ──
   const hardBreak = chainCommands(exitCode, (state, dispatch) => {

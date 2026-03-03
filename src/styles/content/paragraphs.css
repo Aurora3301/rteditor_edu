@@ -1,9 +1,16 @@
 /* ================================================================
    PARAGRAPHS — Spacing between text blocks
+   Controlled by --rte-content-leading and --rte-para-spacing,
+   which are updated by the line-spacing picker in the toolbar.
    ================================================================ */
 
+.rte-editor .ProseMirror {
+  line-height: var(--rte-content-leading, 1.5);
+}
+
 .rte-editor .ProseMirror p {
-  margin: 0 0 var(--rte-sp-3) 0;        /* 12px bottom gap */
+  margin: 0 0 var(--rte-para-spacing, 4px) 0;
+  line-height: var(--rte-content-leading, 1.5);
 }
 
 .rte-editor .ProseMirror p:last-child {

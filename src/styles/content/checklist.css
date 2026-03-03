@@ -10,20 +10,22 @@
 
 .rte-checklist__item {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   gap: var(--rte-sp-2);
-  padding: 2px 0;
+  padding: 1px 0;
   list-style: none;
+  line-height: var(--rte-content-leading, var(--rte-leading, 1.5));
 }
 
 .rte-checklist__checkbox {
-  margin-top: 4px;
-  width: 15px;
-  height: 15px;
-  min-width: 15px;
+  margin-top: 0.2em;   /* nudge down relative to baseline to sit at cap-height */
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
   cursor: pointer;
   accent-color: var(--rte-accent, #6366f1);
   flex-shrink: 0;
+  vertical-align: baseline;
 }
 
 .rte-checklist__content {

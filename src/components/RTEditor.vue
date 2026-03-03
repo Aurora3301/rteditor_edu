@@ -1,5 +1,5 @@
 <template>
-  <div class="rte-root" :data-theme="theme" :style="themeStyle">
+  <div class="rte-root" :data-theme="theme" :style="rootStyle">
     <RTToolbar
       :active-state="activeState"
       :commands="commands"
@@ -9,6 +9,7 @@
       @export-pdf="onExportPDF"
       @export-markdown="onExportMarkdown"
       @emoji-open="showEmojiPicker = true"
+      @spacing-change="onSpacingChange"
     />
     <div class="rte-root__body">
       <div class="rte-editor-wrapper">
@@ -98,10 +99,23 @@ const props = withDefaults(defineProps<RTEditorProps>(), {
   locale: 'en',
 })
 
-const themeStyle = computed(() => {
-  if (!props.customTheme) return undefined
-  return props.customTheme as Record<string, string>
+// ── Spacing state (controlled by line-spacing picker in toolbar) ──
+const spacingVars = ref<Record<string, string>>({
+  '--rte-content-leading': '1.5',
+  '--rte-para-spacing': '4px',
 })
+
+const rootStyle = computed(() => ({
+  ...(props.customTheme as Record<string, string> | undefined),
+  ...spacingVars.value,
+}))
+
+function onSpacingChange(lineHeight: string, paraSpacing: string) {
+  spacingVars.value = {
+    '--rte-content-leading': lineHeight,
+    '--rte-para-spacing': paraSpacing,
+  }
+}
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
