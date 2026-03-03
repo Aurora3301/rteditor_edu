@@ -41,15 +41,6 @@ function serializeNode(node: ProseMirrorNode, context?: string): string {
     case 'list_item':
       return serializeNode(node.firstChild!)
 
-    case 'task_list':
-      return children(node).map(child => {
-        const checked = child.attrs.checked ? '[x]' : '[ ]'
-        return `- ${checked} ${serializeInline(child.firstChild!)}`
-      }).join('\n')
-
-    case 'task_item':
-      return serializeInline(node.firstChild!)
-
     case 'table':
       return serializeTable(node)
 

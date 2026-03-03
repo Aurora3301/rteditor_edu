@@ -64,7 +64,6 @@
 @import './content/blockquote.css';
 @import './content/links.css';
 @import './content/media.css';
-@import './content/checklist.css';
 
 /* ── 5. Node Views (custom ProseMirror nodes) ── */
 @import './nodeviews/upload.css';

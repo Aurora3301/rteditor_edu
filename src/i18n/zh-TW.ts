@@ -31,7 +31,6 @@ export const zhTW: Messages = {
     editLink: '編輯連結',
     removeLink: '移除連結',
     dragContent: '拖曳內容',
-    checklist: '待辦清單',
     textColor: '文字顏色',
     highlightColor: '螢光筆顏色',
     insertTable: '插入表格',

@@ -13,7 +13,6 @@ import {
   setLink, removeLink, getActiveLinkAttrs,
   isMarkActive, isBlockActive, canUndo, canRedo,
   getTextAlign, getActiveFontFamily, getActiveFontSize,
-  toggleChecklist, toggleChecklistItem,
   setTextColor, removeTextColor, getActiveTextColor,
   setHighlight, removeHighlight, getActiveHighlight,
   insertTable,
@@ -80,7 +79,6 @@ export interface EditorActiveState {
   link: boolean
   linkAttrs: { href: string; title: string | null; target: string } | null
   dragActive: boolean
-  taskList: boolean
   textColor: string | null
   highlight: string | null
   inTable: boolean
@@ -127,7 +125,6 @@ export function useEditor(options: UseEditorOptions) {
     link: false,
     linkAttrs: null,
     dragActive: false,
-    taskList: false,
     textColor: null,
     highlight: null,
     inTable: false,
@@ -177,7 +174,6 @@ export function useEditor(options: UseEditorOptions) {
     activeState.link = isMarkActive(schema.marks.link)(state)
     activeState.linkAttrs = getActiveLinkAttrs(state)
     activeState.dragActive = isDragActive(state)
-    activeState.taskList = isBlockActive(schema.nodes.task_item)(state)
     activeState.textColor = getActiveTextColor(state)
     activeState.highlight = getActiveHighlight(state)
     // Check if cursor is inside a table cell
@@ -286,8 +282,6 @@ export function useEditor(options: UseEditorOptions) {
         execCommand(activateDrag)
       }
     },
-    toggleChecklist: () => execCommand(toggleChecklist),
-    toggleChecklistItem: () => execCommand(toggleChecklistItem),
     setTextColor: (color: string) => execCommand(setTextColor(color)),
     removeTextColor: () => execCommand(removeTextColor),
     setHighlight: (color: string) => execCommand(setHighlight(color)),

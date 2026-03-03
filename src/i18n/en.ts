@@ -29,7 +29,6 @@ export const en = {
     editLink: 'Edit Link',
     removeLink: 'Remove Link',
     dragContent: 'Drag Content',
-    checklist: 'Checklist',
     textColor: 'Text Color',
     highlightColor: 'Highlight Color',
     insertTable: 'Insert Table',

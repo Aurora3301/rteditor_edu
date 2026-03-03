@@ -42,10 +42,6 @@ export {
   removeLink,
   getActiveLinkAttrs,
 
-  // Checklist
-  toggleChecklist,
-  toggleChecklistItem,
-
   // Color
   setTextColor,
   removeTextColor,

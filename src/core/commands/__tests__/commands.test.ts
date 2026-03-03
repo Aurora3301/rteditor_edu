@@ -6,7 +6,6 @@ import {
   setHeading, setParagraph, toggleBlockquote, insertHorizontalRule,
   isMarkActive, isBlockActive, canUndo, canRedo,
   undo, redo,
-  toggleChecklist, toggleChecklistItem,
   setTextColor, removeTextColor, getActiveTextColor,
   setHighlight, removeHighlight, getActiveHighlight,
   insertTable,
@@ -157,59 +156,7 @@ describe('State Check Helpers', () => {
   })
 })
 
-describe('Checklist Commands', () => {
-  it('toggleChecklist should return true (always executable)', () => {
-    const state = createState('Task')
-    expect(toggleChecklist(state)).toBe(true)
-  })
 
-  it('toggleChecklist should detect task_item and toggle back', () => {
-    // When already inside a task_item, toggleChecklist detects inTaskList=true
-    const item = schema.node('task_item', { checked: false }, [
-      schema.node('paragraph', null, [schema.text('Task')])
-    ])
-    const list = schema.node('task_list', null, [item])
-    const doc = schema.node('doc', null, [list])
-    const state = EditorState.create({
-      doc, schema, plugins: [],
-      selection: TextSelection.create(doc, 3),
-    })
-    // Should return true (always executable)
-    expect(toggleChecklist(state)).toBe(true)
-  })
-
-  it('toggleChecklistItem should return false if not in task_item', () => {
-    const state = createState('Regular text')
-    expect(toggleChecklistItem(state)).toBe(false)
-  })
-
-  it('toggleChecklistItem should toggle checked state', () => {
-    // Build a state with a task_item
-    const item = schema.node('task_item', { checked: false }, [
-      schema.node('paragraph', null, [schema.text('Task')])
-    ])
-    const list = schema.node('task_list', null, [item])
-    const doc = schema.node('doc', null, [list])
-    // Place cursor inside the task_item paragraph (pos 3 = inside paragraph inside task_item)
-    const state = EditorState.create({
-      doc,
-      schema,
-      plugins: [],
-      selection: TextSelection.create(doc, 3),
-    })
-    let newState: EditorState | null = null
-    toggleChecklistItem(state, (tr: Transaction) => {
-      newState = state.apply(tr)
-    })
-    expect(newState).not.toBeNull()
-    // Find the task_item and check it is now checked
-    let checkedValue: boolean | null = null
-    newState!.doc.descendants(node => {
-      if (node.type.name === 'task_item') checkedValue = node.attrs.checked
-    })
-    expect(checkedValue).toBe(true)
-  })
-})
 
 describe('Color Commands', () => {
   it('setTextColor should return false on empty selection', () => {

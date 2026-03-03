@@ -235,7 +235,6 @@ const slashCommands = computed(() => [
   { id: 'p', icon: '¶', label: 'Paragraph', action: () => { commands.setParagraph(); closeSlash() } },
   { id: 'ul', icon: '•', label: 'Bullet List', action: () => { commands.toggleBulletList(); closeSlash() } },
   { id: 'ol', icon: '1.', label: 'Ordered List', action: () => { commands.toggleOrderedList(); closeSlash() } },
-  { id: 'cl', icon: '☐', label: 'Checklist', action: () => { commands.toggleChecklist(); closeSlash() } },
   { id: 'bq', icon: '❝', label: 'Blockquote', action: () => { commands.toggleBlockquote(); closeSlash() } },
   { id: 'tb', icon: '⊞', label: 'Table', action: () => { showTableDialog.value = true; closeSlash() } },
   { id: 'hr', icon: '—', label: 'Divider', action: () => { commands.insertHorizontalRule(); closeSlash() } },

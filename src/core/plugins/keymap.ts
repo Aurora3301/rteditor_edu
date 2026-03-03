@@ -10,7 +10,6 @@ import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-li
 import { schema } from '../schema'
 import {
   toggleBold, toggleItalic, toggleUnderline, toggleStrike, toggleCode,
-  toggleChecklistItem,
   undo, redo
 } from '../commands/formatting'
 
@@ -64,24 +63,6 @@ function deleteTableAfter(state: EditorState, dispatch?: (tr: Transaction) => vo
   return true
 }
 
-/**
- * When Enter is pressed inside an empty task_item (no text), exit the
- * checklist — identical behaviour to Enter in an empty ordered-list item.
- * Guards precisely: only fires when the paragraph inside the task_item is
- * empty, so splitListItem(task_item) always gets the first crack at
- * non-empty items.
- */
-function exitEmptyTaskItem(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
-  const { $from, empty } = state.selection
-  if (!empty) return false
-  // Parent paragraph must be empty
-  if ($from.parent.content.size > 0) return false
-  // Grandparent must be a task_item
-  if ($from.depth < 2 || $from.node($from.depth - 1).type !== schema.nodes.task_item) return false
-  // Delegate to liftListItem — lifts the item's content out of the task_list
-  return liftListItem(schema.nodes.task_item)(state, dispatch)
-}
-
 export function buildKeymap(): Plugin {
   const bindings: Record<string, any> = {}
 
@@ -92,23 +73,13 @@ export function buildKeymap(): Plugin {
   bindings['Mod-Shift-x'] = toggleStrike    // Matches Google Docs
   bindings['Mod-e'] = toggleCode            // Matches VS Code
 
-  // ── Checklist toggle ──
-  bindings['Mod-Shift-9'] = toggleChecklistItem
-
   // ── History ──
   bindings['Mod-z'] = undo
   bindings['Mod-Shift-z'] = redo
   bindings['Mod-y'] = redo                  // Windows convention
 
-  // ── Enter ──────────────────────────────────────────────────────────────
-  // Order matters:
-  //   1. splitListItem(task_item)  — Enter WITH text → new unchecked checkbox
-  //   2. exitEmptyTaskItem         — Enter on EMPTY item → exit checklist to paragraph
-  //   3. splitListItem(list_item)  — Enter in bullet/ordered list
-  //   4. normal prosemirror splits
+  // ── Enter ──
   bindings['Enter'] = chainCommands(
-    splitListItem(schema.nodes.task_item),
-    exitEmptyTaskItem,
     splitListItem(schema.nodes.list_item),
     newlineInCode,
     createParagraphNear,
@@ -116,12 +87,8 @@ export function buildKeymap(): Plugin {
     splitBlock,
   )
 
-  // ── Backspace ──────────────────────────────────────────────────────────
-  // exitEmptyTaskItem on Backspace: when the task_item paragraph is empty,
-  // backspace exits the checklist (same guard as Enter — precise, not greedy).
-  // Then fall through to table-delete and standard ProseMirror handlers.
+  // ── Backspace ──
   bindings['Backspace'] = chainCommands(
-    exitEmptyTaskItem,
     deleteTableBefore,
     undoInputRule,
     deleteSelection,
@@ -142,15 +109,9 @@ export function buildKeymap(): Plugin {
     selectNodeForward,
   )
 
-  // ── List indent/outdent (also applies to task_item) ──
-  bindings['Tab'] = chainCommands(
-    sinkListItem(schema.nodes.task_item),
-    sinkListItem(schema.nodes.list_item),
-  )
-  bindings['Shift-Tab'] = chainCommands(
-    liftListItem(schema.nodes.task_item),
-    liftListItem(schema.nodes.list_item),
-  )
+  // ── List indent/outdent ──
+  bindings['Tab'] = sinkListItem(schema.nodes.list_item)
+  bindings['Shift-Tab'] = liftListItem(schema.nodes.list_item)
 
   // ── Hard break (Shift+Enter) ──
   const hardBreak = chainCommands(exitCode, (state, dispatch) => {

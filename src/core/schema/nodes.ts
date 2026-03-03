@@ -104,29 +104,6 @@ export const nodes: Record<string, NodeSpec> = {
     },
   },
 
-  task_list: {
-    content: 'task_item+',
-    group: 'block',
-    parseDOM: [{ tag: 'ul.rte-checklist' }],
-    toDOM() {
-      return ['ul', { class: 'rte-checklist' }, 0]
-    },
-  } as NodeSpec,
-
-  task_item: {
-    content: 'paragraph block*',
-    attrs: { checked: { default: false } },
-    parseDOM: [{
-      tag: 'li[data-checked]',
-      getAttrs(dom: HTMLElement) {
-        return { checked: dom.getAttribute('data-checked') === 'true' }
-      },
-    }],
-    toDOM(node: ProseMirrorNode) {
-      return ['li', { 'data-checked': node.attrs.checked ? 'true' : 'false' }, 0]
-    },
-  } as NodeSpec,
-
   table: {
     content: 'table_row+',
     group: 'block',

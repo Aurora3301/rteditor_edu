@@ -172,28 +172,6 @@ describe('JSON Serializer', () => {
 
 
 describe('HTML Serializer — Phase 2 Nodes', () => {
-  it('toHTML should serialize checklist', () => {
-    const item = schema.node('task_item', { checked: false }, [
-      schema.node('paragraph', null, [schema.text('Do something')])
-    ])
-    const list = schema.node('task_list', null, [item])
-    const doc = schema.node('doc', null, [list])
-    const html = toHTML(doc)
-    expect(html).toContain('rte-checklist')
-    expect(html).toContain('data-checked="false"')
-    expect(html).toContain('Do something')
-  })
-
-  it('toHTML should serialize checked task_item', () => {
-    const item = schema.node('task_item', { checked: true }, [
-      schema.node('paragraph', null, [schema.text('Done task')])
-    ])
-    const list = schema.node('task_list', null, [item])
-    const doc = schema.node('doc', null, [list])
-    const html = toHTML(doc)
-    expect(html).toContain('data-checked="true"')
-  })
-
   it('toHTML should serialize table', () => {
     const cell = (text: string) => schema.node('table_cell', null, [
       schema.node('paragraph', null, [schema.text(text)])
@@ -242,17 +220,6 @@ describe('HTML Serializer — Phase 2 Nodes', () => {
     ])
     const html = toHTML(doc)
     expect(html).toContain('background-color:')
-  })
-
-  it('fromHTML should round-trip checklist text content', () => {
-    const item = schema.node('task_item', { checked: true }, [
-      schema.node('paragraph', null, [schema.text('Done')])
-    ])
-    const list = schema.node('task_list', null, [item])
-    const doc = schema.node('doc', null, [list])
-    const html = toHTML(doc)
-    const parsed = fromHTML(html)
-    expect(parsed.textContent).toContain('Done')
   })
 
   it('fromHTML should parse table', () => {
@@ -365,19 +332,7 @@ describe('Markdown Serializer', () => {
     expect(md).toContain('---')
   })
 
-  it('toMarkdown should serialize task list with [ ] / [x]', () => {
-    const item1 = schema.node('task_item', { checked: false }, [
-      schema.node('paragraph', null, [schema.text('Pending')])
-    ])
-    const item2 = schema.node('task_item', { checked: true }, [
-      schema.node('paragraph', null, [schema.text('Done')])
-    ])
-    const list = schema.node('task_list', null, [item1, item2])
-    const doc = schema.node('doc', null, [list])
-    const md = toMarkdown(doc)
-    expect(md).toContain('- [ ] Pending')
-    expect(md).toContain('- [x] Done')
-  })
+
 })
 
 describe('Word Count Utility', () => {

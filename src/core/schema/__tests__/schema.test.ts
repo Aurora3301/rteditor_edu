@@ -183,34 +183,6 @@ describe('Marks', () => {
 })
 
 describe('Phase 2 Nodes', () => {
-  it('should have task_list and task_item nodes', () => {
-    expect(schema.nodes.task_list).toBeDefined()
-    expect(schema.nodes.task_item).toBeDefined()
-  })
-
-  it('task_list should contain task_items', () => {
-    const item = schema.node('task_item', { checked: false }, [
-      schema.node('paragraph', null, [schema.text('Do something')])
-    ])
-    const list = schema.node('task_list', null, [item])
-    expect(list.type.name).toBe('task_list')
-    expect(list.childCount).toBe(1)
-  })
-
-  it('task_item should default checked to false', () => {
-    const item = schema.node('task_item', null, [
-      schema.node('paragraph', null, [schema.text('Task')])
-    ])
-    expect(item.attrs.checked).toBe(false)
-  })
-
-  it('task_item should accept checked=true', () => {
-    const item = schema.node('task_item', { checked: true }, [
-      schema.node('paragraph', null, [schema.text('Done')])
-    ])
-    expect(item.attrs.checked).toBe(true)
-  })
-
   it('should have table, table_row, table_cell, table_header nodes', () => {
     expect(schema.nodes.table).toBeDefined()
     expect(schema.nodes.table_row).toBeDefined()
