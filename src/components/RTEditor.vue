@@ -370,12 +370,20 @@ function onEditorMouseOut(e: MouseEvent) {
   commentTooltip.value = null
 }
 
+// Scrolling does not fire mouseout, so the tooltip would stay visible after
+// the user scrolls away from the hovered word. Clear it on any scroll event.
+function onScrollHideTooltip() {
+  commentTooltip.value = null
+}
+
 onMounted(() => {
   const el = editorRef.value
   if (!el) return
   el.addEventListener('click', onEditorClick)
   el.addEventListener('mouseover', onEditorMouseOver)
   el.addEventListener('mouseout', onEditorMouseOut)
+  // capture:true catches scroll on the window AND any scrollable ancestor
+  window.addEventListener('scroll', onScrollHideTooltip, true)
 })
 onUnmounted(() => {
   const el = editorRef.value
@@ -383,6 +391,7 @@ onUnmounted(() => {
   el.removeEventListener('click', onEditorClick)
   el.removeEventListener('mouseover', onEditorMouseOver)
   el.removeEventListener('mouseout', onEditorMouseOut)
+  window.removeEventListener('scroll', onScrollHideTooltip, true)
 })
 
 async function handleWordImport(file: File) {
