@@ -180,7 +180,7 @@
   border-radius: 1px;
   display: block;
 }
-/* Slight tint when hovered so the purple swatch is recognisable */
+/* Slight yellow tint on hover matching the comment highlight colour */
 .rte-toolbar__button--comment:hover {
-  background: rgba(205, 189, 235, 0.22);
+  background: rgba(254, 249, 195, 0.55);
 }

@@ -74,6 +74,16 @@
       :in-table="activeState.inTable"
       :commands="commands"
     />
+
+    <!-- Comment tooltip — Teleported to <body> so it's above every stacking context -->
+    <Teleport to="body">
+      <div
+        v-if="commentTooltip"
+        class="rte-comment-tooltip"
+        role="tooltip"
+        :style="{ left: commentTooltip.x + 'px', top: commentTooltip.y + 'px' }"
+      >{{ commentTooltip.text }}</div>
+    </Teleport>
   </div>
 </template>
 
@@ -162,6 +172,9 @@ const bubbleMenuRef = ref<InstanceType<typeof RTBubbleMenu> | null>(null)
 const tableMiniToolbarRef = ref<InstanceType<typeof RTTableMiniToolbar> | null>(null)
 const remarkPopoverRef = ref<InstanceType<typeof RTRemarkPopover> | null>(null)
 const mathModalRef = ref<InstanceType<typeof RTMathModal> | null>(null)
+
+// Comment tooltip — driven by hover; rendered via Teleport into <body>
+const commentTooltip = ref<{ text: string; x: number; y: number } | null>(null)
 
 const {
   view,
@@ -331,12 +344,45 @@ function onEditorClick(e: MouseEvent) {
   remarkPopoverRef.value?.open(rect, { id, text })
 }
 
+// ── Comment tooltip hover ──
+// Uses mouseover/mouseout delegation on the editor container.
+// The tooltip is Teleported to <body> so it escapes every stacking context
+// and is guaranteed to sit above all other UI (z-index: 2147483647).
+function onEditorMouseOver(e: MouseEvent) {
+  const span = (e.target as HTMLElement).closest('[data-comment-id]') as HTMLElement | null
+  if (!span) return
+  const text = span.getAttribute('data-comment-text')
+  if (!text) return
+
+  // Centre the tooltip horizontally over the span, above it
+  const rect = span.getBoundingClientRect()
+  commentTooltip.value = {
+    text,
+    x: rect.left + rect.width / 2,   // horizontal centre of the span
+    y: rect.top - 8,                  // just above the span (CSS handles the vertical offset)
+  }
+}
+
+function onEditorMouseOut(e: MouseEvent) {
+  // Hide only when leaving into something outside a comment span
+  const related = e.relatedTarget as HTMLElement | null
+  if (related?.closest('[data-comment-id]')) return
+  commentTooltip.value = null
+}
+
 onMounted(() => {
-  // Use capture:false so ProseMirror's own click handlers run first
-  editorRef.value?.addEventListener('click', onEditorClick)
+  const el = editorRef.value
+  if (!el) return
+  el.addEventListener('click', onEditorClick)
+  el.addEventListener('mouseover', onEditorMouseOver)
+  el.addEventListener('mouseout', onEditorMouseOut)
 })
 onUnmounted(() => {
-  editorRef.value?.removeEventListener('click', onEditorClick)
+  const el = editorRef.value
+  if (!el) return
+  el.removeEventListener('click', onEditorClick)
+  el.removeEventListener('mouseover', onEditorMouseOver)
+  el.removeEventListener('mouseout', onEditorMouseOut)
 })
 
 async function handleWordImport(file: File) {

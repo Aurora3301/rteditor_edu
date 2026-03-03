@@ -1,27 +1,50 @@
 .rte-comment {
-  background-color: #CDBDEB;
-  border-bottom: 2px solid #9b7cc4;
+  background-color: #fef9c3;        /* yellow — back to original */
+  border-bottom: 2px solid #f59e0b;
   cursor: pointer;
   position: relative;
 }
+/* Tooltip is now rendered via JavaScript into <body> — see RTEditor.vue */
 
-.rte-comment:hover::after {
-  content: attr(data-comment-text);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 0;
-  max-width: 260px;
+/* ── Body-level comment tooltip (rendered by RTEditor via Teleport) ────────── */
+.rte-comment-tooltip {
+  position: fixed;                       /* fixed so scrolling doesn't move it */
+  z-index: 2147483647;                   /* CSS max — above every stacking context */
+  pointer-events: none;
+
   background: #1f2937;
   color: #fff;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  padding: 6px 8px;
-  border-radius: 6px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding: 6px 10px;
+  border-radius: 7px;
+  max-width: 280px;
   white-space: pre-wrap;
   word-break: break-word;
-  z-index: 9998;
-  pointer-events: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+
+  /* Small arrow pointing downward toward the text */
+  transform: translateX(-50%) translateY(-100%);
+  margin-top: -8px;
+
+  /* Fade in */
+  animation: rte-tooltip-in 0.1s ease;
+}
+
+/* Arrow caret */
+.rte-comment-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+}
+
+@keyframes rte-tooltip-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(calc(-100% - 4px)); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(-100%); }
 }
 
 .rte-remark-popover {
