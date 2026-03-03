@@ -5,6 +5,12 @@ import { undo, redo } from 'prosemirror-history'
 import { wrapInList, liftListItem, sinkListItem } from 'prosemirror-schema-list'
 import { EditorState, Transaction, Command } from 'prosemirror-state'
 import { NodeType, MarkType, Mark } from 'prosemirror-model'
+import {
+  addColumnAfter, addColumnBefore, deleteColumn,
+  addRowAfter, addRowBefore, deleteRow,
+  mergeCells, splitCell, toggleHeaderRow,
+  CellSelection,
+} from 'prosemirror-tables'
 import { schema } from '../schema'
 
 /** Validate that a URL is safe (no javascript:, vbscript:, data: protocols) */
@@ -456,4 +462,181 @@ export function getActiveFontSize(state: EditorState): string | null {
     return !mark
   })
   return mark ? (mark as Mark).attrs.size : null
+}
+
+
+// ── Checklist commands ──────────────────────────────────────────────────
+
+/** Toggle the current block to/from a task_list / task_item */
+export function toggleChecklist(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { from, to } = state.selection
+  const inTaskList = isBlockActive(schema.nodes.task_item)(state)
+
+  if (dispatch) {
+    const tr = state.tr
+    if (inTaskList) {
+      // Convert task_items back to paragraphs inside a bullet_list structure
+      state.doc.nodesBetween(from, to, (node, pos) => {
+        if (node.type === schema.nodes.task_item) {
+          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.list_item)
+        }
+        if (node.type === schema.nodes.task_list) {
+          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.bullet_list)
+        }
+      })
+    } else {
+      // Wrap selection in task_list
+      state.doc.nodesBetween(from, to, (node, pos) => {
+        if (node.type === schema.nodes.paragraph) {
+          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.task_item, { checked: false })
+        }
+        if (node.type === schema.nodes.bullet_list || node.type === schema.nodes.ordered_list) {
+          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.task_list)
+        }
+      })
+    }
+    dispatch(tr.scrollIntoView())
+  }
+  return true
+}
+
+/** Toggle the checked state of the task_item at cursor */
+export function toggleChecklistItem(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { $from } = state.selection
+  // Find the task_item ancestor
+  for (let depth = $from.depth; depth >= 0; depth--) {
+    const node = $from.node(depth)
+    if (node.type === schema.nodes.task_item) {
+      if (dispatch) {
+        const pos = $from.before(depth)
+        const tr = state.tr.setNodeMarkup(pos, undefined, {
+          ...node.attrs,
+          checked: !node.attrs.checked,
+        })
+        dispatch(tr)
+      }
+      return true
+    }
+  }
+  return false
+}
+
+// ── Color commands ──────────────────────────────────────────────────────
+
+/** Apply a text color mark to the selection */
+export function setTextColor(color: string): Command {
+  return (state, dispatch) => {
+    const { from, to, empty } = state.selection
+    if (empty) return false
+    if (dispatch) {
+      const markType = schema.marks.textColor
+      const tr = state.tr
+        .removeMark(from, to, markType)
+        .addMark(from, to, markType.create({ color }))
+      dispatch(tr.scrollIntoView())
+    }
+    return true
+  }
+}
+
+/** Remove text color from the selection */
+export function removeTextColor(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { from, to, empty } = state.selection
+  if (empty) return false
+  if (dispatch) {
+    dispatch(state.tr.removeMark(from, to, schema.marks.textColor).scrollIntoView())
+  }
+  return true
+}
+
+/** Apply a highlight (background) color mark to the selection */
+export function setHighlight(color: string): Command {
+  return (state, dispatch) => {
+    const { from, to, empty } = state.selection
+    if (empty) return false
+    if (dispatch) {
+      const markType = schema.marks.highlight
+      const tr = state.tr
+        .removeMark(from, to, markType)
+        .addMark(from, to, markType.create({ color }))
+      dispatch(tr.scrollIntoView())
+    }
+    return true
+  }
+}
+
+/** Remove highlight color from the selection */
+export function removeHighlight(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { from, to, empty } = state.selection
+  if (empty) return false
+  if (dispatch) {
+    dispatch(state.tr.removeMark(from, to, schema.marks.highlight).scrollIntoView())
+  }
+  return true
+}
+
+/** Get the active text color at cursor, or null */
+export function getActiveTextColor(state: EditorState): string | null {
+  const { from, to, empty } = state.selection
+  const markType = schema.marks.textColor
+  if (empty) {
+    const stored = state.storedMarks || state.selection.$from.marks()
+    const m = markType.isInSet(stored)
+    return m ? m.attrs.color : null
+  }
+  let color: string | null = null
+  state.doc.nodesBetween(from, to, (node) => {
+    if (!color && node.isInline) {
+      const m = markType.isInSet(node.marks)
+      if (m) color = m.attrs.color
+    }
+    return !color
+  })
+  return color
+}
+
+/** Get the active highlight color at cursor, or null */
+export function getActiveHighlight(state: EditorState): string | null {
+  const { from, to, empty } = state.selection
+  const markType = schema.marks.highlight
+  if (empty) {
+    const stored = state.storedMarks || state.selection.$from.marks()
+    const m = markType.isInSet(stored)
+    return m ? m.attrs.color : null
+  }
+  let color: string | null = null
+  state.doc.nodesBetween(from, to, (node) => {
+    if (!color && node.isInline) {
+      const m = markType.isInSet(node.marks)
+      if (m) color = m.attrs.color
+    }
+    return !color
+  })
+  return color
+}
+
+// ── Table commands ──────────────────────────────────────────────────────
+
+export { addColumnAfter, addColumnBefore, deleteColumn }
+export { addRowAfter, addRowBefore, deleteRow }
+export { mergeCells, splitCell, toggleHeaderRow }
+
+/** Insert a table at the cursor position */
+export function insertTable(rows: number, cols: number, hasHeader: boolean): Command {
+  return (state, dispatch) => {
+    if (dispatch) {
+      const { paragraph, table, table_row, table_cell, table_header } = schema.nodes
+      const cells = (isHeader: boolean) =>
+        Array.from({ length: cols }, () =>
+          (isHeader ? table_header : table_cell).createAndFill()!
+        )
+      const tableRows = Array.from({ length: rows }, (_, i) =>
+        table_row.create(null, cells(hasHeader && i === 0))
+      )
+      const tableNode = table.create(null, tableRows)
+      const tr = state.tr.replaceSelectionWith(tableNode)
+      dispatch(tr.scrollIntoView())
+    }
+    return true
+  }
 }

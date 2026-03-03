@@ -140,4 +140,33 @@ export const marks: Record<string, MarkSpec> = {
       return ['a', attrs, 0]
     },
   } as MarkSpec,
+
+  textColor: {
+    attrs: { color: {} },
+    parseDOM: [{
+      style: 'color',
+      getAttrs: (value: string) => {
+        return value ? { color: value } : false
+      },
+    }],
+    toDOM(mark: Mark) {
+      // Validate color value (hex, rgb, named) to prevent injection
+      const color = mark.attrs.color.replace(/[;{}\\<>"']/g, '')
+      return ['span', { style: `color: ${color}` }, 0]
+    },
+  } as MarkSpec,
+
+  highlight: {
+    attrs: { color: {} },
+    parseDOM: [{
+      style: 'background-color',
+      getAttrs: (value: string) => {
+        return value ? { color: value } : false
+      },
+    }],
+    toDOM(mark: Mark) {
+      const color = mark.attrs.color.replace(/[;{}\\<>"']/g, '')
+      return ['span', { style: `background-color: ${color}` }, 0]
+    },
+  } as MarkSpec,
 }

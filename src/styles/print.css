@@ -35,3 +35,30 @@
   }
 }
 
+/* Phase 2: Table print styles */
+@media print {
+  .rte-toolbar,
+  .rte-table-toolbar,
+  .rte-slash-menu,
+  .rte-dialog-overlay,
+  .rte-emoji-picker,
+  .rte-color-picker,
+  .rte-export-menu__list {
+    display: none !important;
+  }
+
+  .rte-editor table {
+    border-collapse: collapse;
+    page-break-inside: avoid;
+  }
+
+  .rte-editor td,
+  .rte-editor th {
+    border: 1px solid #999;
+  }
+
+  .rte-editor ul.rte-checklist li[data-checked="true"] > p {
+    text-decoration: line-through;
+  }
+}
+

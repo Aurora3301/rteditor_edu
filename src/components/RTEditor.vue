@@ -4,6 +4,11 @@
       :active-state="activeState"
       :commands="commands"
       @image-select="handleImageSelect"
+      @insert-table="showTableDialog = true"
+      @word-count="showWordCount = true"
+      @export-pdf="onExportPDF"
+      @export-markdown="onExportMarkdown"
+      @emoji-open="showEmojiPicker = true"
     />
     <div class="rte-root__body">
       <div class="rte-editor-wrapper">
@@ -19,6 +24,53 @@
       :active-state="activeState"
       :commands="commands"
     />
+
+    <!-- Table Insert Dialog -->
+    <RTTableInsertDialog
+      v-if="showTableDialog"
+      @confirm="onInsertTable"
+      @cancel="showTableDialog = false"
+    />
+
+    <!-- Table contextual toolbar -->
+    <RTTableToolbar
+      :visible="activeState.inTable"
+      :top="tableToolbarPos.top"
+      :left="tableToolbarPos.left"
+      @add-row-before="commands.addRowBefore()"
+      @add-row-after="commands.addRowAfter()"
+      @add-col-before="commands.addColumnBefore()"
+      @add-col-after="commands.addColumnAfter()"
+      @delete-row="commands.deleteRow()"
+      @delete-col="commands.deleteColumn()"
+      @merge-cells="commands.mergeCells()"
+      @split-cell="commands.splitCell()"
+      @toggle-header="commands.toggleHeaderRow()"
+    />
+
+    <!-- Slash command menu -->
+    <RTSlashMenu
+      :visible="slashMenuVisible"
+      :top="slashMenuPos.top"
+      :left="slashMenuPos.left"
+      :commands="slashCommands"
+      @close="closeSlash"
+    />
+
+    <!-- Word Count Modal -->
+    <RTWordCountModal
+      v-if="showWordCount"
+      :stats="docStats"
+      :selection-stats="selStats"
+      @close="showWordCount = false"
+    />
+
+    <!-- Emoji Picker -->
+    <RTEmojiPicker
+      v-if="showEmojiPicker"
+      style="position: fixed; z-index: 1000; top: 50%; left: 50%; transform: translate(-50%, -50%)"
+      @select="onEmojiSelect"
+    />
   </div>
 </template>
 
@@ -26,7 +78,13 @@
 import { ref, computed, watch } from 'vue'
 import RTToolbar from './RTToolbar.vue'
 import RTBubbleMenu from './RTBubbleMenu.vue'
+import RTTableInsertDialog from './RTTableInsertDialog.vue'
+import RTTableToolbar from './RTTableToolbar.vue'
+import RTSlashMenu from './RTSlashMenu.vue'
+import RTWordCountModal from './RTWordCountModal.vue'
+import RTEmojiPicker from './RTEmojiPicker.vue'
 import { useEditor } from '../composables/useEditor'
+import { closeSlashMenu } from '../core/plugins/slashMenu'
 import { provideI18n, type Locale } from '../i18n'
 import type { ThemeOverrides } from '../types'
 
@@ -88,6 +146,8 @@ const {
   commands,
   setHTML,
   setJSON,
+  getStats,
+  exportMarkdown,
 } = useEditor({
   containerRef: editorRef,
   initialHTML: props.modelValue || undefined,
@@ -158,6 +218,68 @@ function fileToDataURL(file: File): Promise<string> {
     reader.onerror = reject
     reader.readAsDataURL(file)
   })
+}
+
+// ── Phase 2: New reactive state ──
+const showTableDialog = ref(false)
+const showWordCount = ref(false)
+const showEmojiPicker = ref(false)
+const tableToolbarVisible = ref(false)
+const tableToolbarPos = ref({ top: 0, left: 0 })
+const slashMenuVisible = ref(false)
+const slashMenuPos = ref({ top: 0, left: 0 })
+const docStats = computed(() => getStats()?.docStats ?? { words: 0, chars: 0, charsNoSpaces: 0, paragraphs: 0 })
+const selStats = computed(() => getStats()?.selStats ?? null)
+
+// ── Slash commands ──
+const slashCommands = computed(() => [
+  { id: 'h1', icon: 'H1', label: 'Heading 1', action: () => { commands.setHeading(1); closeSlash() } },
+  { id: 'h2', icon: 'H2', label: 'Heading 2', action: () => { commands.setHeading(2); closeSlash() } },
+  { id: 'h3', icon: 'H3', label: 'Heading 3', action: () => { commands.setHeading(3); closeSlash() } },
+  { id: 'p', icon: '¶', label: 'Paragraph', action: () => { commands.setParagraph(); closeSlash() } },
+  { id: 'ul', icon: '•', label: 'Bullet List', action: () => { commands.toggleBulletList(); closeSlash() } },
+  { id: 'ol', icon: '1.', label: 'Ordered List', action: () => { commands.toggleOrderedList(); closeSlash() } },
+  { id: 'cl', icon: '☐', label: 'Checklist', action: () => { commands.toggleChecklist(); closeSlash() } },
+  { id: 'bq', icon: '❝', label: 'Blockquote', action: () => { commands.toggleBlockquote(); closeSlash() } },
+  { id: 'tb', icon: '⊞', label: 'Table', action: () => { showTableDialog.value = true; closeSlash() } },
+  { id: 'hr', icon: '—', label: 'Divider', action: () => { commands.insertHorizontalRule(); closeSlash() } },
+  { id: 'em', icon: '😊', label: 'Emoji', action: () => { showEmojiPicker.value = true; closeSlash() } },
+])
+
+function closeSlash() {
+  const v = view.value
+  if (v) closeSlashMenu(v)
+  slashMenuVisible.value = false
+}
+
+// ── Phase 2 event handlers ──
+function onInsertTable(rows: number, cols: number, hasHeader: boolean) {
+  commands.insertTable(rows, cols, hasHeader)
+  showTableDialog.value = false
+}
+
+function onEmojiSelect(emoji: string) {
+  const v = view.value
+  if (!v) return
+  const tr = v.state.tr.insertText(emoji)
+  v.dispatch(tr)
+  showEmojiPicker.value = false
+  v.focus()
+}
+
+function onExportPDF() {
+  window.print()
+}
+
+function onExportMarkdown() {
+  const md = exportMarkdown()
+  const blob = new Blob([md], { type: 'text/markdown' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'document.md'
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 // ── Expose for parent component access ──

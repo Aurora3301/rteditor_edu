@@ -26,4 +26,14 @@ export {
 } from './commands'
 
 // Serializers
-export { toHTML, fromHTML, createEmptyDoc, toJSON, fromJSON } from './serializers'
+export { toHTML, fromHTML, createEmptyDoc, toJSON, fromJSON, toMarkdown } from './serializers'
+
+// Utilities
+export { importFromCKEditor4 } from './utils/ckEditor4Import'
+export { getDocStats, getSelectionStats } from './utils/wordCount'
+export type { DocStats } from './utils/wordCount'
+export { emojiList } from './utils/emojiData'
+export type { EmojiEntry } from './utils/emojiData'
+
+// Slash menu
+export { isSlashMenuActive, closeSlashMenu, slashMenuKey } from './plugins/slashMenu'

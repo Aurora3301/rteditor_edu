@@ -1,0 +1,46 @@
+/* ================================================================
+   WORD COUNT MODAL
+   ================================================================ */
+
+.rte-wordcount__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--rte-sp-3);
+}
+
+.rte-wordcount__table tr {
+  border-bottom: 1px solid var(--rte-border);
+}
+
+.rte-wordcount__table tr:last-child {
+  border-bottom: none;
+}
+
+.rte-wordcount__label {
+  padding: var(--rte-sp-2) var(--rte-sp-1);
+  color: var(--rte-text-muted);
+  font-size: 13px;
+  width: 70%;
+}
+
+.rte-wordcount__value {
+  padding: var(--rte-sp-2) var(--rte-sp-1);
+  font-weight: 600;
+  font-size: 14px;
+  text-align: right;
+  color: var(--rte-text);
+}
+
+.rte-wordcount__subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rte-text-muted);
+  margin-bottom: var(--rte-sp-2);
+}
+
+.rte-wordcount__selection {
+  border-top: 1px solid var(--rte-border);
+  padding-top: var(--rte-sp-3);
+  margin-top: var(--rte-sp-1);
+}
+

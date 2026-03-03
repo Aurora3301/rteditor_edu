@@ -52,3 +52,101 @@
     0 0 0 4px var(--rte-accent);
 }
 
+
+/* ================================================================
+   COLOR PICKER — 60-swatch popover with hex input
+   ================================================================ */
+
+.rte-color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rte-sp-2);
+  padding: var(--rte-sp-2);
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-md);
+  box-shadow: var(--rte-shadow-lg);
+  min-width: 220px;
+}
+
+.rte-color-picker__swatches {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 3px;
+}
+
+.rte-color-picker__swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,.15);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.rte-color-picker__swatch:hover,
+.rte-color-picker__swatch[aria-pressed="true"] {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px var(--rte-accent);
+  z-index: 1;
+  position: relative;
+}
+
+.rte-color-picker__custom {
+  display: flex;
+  align-items: center;
+  gap: var(--rte-sp-1);
+  border-top: 1px solid var(--rte-border);
+  padding-top: var(--rte-sp-2);
+}
+
+.rte-color-picker__hash {
+  color: var(--rte-text-muted);
+  font-size: 13px;
+}
+
+.rte-color-picker__hex {
+  flex: 1;
+  padding: 2px var(--rte-sp-1);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-sm);
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--rte-bg);
+  color: var(--rte-text);
+  outline: none;
+}
+
+.rte-color-picker__hex:focus {
+  border-color: var(--rte-accent);
+}
+
+.rte-color-picker__apply {
+  padding: 2px 8px;
+  background: var(--rte-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--rte-radius-sm);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.rte-color-picker__remove {
+  width: 100%;
+  padding: var(--rte-sp-1);
+  background: none;
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-sm);
+  color: var(--rte-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.rte-color-picker__remove:hover {
+  background: var(--rte-bg-subtle);
+  color: var(--rte-text);
+}
+

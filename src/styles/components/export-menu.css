@@ -1,0 +1,43 @@
+/* ================================================================
+   EXPORT MENU — Dropdown for PDF / Markdown export
+   ================================================================ */
+
+.rte-export-menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.rte-export-menu__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  list-style: none;
+  margin: 0;
+  padding: var(--rte-sp-1) 0;
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-md);
+  box-shadow: var(--rte-shadow-md);
+  z-index: var(--rte-z-popover, 500);
+}
+
+.rte-export-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--rte-sp-2);
+  width: 100%;
+  padding: var(--rte-sp-2) var(--rte-sp-3);
+  background: none;
+  border: none;
+  color: var(--rte-text);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.rte-export-menu__item:hover {
+  background: var(--rte-bg-subtle);
+}
+

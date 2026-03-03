@@ -66,3 +66,95 @@
 .rte-dialog__close:hover        { background: var(--rte-bg-muted); }
 .rte-dialog__close:focus-visible { outline: none; box-shadow: var(--rte-ring); }
 
+
+/* ================================================================
+   DIALOG — Additional overlay + field / action styles
+   ================================================================ */
+
+.rte-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--rte-z-dialog, 600);
+}
+
+.rte-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rte-sp-1);
+  margin-bottom: var(--rte-sp-3);
+}
+
+.rte-dialog__field--checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+.rte-dialog__label {
+  font-size: 13px;
+  color: var(--rte-text-muted);
+}
+
+.rte-dialog__input {
+  padding: var(--rte-sp-1h) var(--rte-sp-2);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-sm);
+  font-size: 14px;
+  background: var(--rte-bg);
+  color: var(--rte-text);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rte-dialog__input:focus {
+  border-color: var(--rte-accent);
+}
+
+.rte-dialog__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--rte-accent);
+  cursor: pointer;
+}
+
+.rte-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--rte-sp-2);
+  margin-top: var(--rte-sp-4);
+  padding-top: var(--rte-sp-3);
+  border-top: 1px solid var(--rte-border);
+}
+
+.rte-dialog__btn {
+  padding: var(--rte-sp-1h) var(--rte-sp-4);
+  border-radius: var(--rte-radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid var(--rte-border);
+  transition: background 0.15s;
+}
+
+.rte-dialog__btn--cancel {
+  background: var(--rte-bg);
+  color: var(--rte-text);
+}
+
+.rte-dialog__btn--cancel:hover {
+  background: var(--rte-bg-subtle);
+}
+
+.rte-dialog__btn--confirm {
+  background: var(--rte-accent);
+  color: #fff;
+  border-color: var(--rte-accent);
+}
+
+.rte-dialog__btn--confirm:hover {
+  opacity: 0.9;
+}
+

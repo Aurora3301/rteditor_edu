@@ -10,6 +10,7 @@ import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-li
 import { schema } from '../schema'
 import {
   toggleBold, toggleItalic, toggleUnderline, toggleStrike, toggleCode,
+  toggleChecklistItem,
   undo, redo
 } from '../commands/formatting'
 
@@ -22,6 +23,9 @@ export function buildKeymap(): Plugin {
   bindings['Mod-u'] = toggleUnderline
   bindings['Mod-Shift-x'] = toggleStrike    // Matches Google Docs
   bindings['Mod-e'] = toggleCode            // Matches VS Code
+
+  // ── Checklist toggle ──
+  bindings['Mod-Shift-9'] = toggleChecklistItem
 
   // ── History ──
   bindings['Mod-z'] = undo

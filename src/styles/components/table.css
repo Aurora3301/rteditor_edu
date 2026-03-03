@@ -1,0 +1,102 @@
+/* ================================================================
+   TABLE — Editor table styles, contextual toolbar, resize handles
+   ================================================================ */
+
+.rte-editor table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--rte-sp-4) 0;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.rte-editor td,
+.rte-editor th {
+  min-width: 40px;
+  border: 1px solid var(--rte-border);
+  padding: var(--rte-sp-2) var(--rte-sp-3);
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.rte-editor th {
+  background: var(--rte-bg-subtle);
+  font-weight: 600;
+  text-align: left;
+}
+
+.rte-editor td > *,
+.rte-editor th > * {
+  margin: 0;
+}
+
+/* ProseMirror selected cells */
+.rte-editor .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--rte-accent);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* Column resize handle */
+.rte-editor .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--rte-accent);
+  opacity: 0;
+  cursor: col-resize;
+  z-index: 20;
+  transition: opacity 0.15s;
+}
+
+.rte-editor .column-resize-handle:hover,
+.rte-editor.resize-cursor .column-resize-handle {
+  opacity: 1;
+}
+
+.rte-editor.resize-cursor {
+  cursor: col-resize;
+}
+
+/* Table toolbar */
+.rte-table-toolbar {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-md);
+  box-shadow: var(--rte-shadow-md);
+  z-index: var(--rte-z-toolbar);
+}
+
+.rte-table-toolbar__btn {
+  padding: 2px 6px;
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-sm);
+  background: var(--rte-bg);
+  color: var(--rte-text);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.rte-table-toolbar__btn:hover {
+  background: var(--rte-bg-subtle);
+}
+
+.rte-table-toolbar__sep {
+  width: 1px;
+  height: 14px;
+  background: var(--rte-border);
+  margin: 0 2px;
+}
+

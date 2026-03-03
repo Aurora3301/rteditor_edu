@@ -48,6 +48,11 @@
 @import './components/button.css';
 @import './components/sidebar.css';
 @import './components/color-picker.css';
+@import './components/table.css';
+@import './components/slash-menu.css';
+@import './components/word-count.css';
+@import './components/export-menu.css';
+@import './components/emoji-picker.css';
 
 /* ── 4. Content (prose — inside editor) ── */
 @import './content/editor.css';
@@ -59,6 +64,7 @@
 @import './content/blockquote.css';
 @import './content/links.css';
 @import './content/media.css';
+@import './content/checklist.css';
 
 /* ── 5. Node Views (custom ProseMirror nodes) ── */
 @import './nodeviews/upload.css';

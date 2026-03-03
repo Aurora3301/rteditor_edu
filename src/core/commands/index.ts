@@ -42,6 +42,30 @@ export {
   removeLink,
   getActiveLinkAttrs,
 
+  // Checklist
+  toggleChecklist,
+  toggleChecklistItem,
+
+  // Color
+  setTextColor,
+  removeTextColor,
+  getActiveTextColor,
+  setHighlight,
+  removeHighlight,
+  getActiveHighlight,
+
+  // Table
+  insertTable,
+  addColumnAfter,
+  addColumnBefore,
+  deleteColumn,
+  addRowAfter,
+  addRowBefore,
+  deleteRow,
+  mergeCells,
+  splitCell,
+  toggleHeaderRow,
+
   // State checks
   isMarkActive,
   isBlockActive,

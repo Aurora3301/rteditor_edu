@@ -13,8 +13,18 @@ import {
   setLink, removeLink, getActiveLinkAttrs,
   isMarkActive, isBlockActive, canUndo, canRedo,
   getTextAlign, getActiveFontFamily, getActiveFontSize,
+  toggleChecklist, toggleChecklistItem,
+  setTextColor, removeTextColor, getActiveTextColor,
+  setHighlight, removeHighlight, getActiveHighlight,
+  insertTable,
+  addRowBefore, addRowAfter, deleteRow,
+  addColumnBefore, addColumnAfter, deleteColumn,
+  mergeCells, splitCell, toggleHeaderRow,
 } from '../core/commands'
 import { activateDrag, deactivateDrag, isDragActive } from '../core/plugins/dragHandle'
+import { getDocStats, getSelectionStats } from '../core/utils/wordCount'
+import { toMarkdown } from '../core/serializers/markdown'
+import { isSlashMenuActive, slashMenuKey } from '../core/plugins/slashMenu'
 
 /**
  * Options for the {@link useEditor} composable.
@@ -72,6 +82,10 @@ export interface EditorActiveState {
   link: boolean
   linkAttrs: { href: string; title: string | null; target: string } | null
   dragActive: boolean
+  taskList: boolean
+  textColor: string | null
+  highlight: string | null
+  inTable: boolean
 }
 
 /**
@@ -114,6 +128,10 @@ export function useEditor(options: UseEditorOptions) {
     link: false,
     linkAttrs: null,
     dragActive: false,
+    taskList: false,
+    textColor: null,
+    highlight: null,
+    inTable: false,
   })
 
   // ── Debounced serialization ──
@@ -151,6 +169,18 @@ export function useEditor(options: UseEditorOptions) {
     activeState.link = isMarkActive(schema.marks.link)(state)
     activeState.linkAttrs = getActiveLinkAttrs(state)
     activeState.dragActive = isDragActive(state)
+    activeState.taskList = isBlockActive(schema.nodes.task_item)(state)
+    activeState.textColor = getActiveTextColor(state)
+    activeState.highlight = getActiveHighlight(state)
+    // Check if cursor is inside a table cell
+    activeState.inTable = (() => {
+      const { $from } = state.selection
+      for (let d = $from.depth; d >= 0; d--) {
+        const node = $from.node(d)
+        if (node.type.name === 'table_cell' || node.type.name === 'table_header') return true
+      }
+      return false
+    })()
   }
 
   // ── Lifecycle ──
@@ -248,6 +278,22 @@ export function useEditor(options: UseEditorOptions) {
         execCommand(activateDrag)
       }
     },
+    toggleChecklist: () => execCommand(toggleChecklist),
+    toggleChecklistItem: () => execCommand(toggleChecklistItem),
+    setTextColor: (color: string) => execCommand(setTextColor(color)),
+    removeTextColor: () => execCommand(removeTextColor),
+    setHighlight: (color: string) => execCommand(setHighlight(color)),
+    removeHighlight: () => execCommand(removeHighlight),
+    insertTable: (rows: number, cols: number, hasHeader: boolean) => execCommand(insertTable(rows, cols, hasHeader)),
+    addRowBefore: () => execCommand(addRowBefore),
+    addRowAfter: () => execCommand(addRowAfter),
+    deleteRow: () => execCommand(deleteRow),
+    addColumnBefore: () => execCommand(addColumnBefore),
+    addColumnAfter: () => execCommand(addColumnAfter),
+    deleteColumn: () => execCommand(deleteColumn),
+    mergeCells: () => execCommand(mergeCells),
+    splitCell: () => execCommand(splitCell),
+    toggleHeaderRow: () => execCommand(toggleHeaderRow),
   }
 
   // ── Set content programmatically ──
@@ -267,6 +313,22 @@ export function useEditor(options: UseEditorOptions) {
     v.dispatch(tr)
   }
 
+  function getStats() {
+    const v = view.value
+    if (!v) return null
+    const state = v.state
+    const { from, to, empty } = state.selection
+    const docStats = getDocStats(state.doc)
+    const selStats = empty ? null : getSelectionStats(state.doc.textBetween(from, to, ' '))
+    return { docStats, selStats }
+  }
+
+  function exportMarkdown(): string {
+    const v = view.value
+    if (!v) return ''
+    return toMarkdown(v.state.doc)
+  }
+
   return {
     /** The ProseMirror EditorView (shallowRef — don't deep-watch!) */
     view,
@@ -284,5 +346,9 @@ export function useEditor(options: UseEditorOptions) {
     setHTML,
     /** Programmatically set JSON content */
     setJSON,
+    /** Get document and selection word/char stats */
+    getStats,
+    /** Export document as Markdown string */
+    exportMarkdown,
   }
 }

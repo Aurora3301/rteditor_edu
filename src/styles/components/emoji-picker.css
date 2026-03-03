@@ -1,0 +1,64 @@
+/* ================================================================
+   EMOJI PICKER — Searchable flat emoji grid
+   ================================================================ */
+
+.rte-emoji-picker {
+  width: 350px;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  background: var(--rte-bg);
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-md);
+  box-shadow: var(--rte-shadow-lg);
+  overflow: hidden;
+}
+
+.rte-emoji-picker__search {
+  padding: var(--rte-sp-2) var(--rte-sp-3);
+  border: none;
+  border-bottom: 1px solid var(--rte-border);
+  background: var(--rte-bg-subtle);
+  color: var(--rte-text);
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rte-emoji-picker__grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: var(--rte-sp-2);
+  gap: 2px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.rte-emoji-picker__emoji {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: none;
+  background: none;
+  border-radius: var(--rte-radius-sm);
+  cursor: pointer;
+  transition: background 0.1s;
+  padding: 0;
+}
+
+.rte-emoji-picker__emoji:hover {
+  background: var(--rte-bg-subtle);
+}
+
+.rte-emoji-picker__empty {
+  width: 100%;
+  padding: var(--rte-sp-4);
+  text-align: center;
+  color: var(--rte-text-muted);
+  font-size: 13px;
+}
+

@@ -128,6 +128,48 @@
       </select>
     </div>
 
+    <div class="rte-toolbar__separator" role="separator"></div>
+
+    <!-- Group: Text Color + Highlight -->
+    <div class="rte-toolbar__group" style="position: relative">
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Text Color"
+        title="Text Color"
+        :style="activeTextColor ? `border-bottom: 3px solid ${activeTextColor}` : ''"
+        @click="showTextColorPicker = !showTextColorPicker; showHighlightPicker = false"
+      >
+        A
+      </button>
+      <RTColorPicker
+        v-if="showTextColorPicker"
+        :model-value="activeTextColor"
+        label="Text Color"
+        style="position: absolute; top: 100%; left: 0; z-index: 100"
+        @update:model-value="(c) => { commands.setTextColor(c); showTextColorPicker = false }"
+        @remove="commands.removeTextColor(); showTextColorPicker = false"
+      />
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Highlight Color"
+        title="Highlight Color"
+        :style="activeHighlight ? `border-bottom: 3px solid ${activeHighlight}` : ''"
+        @click="showHighlightPicker = !showHighlightPicker; showTextColorPicker = false"
+      >
+        H
+      </button>
+      <RTColorPicker
+        v-if="showHighlightPicker"
+        :model-value="activeHighlight"
+        label="Highlight Color"
+        style="position: absolute; top: 100%; left: 40px; z-index: 100"
+        @update:model-value="(c) => { commands.setHighlight(c); showHighlightPicker = false }"
+        @remove="commands.removeHighlight(); showHighlightPicker = false"
+      />
+    </div>
+
     <!-- Row break -->
     <div class="rte-toolbar__break"></div>
 
@@ -167,6 +209,32 @@
         @click="commands.setHeading(3)"
       >
         H3
+      </button>
+    </div>
+
+    <div class="rte-toolbar__separator" role="separator"></div>
+
+    <!-- Group: Checklist + Table -->
+    <div class="rte-toolbar__group">
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        :class="{ 'rte-toolbar__button--active': activeState.taskList }"
+        :aria-pressed="activeState.taskList"
+        aria-label="Checklist"
+        title="Checklist (Ctrl+Shift+9)"
+        @click="commands.toggleChecklist()"
+      >
+        ☐
+      </button>
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Insert Table"
+        title="Insert Table"
+        @click="$emit('insert-table')"
+      >
+        ⊞
       </button>
     </div>
 
@@ -318,6 +386,34 @@
 
     <div class="rte-toolbar__separator" role="separator"></div>
 
+    <!-- Group: Word Count + Export + Emoji -->
+    <div class="rte-toolbar__group">
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Word Count"
+        title="Word Count"
+        @click="$emit('word-count')"
+      >
+        ≡#
+      </button>
+      <RTExportMenu
+        @export-pdf="$emit('export-pdf')"
+        @export-markdown="$emit('export-markdown')"
+      />
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Emoji"
+        title="Insert Emoji"
+        @click="$emit('emoji-open')"
+      >
+        😊
+      </button>
+    </div>
+
+    <div class="rte-toolbar__separator" role="separator"></div>
+
     <!-- Group 5: History -->
     <div class="rte-toolbar__group">
       <button
@@ -345,10 +441,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import RTColorPicker from './RTColorPicker.vue'
+import RTExportMenu from './RTExportMenu.vue'
 import type { EditorActiveState } from '../composables/useEditor'
 
-defineProps<{
+const props = defineProps<{
   /** Current active formatting state */
   activeState: EditorActiveState
   /** Command functions to call */
@@ -373,12 +471,37 @@ defineProps<{
     undo: () => void
     redo: () => void
     toggleDrag: () => void
+    toggleChecklist: () => void
+    setTextColor: (color: string) => void
+    removeTextColor: () => void
+    setHighlight: (color: string) => void
+    removeHighlight: () => void
+    insertTable: (rows: number, cols: number, hasHeader: boolean) => void
+    addRowBefore: () => void
+    addRowAfter: () => void
+    deleteRow: () => void
+    addColumnBefore: () => void
+    addColumnAfter: () => void
+    deleteColumn: () => void
+    mergeCells: () => void
+    splitCell: () => void
+    toggleHeaderRow: () => void
   }
 }>()
 
 const emit = defineEmits<{
   'image-select': [file: File]
+  'insert-table': []
+  'word-count': []
+  'export-pdf': []
+  'export-markdown': []
+  'emoji-open': []
 }>()
+
+const showTextColorPicker = ref(false)
+const showHighlightPicker = ref(false)
+const activeTextColor = computed(() => props.activeState.textColor)
+const activeHighlight = computed(() => props.activeState.highlight)
 
 const imageInput = ref<HTMLInputElement | null>(null)
 

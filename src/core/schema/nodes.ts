@@ -104,6 +104,104 @@ export const nodes: Record<string, NodeSpec> = {
     },
   },
 
+  task_list: {
+    content: 'task_item+',
+    group: 'block',
+    parseDOM: [{ tag: 'ul.rte-checklist' }],
+    toDOM() {
+      return ['ul', { class: 'rte-checklist' }, 0]
+    },
+  } as NodeSpec,
+
+  task_item: {
+    content: 'paragraph block*',
+    attrs: { checked: { default: false } },
+    parseDOM: [{
+      tag: 'li[data-checked]',
+      getAttrs(dom: HTMLElement) {
+        return { checked: dom.getAttribute('data-checked') === 'true' }
+      },
+    }],
+    toDOM(node: ProseMirrorNode) {
+      return ['li', { 'data-checked': node.attrs.checked ? 'true' : 'false' }, 0]
+    },
+  } as NodeSpec,
+
+  table: {
+    content: 'table_row+',
+    group: 'block',
+    tableRole: 'table',
+    parseDOM: [{ tag: 'table' }],
+    toDOM() { return ['table', ['tbody', 0]] },
+  } as NodeSpec,
+
+  table_row: {
+    content: '(table_cell | table_header)*',
+    tableRole: 'row',
+    parseDOM: [{ tag: 'tr' }],
+    toDOM() { return ['tr', 0] },
+  } as NodeSpec,
+
+  table_cell: {
+    content: 'block+',
+    attrs: {
+      colspan: { default: 1 },
+      rowspan: { default: 1 },
+      colwidth: { default: null },
+    },
+    tableRole: 'cell',
+    isolating: true,
+    parseDOM: [{
+      tag: 'td',
+      getAttrs(dom: HTMLElement) {
+        return {
+          colspan: Number(dom.getAttribute('colspan') || 1),
+          rowspan: Number(dom.getAttribute('rowspan') || 1),
+          colwidth: dom.getAttribute('data-colwidth')
+            ? dom.getAttribute('data-colwidth')!.split(',').map(Number)
+            : null,
+        }
+      },
+    }],
+    toDOM(node: ProseMirrorNode) {
+      const attrs: Record<string, any> = {}
+      if (node.attrs.colspan !== 1) attrs.colspan = node.attrs.colspan
+      if (node.attrs.rowspan !== 1) attrs.rowspan = node.attrs.rowspan
+      if (node.attrs.colwidth) attrs['data-colwidth'] = node.attrs.colwidth.join(',')
+      return ['td', attrs, 0]
+    },
+  } as NodeSpec,
+
+  table_header: {
+    content: 'block+',
+    attrs: {
+      colspan: { default: 1 },
+      rowspan: { default: 1 },
+      colwidth: { default: null },
+    },
+    tableRole: 'header_cell',
+    isolating: true,
+    parseDOM: [{
+      tag: 'th',
+      getAttrs(dom: HTMLElement) {
+        return {
+          colspan: Number(dom.getAttribute('colspan') || 1),
+          rowspan: Number(dom.getAttribute('rowspan') || 1),
+          colwidth: dom.getAttribute('data-colwidth')
+            ? dom.getAttribute('data-colwidth')!.split(',').map(Number)
+            : null,
+        }
+      },
+    }],
+    toDOM(node: ProseMirrorNode) {
+      const attrs: Record<string, any> = {}
+      if (node.attrs.colspan !== 1) attrs.colspan = node.attrs.colspan
+      if (node.attrs.rowspan !== 1) attrs.rowspan = node.attrs.rowspan
+      if (node.attrs.colwidth) attrs['data-colwidth'] = node.attrs.colwidth.join(',')
+      return ['th', attrs, 0]
+    },
+  } as NodeSpec,
+
   text: {
     group: 'inline',
     inline: true,
