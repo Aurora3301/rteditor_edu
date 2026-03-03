@@ -1,135 +1,224 @@
+/* ================================================================
+   MATH MODAL — always white, clear readable symbol buttons
+   ================================================================ */
+
 .rte-math-modal {
-  max-width: 560px;
+  max-width: 580px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 92vh;
   overflow-y: auto;
+
+  /* Force white regardless of theme / CSS variable values */
+  background: #ffffff !important;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+  padding: 20px 24px 20px;
 }
 
-/* Header — flex row so close button can't overlap palette */
+/* ── Header ──────────────────────────────────────────────────── */
 .rte-math-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .rte-math-modal__title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--rte-color-text, #111827);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .rte-math-modal__close {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: none;
-  border-radius: 4px;
-  color: var(--rte-color-text-muted, #6b7280);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #6b7280;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
-.rte-math-modal__close:hover { background: var(--rte-color-hover, #f3f4f6); }
+.rte-math-modal__close:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
+}
 
-/* Category tabs */
+/* ── Category tabs ───────────────────────────────────────────── */
 .rte-math-modal__tabs {
   display: flex;
-  gap: 4px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid var(--rte-color-border, #e5e7eb);
-  padding-bottom: 6px;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .rte-math-modal__tab {
-  padding: 3px 10px;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  padding: 5px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;        /* pill shape */
   font-size: 0.8rem;
-  cursor: pointer;
-  background: transparent;
-  color: var(--rte-color-text-muted, #6b7280);
-  transition: all 0.12s;
-}
-.rte-math-modal__tab:hover { background: var(--rte-color-hover, #f3f4f6); color: var(--rte-color-text, #111827); }
-.rte-math-modal__tab--active {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1d4ed8;
   font-weight: 500;
+  cursor: pointer;
+  background: #ffffff;
+  color: #6b7280;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.rte-math-modal__tab:hover {
+  background: #f3f4f6;
+  color: #111827;
+  border-color: #9ca3af;
+}
+.rte-math-modal__tab--active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
 }
 
-/* Symbol palette */
+/* ── Symbol palette ──────────────────────────────────────────── */
 .rte-math-modal__palette {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 10px;
-  max-height: 180px;
+  gap: 5px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  max-height: 192px;
   overflow-y: auto;
 }
 
+/* Scrollbar styling for the palette */
+.rte-math-modal__palette::-webkit-scrollbar { width: 5px; }
+.rte-math-modal__palette::-webkit-scrollbar-track { background: transparent; }
+.rte-math-modal__palette::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+
 .rte-math-modal__sym {
-  padding: 3px 7px;
-  border: 1px solid var(--rte-color-border, #e5e7eb);
-  border-radius: 4px;
-  background: var(--rte-color-surface, #f9fafb);
-  font-size: 13px;
+  padding: 5px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 14px;           /* larger than before */
+  font-weight: 500;
+  color: #1f2937;            /* dark, high-contrast text */
   cursor: pointer;
-  transition: background 0.12s;
-  line-height: 1.4;
+  transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
+  line-height: 1.5;
   white-space: nowrap;
+  min-width: 36px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-
 .rte-math-modal__sym:hover {
-  background: var(--rte-color-hover, #f3f4f6);
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  box-shadow: 0 1px 4px rgba(59,130,246,0.15);
+}
+.rte-math-modal__sym:active {
+  background: #dbeafe;
+  transform: scale(0.96);
 }
 
+/* ── LaTeX input ─────────────────────────────────────────────── */
 .rte-math-modal__input {
   width: 100%;
   box-sizing: border-box;
-  font-family: var(--rte-font-mono, monospace);
-  font-size: 0.85rem;
-  border: 1px solid var(--rte-color-border, #d1d5db);
-  border-radius: 6px;
-  padding: 8px;
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
   outline: none;
   resize: vertical;
-  color: var(--rte-color-text, #374151);
-  background: var(--rte-color-surface, #fff);
+  color: #111827;
+  background: #ffffff;
+  line-height: 1.6;
 }
-
+.rte-math-modal__input::placeholder { color: #9ca3af; }
 .rte-math-modal__input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
 }
 
+/* ── Preview ─────────────────────────────────────────────────── */
 .rte-math-modal__preview-label {
-  font-size: 0.75rem;
-  color: var(--rte-color-text-muted, #6b7280);
-  margin: 8px 0 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  margin: 10px 0 5px;
 }
 
 .rte-math-modal__preview {
-  min-height: 2.5rem;
+  min-height: 3rem;
   text-align: center;
-  padding: 8px;
-  background: var(--rte-color-surface-alt, #f9fafb);
-  border-radius: 6px;
-  border: 1px solid var(--rte-color-border, #e5e7eb);
+  padding: 12px 8px;
+  background: #f0f9ff;
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+  color: #0c4a6e;
 }
 
+/* ── Action buttons ──────────────────────────────────────────── */
 .rte-math-modal__actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
 }
 
+/* ── Scoped action button overrides (Cancel / Insert) ───────── */
+.rte-math-modal .rte-btn {
+  padding: 7px 18px;
+  border-radius: 7px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.rte-math-modal .rte-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+.rte-math-modal .rte-btn--primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+}
+.rte-math-modal .rte-btn--primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+.rte-math-modal .rte-btn--primary:disabled {
+  background: #93c5fd;
+  border-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* ── Inline math wrapper (in editor, not in modal) ───────────── */
 /* Inline math wrapper */
 .rte-math-inline-wrapper {
   display: inline-flex;
