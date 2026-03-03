@@ -79,6 +79,7 @@
         <button type="button" class="rte-bubble-menu__btn" :class="{ 'rte-bubble-menu__btn--active': activeState.strike }" :aria-pressed="activeState.strike" aria-label="Strikethrough" @click="commands.toggleStrike()"><s>S</s></button>
         <div class="rte-bubble-menu__separator"></div>
         <button type="button" class="rte-bubble-menu__btn" :class="{ 'rte-bubble-menu__btn--active': activeState.link }" aria-label="Link" @click="onAddLink">🔗</button>
+        <button type="button" class="rte-bubble-menu__btn" aria-label="Add Remark" title="Add Remark" @click="emit('add-remark')">💬</button>
       </template>
     </div>
   </Teleport>
@@ -88,6 +89,8 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import type { EditorView } from 'prosemirror-view'
 import type { EditorActiveState } from '../composables/useEditor'
+
+const emit = defineEmits<{ 'add-remark': [] }>()
 
 const props = defineProps<{
   view: EditorView | null

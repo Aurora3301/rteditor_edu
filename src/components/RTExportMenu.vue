@@ -14,12 +14,12 @@
     <ul v-if="open" class="rte-export-menu__list" role="menu">
       <li role="menuitem">
         <button type="button" class="rte-export-menu__item" @click="exportPDF">
-          📄 PDF
+          📄 Export PDF
         </button>
       </li>
       <li role="menuitem">
-        <button type="button" class="rte-export-menu__item" @click="exportMarkdown">
-          # Markdown (.md)
+        <button type="button" class="rte-export-menu__item" @click="exportDocx">
+          📝 Export Word (.docx)
         </button>
       </li>
     </ul>
@@ -31,7 +31,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const emit = defineEmits<{
   'export-pdf': []
-  'export-markdown': []
+  'export-docx': []
 }>()
 
 const open = ref(false)
@@ -42,9 +42,9 @@ function exportPDF() {
   emit('export-pdf')
 }
 
-function exportMarkdown() {
+function exportDocx() {
   open.value = false
-  emit('export-markdown')
+  emit('export-docx')
 }
 
 function onOutsideClick(e: MouseEvent) {

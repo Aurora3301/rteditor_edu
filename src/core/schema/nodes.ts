@@ -181,6 +181,22 @@ export const nodes: Record<string, NodeSpec> = {
     },
   } as NodeSpec,
 
+  math_inline: {
+    group: 'inline',
+    inline: true,
+    atom: true,
+    attrs: { latex: { default: '' } },
+    parseDOM: [{
+      tag: 'span[data-math]',
+      getAttrs(dom: HTMLElement) {
+        return { latex: dom.getAttribute('data-math') || '' }
+      },
+    }],
+    toDOM(node: ProseMirrorNode) {
+      return ['span', { 'data-math': node.attrs.latex, class: 'rte-math-inline' }, node.attrs.latex]
+    },
+  } as NodeSpec,
+
   text: {
     group: 'inline',
     inline: true,
@@ -204,6 +220,8 @@ export const nodes: Record<string, NodeSpec> = {
       title: { default: null },
       width: { default: null },
       height: { default: null },
+      float: { default: null },
+      caption: { default: '' },
     },
     group: 'inline',
     draggable: true,
@@ -211,25 +229,29 @@ export const nodes: Record<string, NodeSpec> = {
       tag: 'img[src]',
       getAttrs(dom: HTMLElement) {
         const src = dom.getAttribute('src') || ''
-        // Reject non-image dangerous protocols
         if (/^(javascript|vbscript):/i.test(src.trim())) return false
         if (src.startsWith('data:') && !src.startsWith('data:image/')) return false
+        const floatVal = (dom as HTMLElement).style?.float || dom.getAttribute('data-float') || null
         return {
           src,
           alt: dom.getAttribute('alt'),
           title: dom.getAttribute('title'),
           width: dom.getAttribute('width'),
           height: dom.getAttribute('height'),
+          float: floatVal,
+          caption: dom.getAttribute('data-caption') || '',
         }
       },
     }],
     toDOM(node: ProseMirrorNode) {
-      const { src, alt, title, width, height } = node.attrs
+      const { src, alt, title, width, height, float: f, caption } = node.attrs
       const attrs: Record<string, string> = { src }
       if (alt) attrs.alt = alt
       if (title) attrs.title = title
-      if (width) attrs.width = width
-      if (height) attrs.height = height
+      if (width) attrs.width = String(width)
+      if (height) attrs.height = String(height)
+      if (f) { attrs.style = `float:${f};margin:4px`; attrs['data-float'] = f }
+      if (caption) attrs['data-caption'] = caption
       return ['img', attrs]
     },
   } as NodeSpec,

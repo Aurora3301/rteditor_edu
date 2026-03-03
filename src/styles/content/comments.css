@@ -1,0 +1,105 @@
+.rte-comment {
+  background-color: #fef9c3;
+  border-bottom: 2px solid #f59e0b;
+  cursor: pointer;
+  position: relative;
+}
+
+.rte-comment:hover::after {
+  content: attr(data-comment-text);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  max-width: 260px;
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  padding: 6px 8px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  z-index: 9998;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.rte-remark-popover {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+  padding: 12px;
+  min-width: 280px;
+  max-width: 360px;
+}
+
+.rte-remark-popover__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.rte-remark-popover__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 0 2px;
+}
+
+.rte-remark-popover__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.85rem;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+}
+
+.rte-remark-popover__textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+.rte-remark-popover__actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.rte-remark-popover__btn {
+  padding: 4px 12px;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.rte-remark-popover__btn--primary {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.rte-remark-popover__btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rte-remark-popover__btn--danger {
+  color: #dc2626;
+  border-color: #fca5a5;
+  background: #fff;
+}
+

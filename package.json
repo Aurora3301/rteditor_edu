@@ -54,6 +54,9 @@
     "vue-tsc": "^3.2.5"
   },
   "dependencies": {
+    "docx": "^9.6.0",
+    "katex": "^0.16.33",
+    "mammoth": "^1.11.0",
     "prosemirror-tables": "^1.8.5"
   }
 }

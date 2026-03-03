@@ -11,6 +11,9 @@ import {
   setHeading, setParagraph, setTextAlign, toggleBulletList, toggleOrderedList,
   toggleBlockquote, insertHorizontalRule, insertImage, clearFormatting, undo, redo,
   setLink, removeLink, getActiveLinkAttrs,
+  insertMath,
+  insertRowBefore, insertRowAfter, deleteRow,
+  insertColBefore, insertColAfter, deleteColumn, deleteTable,
   isMarkActive, isBlockActive, canUndo, canRedo,
   getTextAlign, getActiveFontFamily, getActiveFontSize,
   setTextColor, removeTextColor, getActiveTextColor,
@@ -282,7 +285,15 @@ export function useEditor(options: UseEditorOptions) {
     removeTextColor: () => execCommand(removeTextColor),
     setHighlight: (color: string) => execCommand(setHighlight(color)),
     removeHighlight: () => execCommand(removeHighlight),
+    insertMath: (latex: string) => execCommand(insertMath(latex)),
     insertTable: (rows: number, cols: number, hasHeader: boolean) => execCommand(insertTable(rows, cols, hasHeader)),
+    insertRowBefore: () => execCommand(insertRowBefore),
+    insertRowAfter: () => execCommand(insertRowAfter),
+    deleteRow: () => execCommand(deleteRow),
+    insertColBefore: () => execCommand(insertColBefore),
+    insertColAfter: () => execCommand(insertColAfter),
+    deleteColumn: () => execCommand(deleteColumn),
+    deleteTable: () => execCommand(deleteTable),
   }
 
   // ── Set content programmatically ──

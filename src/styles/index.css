@@ -25,6 +25,9 @@
    themes/      = Dark mode + auto-detect overrides
    ================================================================ */
 
+/* ── 0. Third-party ── */
+@import 'katex/dist/katex.min.css';
+
 /* ── 1. Design Tokens (variables only) ── */
 @import './tokens/palette.css';
 @import './tokens/typography.css';
@@ -52,8 +55,10 @@
 @import './components/slash-menu.css';
 @import './components/word-count.css';
 @import './components/status-bar.css';
+@import './components/table-mini-toolbar.css';
 @import './components/export-menu.css';
 @import './components/emoji-picker.css';
+@import './components/math-modal.css';
 
 /* ── 4. Content (prose — inside editor) ── */
 @import './content/editor.css';
@@ -68,9 +73,11 @@
 
 /* ── 5. Node Views (custom ProseMirror nodes) ── */
 @import './nodeviews/upload.css';
+@import './nodeviews/image.css';
 @import './nodeviews/file-card.css';
 @import './nodeviews/math.css';
 @import './nodeviews/comment-highlight.css';
+@import './content/comments.css';
 
 /* ── 6. Themes ── */
 @import './themes/dark.css';

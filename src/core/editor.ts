@@ -3,6 +3,8 @@ import { EditorView } from 'prosemirror-view'
 import { Node as ProseMirrorNode } from 'prosemirror-model'
 import { createPlugins } from './plugins'
 import { fromHTML, fromJSON, createEmptyDoc } from './serializers'
+import { ImageNodeView } from './plugins/imageNodeView'
+import { MathNodeView } from './plugins/mathNodeView'
 
 /**
  * Options for creating an editor instance.
@@ -67,6 +69,11 @@ export function createEditor(options: EditorOptions): EditorView {
 
   const view = new EditorView(options.element, {
     state,
+
+    nodeViews: {
+      image: (node, view, getPos) => new ImageNodeView(node, view, getPos),
+      math_inline: (node, view, getPos) => new MathNodeView(node, view, getPos),
+    },
 
     editable: () => options.editable !== false,
 

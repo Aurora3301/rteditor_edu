@@ -49,8 +49,18 @@ export {
   removeHighlight,
   getActiveHighlight,
 
+  // Math
+  insertMath,
+
   // Table
   insertTable,
+  insertRowBefore,
+  insertRowAfter,
+  deleteRow,
+  insertColBefore,
+  insertColAfter,
+  deleteColumn,
+  deleteTable,
 
   // State checks
   isMarkActive,

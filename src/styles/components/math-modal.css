@@ -1,0 +1,106 @@
+.rte-math-modal {
+  max-width: 480px;
+  width: 100%;
+}
+
+.rte-math-modal__palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.rte-math-modal__sym {
+  padding: 3px 7px;
+  border: 1px solid var(--rte-color-border, #e5e7eb);
+  border-radius: 4px;
+  background: var(--rte-color-surface, #f9fafb);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s;
+  line-height: 1.4;
+}
+
+.rte-math-modal__sym:hover {
+  background: var(--rte-color-hover, #f3f4f6);
+}
+
+.rte-math-modal__input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--rte-font-mono, monospace);
+  font-size: 0.85rem;
+  border: 1px solid var(--rte-color-border, #d1d5db);
+  border-radius: 6px;
+  padding: 8px;
+  outline: none;
+  resize: vertical;
+  color: var(--rte-color-text, #374151);
+  background: var(--rte-color-surface, #fff);
+}
+
+.rte-math-modal__input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+.rte-math-modal__preview-label {
+  font-size: 0.75rem;
+  color: var(--rte-color-text-muted, #6b7280);
+  margin: 8px 0 4px;
+}
+
+.rte-math-modal__preview {
+  min-height: 2.5rem;
+  text-align: center;
+  padding: 8px;
+  background: var(--rte-color-surface-alt, #f9fafb);
+  border-radius: 6px;
+  border: 1px solid var(--rte-color-border, #e5e7eb);
+}
+
+.rte-math-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Inline math wrapper */
+.rte-math-inline-wrapper {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 1px 2px;
+  transition: background 0.12s;
+}
+
+.rte-math-inline-wrapper:hover {
+  background: rgba(59,130,246,0.08);
+}
+
+.rte-math-inline-wrapper--editing {
+  flex-direction: column;
+  cursor: default;
+  background: rgba(59,130,246,0.05);
+  padding: 4px;
+  border-radius: 5px;
+}
+
+.rte-math-inline-input {
+  font-family: monospace;
+  font-size: 0.8rem;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  padding: 2px 6px;
+  outline: none;
+  width: 160px;
+}
+
+.rte-math-inline-placeholder {
+  opacity: 0.4;
+  font-style: italic;
+  font-size: 0.9em;
+}
+

@@ -4,10 +4,12 @@
       :active-state="activeState"
       :commands="commands"
       @image-select="handleImageSelect"
+      @word-import="handleWordImport"
       @insert-table="showTableDialog = true"
       @word-count="showWordCount = true"
       @export-pdf="onExportPDF"
-      @export-markdown="onExportMarkdown"
+      @export-docx="onExportDocx"
+      @math-open="mathModalRef?.open()"
       @emoji-open="showEmojiPicker = true"
       @spacing-change="onSpacingChange"
     />
@@ -39,7 +41,14 @@
       :view="view"
       :active-state="activeState"
       :commands="commands"
+      @add-remark="onAddRemark"
     />
+
+    <!-- Remark popover -->
+    <RTRemarkPopover ref="remarkPopoverRef" :view="view" />
+
+    <!-- Math modal -->
+    <RTMathModal ref="mathModalRef" @confirm="onInsertMath" />
 
     <!-- Table Insert Dialog -->
     <RTTableInsertDialog
@@ -71,6 +80,14 @@
       style="position: fixed; z-index: 1000; top: 50%; left: 50%; transform: translate(-50%, -50%)"
       @select="onEmojiSelect"
     />
+
+    <!-- Table Mini-Toolbar -->
+    <RTTableMiniToolbar
+      ref="tableMiniToolbarRef"
+      :view="view"
+      :in-table="activeState.inTable"
+      :commands="commands"
+    />
   </div>
 </template>
 
@@ -82,6 +99,11 @@ import RTTableInsertDialog from './RTTableInsertDialog.vue'
 import RTSlashMenu from './RTSlashMenu.vue'
 import RTWordCountModal from './RTWordCountModal.vue'
 import RTEmojiPicker from './RTEmojiPicker.vue'
+import RTTableMiniToolbar from './RTTableMiniToolbar.vue'
+import RTRemarkPopover from './RTRemarkPopover.vue'
+import RTMathModal from './RTMathModal.vue'
+import { exportToDocx } from '../core/utils/docxExporter'
+import { importDocx } from '../core/utils/docxImporter'
 import { useEditor } from '../composables/useEditor'
 import { closeSlashMenu } from '../core/plugins/slashMenu'
 import { provideI18n, type Locale } from '../i18n'
@@ -151,6 +173,9 @@ watch(() => props.locale, (newLocale) => {
 
 const editorRef = ref<HTMLElement | null>(null)
 const bubbleMenuRef = ref<InstanceType<typeof RTBubbleMenu> | null>(null)
+const tableMiniToolbarRef = ref<InstanceType<typeof RTTableMiniToolbar> | null>(null)
+const remarkPopoverRef = ref<InstanceType<typeof RTRemarkPopover> | null>(null)
+const mathModalRef = ref<InstanceType<typeof RTMathModal> | null>(null)
 
 const {
   view,
@@ -171,9 +196,12 @@ const {
   editable: !props.readonly,
 })
 
-// ── Notify bubble menu of state changes ──
+// ── Notify bubble menu + table toolbar of state changes ──
 watch([html, () => activeState.link], () => {
   bubbleMenuRef.value?.onTransaction()
+})
+watch(() => activeState.inTable, () => {
+  tableMiniToolbarRef.value?.updatePosition()
 })
 
 // ── Sync internal state → parent (v-model) ──
@@ -284,15 +312,38 @@ function onExportPDF() {
   window.print()
 }
 
-function onExportMarkdown() {
-  const md = exportMarkdown()
-  const blob = new Blob([md], { type: 'text/markdown' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'document.md'
-  a.click()
-  URL.revokeObjectURL(url)
+async function onExportDocx() {
+  const v = view.value
+  if (!v) return
+  await exportToDocx(v.state.doc, 'document.docx')
+}
+
+function onInsertMath(latex: string) {
+  commands.insertMath(latex)
+  view.value?.focus()
+}
+
+function onAddRemark() {
+  const v = view.value
+  if (!v) return
+  const { from, to } = v.state.selection
+  if (from === to) return
+  const coords = v.coordsAtPos(from)
+  const rect = { left: coords.left, top: coords.top, bottom: coords.bottom, right: coords.right, width: 0, height: 0 } as DOMRect
+  remarkPopoverRef.value?.open(rect as DOMRect)
+}
+
+async function handleWordImport(file: File) {
+  try {
+    const doc = await importDocx(file)
+    const v = view.value
+    if (!v) return
+    const tr = v.state.tr.replaceWith(0, v.state.doc.content.size, doc.content)
+    v.dispatch(tr)
+    v.focus()
+  } catch (err) {
+    console.error('[rteditor] Word import failed:', err)
+  }
 }
 
 // ── JSON API ──

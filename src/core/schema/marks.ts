@@ -164,4 +164,35 @@ export const marks: Record<string, MarkSpec> = {
       return ['span', { style: `background-color: ${color}` }, 0]
     },
   } as MarkSpec,
+
+  comment: {
+    attrs: {
+      id: {},
+      text: { default: '' },
+      author: { default: 'Teacher' },
+      timestamp: { default: '' },
+    },
+    inclusive: false,
+    excludes: '',
+    parseDOM: [{
+      tag: 'span[data-comment-id]',
+      getAttrs(dom: HTMLElement) {
+        return {
+          id: dom.getAttribute('data-comment-id'),
+          text: dom.getAttribute('data-comment-text') || '',
+          author: dom.getAttribute('data-comment-author') || 'Teacher',
+          timestamp: dom.getAttribute('data-comment-ts') || '',
+        }
+      },
+    }],
+    toDOM(mark: Mark) {
+      return ['span', {
+        'data-comment-id': mark.attrs.id,
+        'data-comment-text': mark.attrs.text,
+        'data-comment-author': mark.attrs.author,
+        'data-comment-ts': mark.attrs.timestamp,
+        class: 'rte-comment',
+      }, 0]
+    },
+  } as MarkSpec,
 }

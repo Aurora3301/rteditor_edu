@@ -554,6 +554,30 @@ export function getActiveHighlight(state: EditorState): string | null {
 
 // ── Table commands ──────────────────────────────────────────────────────
 
+/** Insert a math_inline node at the cursor */
+export function insertMath(latex: string): Command {
+  return (state, dispatch) => {
+    const nodeType = schema.nodes.math_inline
+    if (!nodeType) return false
+    const node = nodeType.create({ latex })
+    if (dispatch) {
+      const tr = state.tr.replaceSelectionWith(node)
+      dispatch(tr.scrollIntoView())
+    }
+    return true
+  }
+}
+
+export {
+  addRowBefore as insertRowBefore,
+  addRowAfter as insertRowAfter,
+  deleteRow,
+  addColumnBefore as insertColBefore,
+  addColumnAfter as insertColAfter,
+  deleteColumn,
+  deleteTable,
+} from 'prosemirror-tables'
+
 /** Insert a table at the cursor position */
 export function insertTable(rows: number, cols: number, hasHeader: boolean): Command {
   return (state, dispatch) => {

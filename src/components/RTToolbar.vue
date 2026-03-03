@@ -370,6 +370,15 @@
       <button
         type="button"
         class="rte-toolbar__button"
+        aria-label="Insert Math"
+        title="Insert Math Formula (LaTeX)"
+        @click="$emit('math-open')"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4l4 16"/><path d="M12 4l4 16"/><path d="M3 12h18"/><path d="M9 8h6"/></svg>
+      </button>
+      <button
+        type="button"
+        class="rte-toolbar__button"
         aria-label="Word Count"
         title="Word Count"
         @click="$emit('word-count')"
@@ -378,8 +387,19 @@
       </button>
       <RTExportMenu
         @export-pdf="$emit('export-pdf')"
-        @export-markdown="$emit('export-markdown')"
+        @export-docx="$emit('export-docx')"
       />
+      <!-- Import Word -->
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Import Word Document"
+        title="Import Word (.docx)"
+        @click="wordInput?.click()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      </button>
+      <input ref="wordInput" type="file" accept=".docx" style="display:none" @change="onWordImport" />
       <button
         type="button"
         class="rte-toolbar__button"
@@ -459,10 +479,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'image-select': [file: File]
+  'word-import': [file: File]
   'insert-table': []
   'word-count': []
+  'math-open': []
   'export-pdf': []
-  'export-markdown': []
+  'export-docx': []
   'emoji-open': []
   'spacing-change': [lineHeight: string, paraSpacing: string]
 }>()
@@ -489,6 +511,7 @@ function onSpacingChange(e: Event) {
 }
 
 const imageInput = ref<HTMLInputElement | null>(null)
+const wordInput = ref<HTMLInputElement | null>(null)
 
 function onBlockTypeChange(e: Event) {
   const val = (e.target as HTMLSelectElement).value
@@ -506,9 +529,12 @@ function onBlockTypeChange(e: Event) {
 function onImageSelect(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  if (file) {
-    emit('image-select', file)
-    input.value = '' // Reset so same file can be selected again
-  }
+  if (file) { emit('image-select', file); input.value = '' }
+}
+
+function onWordImport(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file) { emit('word-import', file); input.value = '' }
 }
 </script>

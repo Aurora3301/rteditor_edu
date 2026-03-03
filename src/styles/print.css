@@ -44,8 +44,16 @@
   .rte-emoji-picker,
   .rte-color-picker,
   .rte-export-menu__list,
-  .rte-status-bar {
+  .rte-status-bar,
+  .rte-remark-popover,
+  .rte-table-mini-toolbar {
     display: none !important;
+  }
+
+  /* Strip comment highlighting on print */
+  .rte-comment {
+    background: none !important;
+    border-bottom: none !important;
   }
 
   .rte-editor table {
