@@ -5,8 +5,12 @@
 import {
   Document, Packer, Paragraph, TextRun, HeadingLevel,
   Table, TableRow, TableCell, WidthType, AlignmentType,
-  ExternalHyperlink, ImageRun, ThematicBreak,
+  ExternalHyperlink, ImageRun, ThematicBreak, LevelFormat,
 } from 'docx'
+
+// Stable reference key used for ordered-list numbering throughout this export.
+// Must match what is declared in Document({ numbering.config }).
+const OL_REF = 'rte-ordered-list'
 import type { Node as ProseMirrorNode, Mark } from 'prosemirror-model'
 
 function alignmentType(align: string | null): typeof AlignmentType[keyof typeof AlignmentType] | undefined {
@@ -76,8 +80,8 @@ function nodeToDocxChild(node: ProseMirrorNode): any {
       item.forEach(para => {
         items.push(new Paragraph({
           children: inlineToRuns(para),
-          bullet: name === 'bullet_list' ? { level: 0 } : undefined,
-          numbering: name === 'ordered_list' ? { reference: 'default-numbering', level: 0 } : undefined,
+          bullet:    name === 'bullet_list'   ? { level: 0 }             : undefined,
+          numbering: name === 'ordered_list'  ? { reference: OL_REF, level: 0 } : undefined,
         }))
       })
     })
@@ -114,7 +118,27 @@ export async function exportToDocx(doc: ProseMirrorNode, filename = 'document.do
   const children: any[] = []
   doc.forEach(node => children.push(...nodeToDocxChildren(node)))
 
-  const docxDoc = new Document({ sections: [{ children }] })
+  const docxDoc = new Document({
+    // Ordered-list numbering definition.
+    // Without this, docx v9 emits the raw reference string as the numId
+    // attribute value (e.g. w:val="{rte-ordered-list-0}"), which is invalid
+    // XML and causes Word to refuse to open the file.
+    numbering: {
+      config: [{
+        reference: OL_REF,
+        levels: [{
+          level: 0,
+          format: LevelFormat.DECIMAL,
+          text: '%1.',
+          alignment: AlignmentType.LEFT,
+          style: {
+            paragraph: { indent: { left: 720, hanging: 260 } },
+          },
+        }],
+      }],
+    },
+    sections: [{ children }],
+  })
   const blob = await Packer.toBlob(docxDoc)
   const url = URL.createObjectURL(blob)
   const link = window.document.createElement('a')

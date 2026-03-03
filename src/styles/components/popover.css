@@ -69,6 +69,23 @@
   background: var(--rte-border);
 }
 
+/* ── Backdrop — shared by all Teleported dropdowns (color, export, emoji) ── */
+/* Sits below the picker panel (z-index just below 2147483645).
+   Clicking it closes the associated dropdown. */
+.rte-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483643;
+  background: rgba(0, 0, 0, 0.15);
+  cursor: default;
+  /* Subtle fade-in so it doesn't feel jarring */
+  animation: rte-backdrop-in 0.12s ease;
+}
+@keyframes rte-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* ── Bubble Menu ── */
 .rte-bubble-menu {
   display: inline-flex;

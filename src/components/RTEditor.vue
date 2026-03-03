@@ -60,12 +60,22 @@
       @close="showWordCount = false"
     />
 
-    <!-- Emoji Picker -->
-    <RTEmojiPicker
-      v-if="showEmojiPicker"
-      style="position: fixed; z-index: 1000; top: 50%; left: 50%; transform: translate(-50%, -50%)"
-      @select="onEmojiSelect"
-    />
+    <!-- Emoji Picker — Teleported to <body> so it is above every layer.
+         The backdrop closes it when the user clicks anywhere outside. -->
+    <Teleport to="body">
+      <template v-if="showEmojiPicker">
+        <div
+          class="rte-picker-backdrop"
+          aria-hidden="true"
+          @mousedown.prevent="showEmojiPicker = false"
+        />
+        <RTEmojiPicker
+          ref="emojiPickerRef"
+          style="position: fixed; z-index: 2147483644; top: 50%; left: 50%; transform: translate(-50%, -50%)"
+          @select="onEmojiSelect"
+        />
+      </template>
+    </Teleport>
 
     <!-- Table Mini-Toolbar -->
     <RTTableMiniToolbar
@@ -266,6 +276,7 @@ function fileToDataURL(file: File): Promise<string> {
 const showTableDialog = ref(false)
 const showWordCount = ref(false)
 const showEmojiPicker = ref(false)
+const emojiPickerRef = ref<InstanceType<typeof RTEmojiPicker> | null>(null)
 
 const slashMenuVisible = ref(false)
 const slashMenuPos = ref({ top: 0, left: 0 })

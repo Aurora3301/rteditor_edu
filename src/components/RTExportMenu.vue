@@ -14,24 +14,26 @@
 
     <!-- Teleported to <body> so it is never covered by the editor content -->
     <Teleport to="body">
-      <ul
-        v-if="open"
-        class="rte-export-menu__list"
-        role="menu"
-        :style="{ position: 'fixed', top: menuPos.top + 'px', left: menuPos.left + 'px', zIndex: 2147483646 }"
-        ref="listRef"
-      >
-        <li role="menuitem">
-          <button type="button" class="rte-export-menu__item" @click="exportPDF">
-            📄 Export PDF
-          </button>
-        </li>
-        <li role="menuitem">
-          <button type="button" class="rte-export-menu__item" @click="exportDocx">
-            📝 Export Word (.docx)
-          </button>
-        </li>
-      </ul>
+      <template v-if="open">
+        <div class="rte-picker-backdrop" aria-hidden="true" @mousedown.prevent="open = false" />
+        <ul
+          class="rte-export-menu__list"
+          role="menu"
+          :style="{ position: 'fixed', top: menuPos.top + 'px', left: menuPos.left + 'px', zIndex: 2147483646 }"
+          ref="listRef"
+        >
+          <li role="menuitem">
+            <button type="button" class="rte-export-menu__item" @click="exportPDF">
+              📄 Export PDF
+            </button>
+          </li>
+          <li role="menuitem">
+            <button type="button" class="rte-export-menu__item" @click="exportDocx">
+              📝 Export Word (.docx)
+            </button>
+          </li>
+        </ul>
+      </template>
     </Teleport>
   </div>
 </template>

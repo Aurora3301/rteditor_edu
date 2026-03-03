@@ -154,34 +154,38 @@
 
     <!-- Text Color picker — Teleported to body, always above every layer -->
     <Teleport to="body">
-      <div
-        v-if="showTextColorPicker"
-        ref="textColorPickerRef"
-        :style="{ position: 'fixed', top: textColorPos.top + 'px', left: textColorPos.left + 'px', zIndex: 2147483645 }"
-      >
-        <RTColorPicker
-          :model-value="activeTextColor"
-          label="Text Color"
-          @update:model-value="(c) => { commands.setTextColor(c); showTextColorPicker = false }"
-          @remove="commands.removeTextColor(); showTextColorPicker = false"
-        />
-      </div>
+      <template v-if="showTextColorPicker">
+        <div class="rte-picker-backdrop" aria-hidden="true" @mousedown.prevent="closeAllPickers" />
+        <div
+          ref="textColorPickerRef"
+          :style="{ position: 'fixed', top: textColorPos.top + 'px', left: textColorPos.left + 'px', zIndex: 2147483645 }"
+        >
+          <RTColorPicker
+            :model-value="activeTextColor"
+            label="Text Color"
+            @update:model-value="(c) => { commands.setTextColor(c); showTextColorPicker = false }"
+            @remove="commands.removeTextColor(); showTextColorPicker = false"
+          />
+        </div>
+      </template>
     </Teleport>
 
     <!-- Highlight picker — Teleported to body, always above every layer -->
     <Teleport to="body">
-      <div
-        v-if="showHighlightPicker"
-        ref="highlightPickerRef"
-        :style="{ position: 'fixed', top: highlightPos.top + 'px', left: highlightPos.left + 'px', zIndex: 2147483645 }"
-      >
-        <RTColorPicker
-          :model-value="activeHighlight"
-          label="Highlight Color"
-          @update:model-value="(c) => { commands.setHighlight(c); showHighlightPicker = false }"
-          @remove="commands.removeHighlight(); showHighlightPicker = false"
-        />
-      </div>
+      <template v-if="showHighlightPicker">
+        <div class="rte-picker-backdrop" aria-hidden="true" @mousedown.prevent="closeAllPickers" />
+        <div
+          ref="highlightPickerRef"
+          :style="{ position: 'fixed', top: highlightPos.top + 'px', left: highlightPos.left + 'px', zIndex: 2147483645 }"
+        >
+          <RTColorPicker
+            :model-value="activeHighlight"
+            label="Highlight Color"
+            @update:model-value="(c) => { commands.setHighlight(c); showHighlightPicker = false }"
+            @remove="commands.removeHighlight(); showHighlightPicker = false"
+          />
+        </div>
+      </template>
     </Teleport>
 
     <!-- Row break -->
