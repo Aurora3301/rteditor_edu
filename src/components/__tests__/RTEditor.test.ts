@@ -202,33 +202,22 @@ describe('RTEditor Component', () => {
     expect(pm.attributes('contenteditable')).toBe('false')
   })
 
-  // ── Phase 3: Word Limit prop ────────────────────────────────────────────────
-  it('should render .rte-status-bar when wordLimit is provided', () => {
+  // ── Phase 3: Word Limit prop (status bar removed; wordLimit prop still accepted) ──
+  it('should NOT render .rte-status-bar (status bar has been removed)', () => {
     wrapper = mount(RTEditor, { props: { wordLimit: 500 } })
-    expect(wrapper.find('.rte-status-bar').exists()).toBe(true)
+    expect(wrapper.find('.rte-status-bar').exists()).toBe(false)
   })
 
-  it('should show word count info in status bar', async () => {
+  it('wordLimit prop should not crash the editor', async () => {
     wrapper = mount(RTEditor, { props: { wordLimit: 100 } })
     await nextTick()
-    await nextTick()
-    const bar = wrapper.find('.rte-status-bar')
-    expect(bar.exists()).toBe(true)
-    expect(bar.text()).toMatch(/words/i)
-  })
-
-  it('should not render status bar when wordLimit is 0 (default)', () => {
-    wrapper = mount(RTEditor)
-    // Status bar only shows when wordLimit > 0
-    // May render but empty — just check it doesn't crash
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('status bar should show limit number when wordLimit is set', async () => {
-    wrapper = mount(RTEditor, { props: { wordLimit: 250 } })
-    await nextTick()
-    const bar = wrapper.find('.rte-status-bar')
-    expect(bar.text()).toContain('250')
+  it('editor renders without status bar by default', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('.rte-status-bar').exists()).toBe(false)
+    expect(wrapper.exists()).toBe(true)
   })
 
   // ── Phase 3: Wave 6 Math Modal ─────────────────────────────────────────────

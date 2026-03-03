@@ -4,8 +4,7 @@ import type { EditorView, NodeView } from 'prosemirror-view'
 export class ImageNodeView implements NodeView {
   dom: HTMLElement
   private img: HTMLImageElement
-  private captionEl: HTMLElement
-  private floatBar: HTMLElement
+  private rotationBar: HTMLElement
   private node: ProseMirrorNode
   private view: EditorView
   private getPos: () => number | undefined
@@ -21,63 +20,47 @@ export class ImageNodeView implements NodeView {
     this.dom.contentEditable = 'false'
     this.dom.style.display = 'inline-block'
     this.dom.style.position = 'relative'
-    if (node.attrs.float) {
-      this.dom.style.float = node.attrs.float
-      this.dom.style.margin = '4px'
-    }
 
     // Image
     this.img = document.createElement('img')
     this.img.src = node.attrs.src
     this.img.alt = node.attrs.alt || ''
-    if (node.attrs.width) this.img.style.width = `${node.attrs.width}px`
     this.img.className = 'rte-image'
     this.img.style.display = 'block'
     this.img.style.maxWidth = '100%'
+    if (node.attrs.width) this.img.style.width = `${node.attrs.width}px`
+    this.applyRotation(node.attrs.rotation ?? 0)
     this.dom.appendChild(this.img)
 
-    // Float controls bar
-    this.floatBar = document.createElement('div')
-    this.floatBar.className = 'rte-image-floatbar'
-    ;(['left', 'none', 'right'] as const).forEach(f => {
+    // Rotation controls bar (shows on hover)
+    this.rotationBar = document.createElement('div')
+    this.rotationBar.className = 'rte-image-rotbar'
+
+    const rotBtns: { label: string; title: string; delta: number }[] = [
+      { label: '↺', title: 'Rotate left 90°',  delta: -90 },
+      { label: '↻', title: 'Rotate right 90°', delta:  90 },
+    ]
+    rotBtns.forEach(({ label, title, delta }) => {
       const btn = document.createElement('button')
       btn.type = 'button'
-      btn.textContent = f === 'left' ? '◀' : f === 'right' ? '▶' : '■'
-      const label = f === 'none' ? 'No float' : `Float ${f}`
-      btn.title = label
-      btn.setAttribute('aria-label', label)
+      btn.textContent = label
+      btn.title = title
+      btn.setAttribute('aria-label', title)
       btn.tabIndex = 0
-      btn.className = 'rte-image-floatbar__btn'
-      if ((node.attrs.float || 'none') === f) btn.classList.add('rte-image-floatbar__btn--active')
-      const applyFloat = (e: Event) => {
+      btn.className = 'rte-image-rotbar__btn'
+      const apply = (e: Event) => {
         e.preventDefault()
-        this.updateAttr('float', f === 'none' ? null : f)
+        const current = this.node.attrs.rotation ?? 0
+        const next = ((current + delta) % 360 + 360) % 360
+        this.updateAttr('rotation', next)
       }
-      btn.addEventListener('mousedown', applyFloat)
+      btn.addEventListener('mousedown', apply)
       btn.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') applyFloat(e)
+        if (e.key === 'Enter' || e.key === ' ') apply(e)
       })
-      this.floatBar.appendChild(btn)
+      this.rotationBar.appendChild(btn)
     })
-    this.dom.appendChild(this.floatBar)
-
-    // Caption
-    this.captionEl = document.createElement('div')
-    this.captionEl.className = 'rte-image-caption'
-    this.captionEl.contentEditable = 'true'
-    this.captionEl.textContent = node.attrs.caption || ''
-    this.captionEl.setAttribute('placeholder', 'Add caption…')
-    this.captionEl.setAttribute('aria-label', 'Image caption')
-    this.captionEl.setAttribute('role', 'textbox')
-    this.captionEl.setAttribute('aria-multiline', 'false')
-    this.captionEl.addEventListener('input', () => {
-      this.updateAttr('caption', this.captionEl.textContent || '')
-    })
-    // Prevent Enter from bubbling into ProseMirror as a paragraph-break
-    this.captionEl.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter') e.preventDefault()
-    })
-    this.dom.appendChild(this.captionEl)
+    this.dom.appendChild(this.rotationBar)
 
     // Resize handle (bottom-right corner)
     const handle = document.createElement('div')
@@ -103,7 +86,15 @@ export class ImageNodeView implements NodeView {
     this.dom.appendChild(handle)
   }
 
-  private updateAttr(key: string, value: any) {
+  private applyRotation(deg: number) {
+    this.img.style.transform = deg ? `rotate(${deg}deg)` : ''
+    // When rotated 90/270, swap visual dimensions so wrapper stays compact
+    const sideways = deg === 90 || deg === 270
+    this.img.style.marginTop = sideways ? `${(this.img.offsetWidth - this.img.offsetHeight) / 2}px` : ''
+    this.img.style.marginLeft = sideways ? `${(this.img.offsetHeight - this.img.offsetWidth) / 2}px` : ''
+  }
+
+  private updateAttr(key: string, value: unknown) {
     const pos = this.getPos()
     if (pos === undefined) return
     const attrs = { ...this.node.attrs, [key]: value }
@@ -116,14 +107,12 @@ export class ImageNodeView implements NodeView {
     this.node = node
     this.img.src = node.attrs.src
     if (node.attrs.width) this.img.style.width = `${node.attrs.width}px`
-    this.dom.style.float = node.attrs.float || ''
-    this.captionEl.textContent = node.attrs.caption || ''
+    this.applyRotation(node.attrs.rotation ?? 0)
     return true
   }
 
   stopEvent(event: Event): boolean {
-    // Block all events from the caption area so ProseMirror doesn't intercept them
-    return this.captionEl.contains(event.target as Node) || this.floatBar.contains(event.target as Node)
+    return this.rotationBar.contains(event.target as Node)
   }
 }
 

@@ -394,47 +394,44 @@ describe('Word Count Utility', () => {
 })
 
 // ─── Phase 3 Serializer Tests ────────────────────────────────────────────────
-describe('HTML Serializer — Phase 3 (image float/caption)', () => {
-  it('toHTML should serialize image with float=left', () => {
-    const img = schema.node('image', { src: 'photo.jpg', float: 'left', caption: '' })
+describe('HTML Serializer — Phase 3 (image rotation)', () => {
+  it('toHTML should serialize image with rotation=90', () => {
+    const img = schema.node('image', { src: 'photo.jpg', rotation: 90 })
     const doc = schema.node('doc', null, [schema.node('paragraph', null, [img])])
     const html = toHTML(doc)
-    // Browser may serialize as "float: left" or "float:left"
-    expect(html.toLowerCase()).toContain('float')
-    expect(html).toContain('left')
-    expect(html).toContain('data-float="left"')
+    expect(html).toContain('data-rotation="90"')
+    expect(html).toContain('rotate(90deg)')
   })
 
-  it('toHTML should serialize image with data-caption', () => {
-    const img = schema.node('image', { src: 'photo.jpg', caption: 'A beautiful sunset', float: null })
+  it('toHTML should serialize image with rotation=180', () => {
+    const img = schema.node('image', { src: 'photo.jpg', rotation: 180 })
     const doc = schema.node('doc', null, [schema.node('paragraph', null, [img])])
     const html = toHTML(doc)
-    expect(html).toContain('data-caption="A beautiful sunset"')
+    expect(html).toContain('data-rotation="180"')
+    expect(html).toContain('rotate(180deg)')
   })
 
-  it('fromHTML should parse image with data-float', () => {
-    const html = '<p><img src="photo.jpg" data-float="right" style="float:right;margin:4px" /></p>'
+  it('fromHTML should parse image with data-rotation=90', () => {
+    const html = '<p><img src="photo.jpg" data-rotation="90" style="transform:rotate(90deg)" /></p>'
     const doc = fromHTML(html)
     let imgNode: any = null
     doc.descendants(n => { if (n.type.name === 'image') imgNode = n })
     expect(imgNode).not.toBeNull()
-    expect(imgNode.attrs.float).toBe('right')
+    expect(imgNode.attrs.rotation).toBe(90)
   })
 
-  it('fromHTML should parse image with data-caption', () => {
-    const html = '<p><img src="photo.jpg" data-caption="Caption text" /></p>'
-    const doc = fromHTML(html)
-    let imgNode: any = null
-    doc.descendants(n => { if (n.type.name === 'image') imgNode = n })
-    expect(imgNode).not.toBeNull()
-    expect(imgNode.attrs.caption).toBe('Caption text')
-  })
-
-  it('image without float: no float style in output', () => {
-    const img = schema.node('image', { src: 'photo.jpg', float: null, caption: '' })
+  it('image without rotation: no data-rotation or transform in output', () => {
+    const img = schema.node('image', { src: 'photo.jpg', rotation: 0 })
     const doc = schema.node('doc', null, [schema.node('paragraph', null, [img])])
     const html = toHTML(doc)
-    expect(html).not.toContain('float:')
+    expect(html).not.toContain('data-rotation')
+    expect(html).not.toContain('rotate(')
+  })
+
+  it('image should NOT have float or caption in schema', () => {
+    const img = schema.node('image', { src: 'photo.jpg' })
+    expect(img.attrs.float).toBeUndefined()
+    expect(img.attrs.caption).toBeUndefined()
   })
 })
 

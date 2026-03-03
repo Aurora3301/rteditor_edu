@@ -20,21 +20,6 @@
           class="rte-editor"
         />
       </div>
-      <!-- Always-visible status bar -->
-      <div class="rte-status-bar">
-        <span
-          class="rte-status-bar__words"
-          :class="{ 'rte-status-bar__words--over': wordLimit > 0 && docStats.words > wordLimit }"
-        >
-          Words: {{ docStats.words }}<template v-if="wordLimit > 0"> / {{ wordLimit }}</template>
-        </span>
-        <span class="rte-status-bar__sep">·</span>
-        <span class="rte-status-bar__chars">Chars: {{ docStats.chars }}</span>
-        <template v-if="wordLimit > 0 && docStats.words > wordLimit">
-          <span class="rte-status-bar__sep">·</span>
-          <span class="rte-status-bar__warning">⚠ Word limit exceeded</span>
-        </template>
-      </div>
     </div>
     <RTBubbleMenu
       ref="bubbleMenuRef"
@@ -92,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import RTToolbar from './RTToolbar.vue'
 import RTBubbleMenu from './RTBubbleMenu.vue'
 import RTTableInsertDialog from './RTTableInsertDialog.vue'
@@ -332,6 +317,26 @@ function onAddRemark() {
   const rect = { left: coords.left, top: coords.top, bottom: coords.bottom, right: coords.right, width: 0, height: 0 } as DOMRect
   remarkPopoverRef.value?.open(rect as DOMRect)
 }
+
+// ── Comment click-to-edit ──
+// Clicking on a .rte-comment span opens the remark popover in edit mode
+function onEditorClick(e: MouseEvent) {
+  const span = (e.target as HTMLElement).closest('[data-comment-id]') as HTMLElement | null
+  if (!span) return
+  const id = span.getAttribute('data-comment-id')
+  const text = span.getAttribute('data-comment-text') ?? ''
+  if (!id) return
+  const rect = span.getBoundingClientRect()
+  remarkPopoverRef.value?.open(rect, { id, text })
+}
+
+onMounted(() => {
+  // Use capture:false so ProseMirror's own click handlers run first
+  editorRef.value?.addEventListener('click', onEditorClick)
+})
+onUnmounted(() => {
+  editorRef.value?.removeEventListener('click', onEditorClick)
+})
 
 async function handleWordImport(file: File) {
   try {

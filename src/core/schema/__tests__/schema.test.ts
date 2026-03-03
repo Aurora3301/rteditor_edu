@@ -242,45 +242,44 @@ describe('Phase 3 Nodes — math_inline', () => {
   })
 })
 
-describe('Phase 3 Nodes — image (float + caption)', () => {
-  it('image node should have float attr defaulting to null', () => {
+describe('Phase 3 Nodes — image (rotation)', () => {
+  it('image node should have rotation attr defaulting to 0', () => {
     const node = schema.node('image', { src: 'x.png' })
-    expect(node.attrs.float).toBeNull()
+    expect(node.attrs.rotation).toBe(0)
   })
 
-  it('image node should have caption attr defaulting to empty string', () => {
+  it('image node should NOT have float attr', () => {
     const node = schema.node('image', { src: 'x.png' })
-    expect(node.attrs.caption).toBe('')
+    expect(node.attrs.float).toBeUndefined()
   })
 
-  it('image node should store float=left', () => {
-    const node = schema.node('image', { src: 'x.png', float: 'left' })
-    expect(node.attrs.float).toBe('left')
+  it('image node should NOT have caption attr', () => {
+    const node = schema.node('image', { src: 'x.png' })
+    expect(node.attrs.caption).toBeUndefined()
   })
 
-  it('image node should store caption text', () => {
-    const node = schema.node('image', { src: 'x.png', caption: 'A photo' })
-    expect(node.attrs.caption).toBe('A photo')
+  it('image node should store rotation=90', () => {
+    const node = schema.node('image', { src: 'x.png', rotation: 90 })
+    expect(node.attrs.rotation).toBe(90)
   })
 
-  it('image toDOM should emit style float and data-float when float is set', () => {
-    const node = schema.node('image', { src: 'x.png', float: 'right' })
+  it('image node should store rotation=270', () => {
+    const node = schema.node('image', { src: 'x.png', rotation: 270 })
+    expect(node.attrs.rotation).toBe(270)
+  })
+
+  it('image toDOM should emit data-rotation and style transform when rotation != 0', () => {
+    const node = schema.node('image', { src: 'x.png', rotation: 90 })
     const [tag, attrs] = node.type.spec.toDOM!(node) as [string, any]
     expect(tag).toBe('img')
-    expect(attrs['data-float']).toBe('right')
-    expect(attrs.style).toContain('float:right')
+    expect(attrs['data-rotation']).toBe('90')
+    expect(attrs.style).toContain('rotate(90deg)')
   })
 
-  it('image toDOM should emit data-caption when caption is set', () => {
-    const node = schema.node('image', { src: 'x.png', caption: 'Test caption' })
+  it('image toDOM should NOT emit data-rotation or transform when rotation is 0', () => {
+    const node = schema.node('image', { src: 'x.png', rotation: 0 })
     const [, attrs] = node.type.spec.toDOM!(node) as [string, any]
-    expect(attrs['data-caption']).toBe('Test caption')
-  })
-
-  it('image toDOM should NOT emit data-float/style when float is null', () => {
-    const node = schema.node('image', { src: 'x.png', float: null })
-    const [, attrs] = node.type.spec.toDOM!(node) as [string, any]
-    expect(attrs['data-float']).toBeUndefined()
+    expect(attrs['data-rotation']).toBeUndefined()
     expect(attrs.style).toBeUndefined()
   })
 })
