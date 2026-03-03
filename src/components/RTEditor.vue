@@ -18,6 +18,21 @@
           class="rte-editor"
         />
       </div>
+      <!-- Always-visible status bar -->
+      <div class="rte-status-bar">
+        <span
+          class="rte-status-bar__words"
+          :class="{ 'rte-status-bar__words--over': wordLimit > 0 && docStats.words > wordLimit }"
+        >
+          Words: {{ docStats.words }}<template v-if="wordLimit > 0"> / {{ wordLimit }}</template>
+        </span>
+        <span class="rte-status-bar__sep">·</span>
+        <span class="rte-status-bar__chars">Chars: {{ docStats.chars }}</span>
+        <template v-if="wordLimit > 0 && docStats.words > wordLimit">
+          <span class="rte-status-bar__sep">·</span>
+          <span class="rte-status-bar__warning">⚠ Word limit exceeded</span>
+        </template>
+      </div>
     </div>
     <RTBubbleMenu
       ref="bubbleMenuRef"
@@ -89,6 +104,8 @@ export interface RTEditorProps {
   locale?: Locale
   /** Image upload handler. If not provided, images are inserted as data URLs. */
   onImageUpload?: (file: File) => Promise<string>
+  /** Maximum word count. Shows warning when exceeded. 0 = no limit. */
+  wordLimit?: number
 }
 
 const props = withDefaults(defineProps<RTEditorProps>(), {
@@ -97,6 +114,7 @@ const props = withDefaults(defineProps<RTEditorProps>(), {
   readonly: false,
   theme: 'light',
   locale: 'en',
+  wordLimit: 0,
 })
 
 // ── Spacing state (controlled by line-spacing picker in toolbar) ──
@@ -277,6 +295,11 @@ function onExportMarkdown() {
   URL.revokeObjectURL(url)
 }
 
+// ── JSON API ──
+function getJSON(): Record<string, any> {
+  return jsonContent.value
+}
+
 // ── Expose for parent component access ──
 defineExpose({
   /** The ProseMirror EditorView */
@@ -286,6 +309,8 @@ defineExpose({
   /** Set content programmatically */
   setHTML,
   setJSON,
+  /** Get current document as JSON */
+  getJSON,
   /** Focus the editor */
   focus: () => view.value?.focus(),
 })

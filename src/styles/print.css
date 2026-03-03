@@ -43,7 +43,8 @@
   .rte-dialog-overlay,
   .rte-emoji-picker,
   .rte-color-picker,
-  .rte-export-menu__list {
+  .rte-export-menu__list,
+  .rte-status-bar {
     display: none !important;
   }
 

@@ -1,0 +1,31 @@
+/* ================================================================
+   STATUS BAR — Always-visible word/character counter at the bottom
+   ================================================================ */
+
+.rte-status-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--rte-space-2, 6px);
+  padding: 4px var(--rte-space-4, 12px);
+  font-size: 0.75rem;
+  color: var(--rte-color-text-muted, #888);
+  background: var(--rte-color-surface, #fff);
+  border-top: 1px solid var(--rte-color-border, #e5e7eb);
+  user-select: none;
+  min-height: 24px;
+}
+
+.rte-status-bar__sep {
+  opacity: 0.4;
+}
+
+.rte-status-bar__words--over {
+  color: var(--rte-color-danger, #dc2626);
+  font-weight: 600;
+}
+
+.rte-status-bar__warning {
+  color: var(--rte-color-danger, #dc2626);
+  font-weight: 500;
+}
+

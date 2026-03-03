@@ -51,6 +51,7 @@
 @import './components/table.css';
 @import './components/slash-menu.css';
 @import './components/word-count.css';
+@import './components/status-bar.css';
 @import './components/export-menu.css';
 @import './components/emoji-picker.css';
 

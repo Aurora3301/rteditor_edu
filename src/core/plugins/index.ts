@@ -9,6 +9,7 @@ import { buildKeymap } from './keymap'
 import { buildInputRules } from './inputRules'
 import { tableEditing } from 'prosemirror-tables'
 import { createSlashMenuPlugin } from './slashMenu'
+import { createPasteCleanupPlugin } from './pasteCleanup'
 
 /**
  * Create the full plugin array for the editor.
@@ -28,6 +29,7 @@ export function createPlugins(): Plugin[] {
     keymap(baseKeymap),
     tableEditing(),
     createSlashMenuPlugin(),
+    createPasteCleanupPlugin(),
     dropCursor(),
     createDragHandlePlugin(),
     gapCursor(),
