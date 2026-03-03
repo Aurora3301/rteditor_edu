@@ -39,3 +39,20 @@
   min-height: 0;        /* allow flex child to scroll */
 }
 
+/* ── Word-count footer (opt-in via showWordCountFooter prop) ── */
+.rte-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 3px 16px;
+  border-top: 1px solid var(--rte-border);
+  background: var(--rte-bg);
+  min-height: 26px;
+}
+.rte-footer__wordcount {
+  font-size: 0.72rem;
+  color: var(--rte-text-muted, #94a3b8);
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+

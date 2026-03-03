@@ -424,6 +424,16 @@
         @export-pdf="$emit('export-pdf')"
         @export-docx="$emit('export-docx')"
       />
+      <!-- Print button — calls window.print() directly -->
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        aria-label="Print"
+        title="Print document"
+        @click="$emit('print-doc')"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      </button>
       <!-- Import Word -->
       <button
         type="button"
@@ -543,6 +553,7 @@ const emit = defineEmits<{
   'export-docx': []
   'emoji-open': []
   'add-remark': []
+  'print-doc': []
   'spacing-change': [lineHeight: string, paraSpacing: string]
 }>()
 

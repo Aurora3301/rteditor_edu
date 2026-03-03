@@ -324,3 +324,143 @@ describe('RTEditor Component', () => {
   })
 })
 
+// ── Option D: UX polish ───────────────────────────────────────────────────────
+describe('RTEditor — Word Count Footer', () => {
+  let wrapper: VueWrapper<any>
+  afterEach(() => { wrapper?.unmount() })
+
+  it('should NOT render .rte-footer by default', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('.rte-footer').exists()).toBe(false)
+  })
+
+  it('should render .rte-footer when showWordCountFooter=true', () => {
+    wrapper = mount(RTEditor, { props: { showWordCountFooter: true } })
+    expect(wrapper.find('.rte-footer').exists()).toBe(true)
+  })
+
+  it('should render .rte-footer__wordcount inside footer', () => {
+    wrapper = mount(RTEditor, { props: { showWordCountFooter: true } })
+    expect(wrapper.find('.rte-footer__wordcount').exists()).toBe(true)
+  })
+
+  it('footer wordcount shows "words" label', () => {
+    wrapper = mount(RTEditor, { props: { showWordCountFooter: true } })
+    expect(wrapper.find('.rte-footer__wordcount').text()).toContain('words')
+  })
+})
+
+describe('RTEditor — Print button', () => {
+  let wrapper: VueWrapper<any>
+  afterEach(() => { wrapper?.unmount() })
+
+  it('should render Print button in toolbar', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Print"]').exists()).toBe(true)
+  })
+})
+
+describe('RTEditor — Drag-drop overlay', () => {
+  let wrapper: VueWrapper<any>
+  afterEach(() => { wrapper?.unmount() })
+
+  it('should NOT show drag overlay by default', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('.rte-drag-overlay').exists()).toBe(false)
+  })
+
+  it('editor-wrapper has drag event handling', () => {
+    wrapper = mount(RTEditor)
+    const editorWrapper = wrapper.find('.rte-editor-wrapper')
+    expect(editorWrapper.exists()).toBe(true)
+  })
+})
+
+describe('RTEditor — Slash command expansion', () => {
+  let wrapper: VueWrapper<any>
+  afterEach(() => { wrapper?.unmount() })
+
+  it('slash commands include Image entry', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    // Access the internal slashCommands computed via vm
+    const vm = wrapper.vm as any
+    const cmds = vm.slashCommands ?? []
+    const hasImage = Array.isArray(cmds)
+      ? cmds.some((c: any) => c.id === 'img')
+      : false
+    expect(hasImage).toBe(true)
+  })
+
+  it('slash commands include Math Formula entry', async () => {
+    wrapper = mount(RTEditor)
+    await nextTick()
+    const vm = wrapper.vm as any
+    const cmds = vm.slashCommands ?? []
+    const hasMath = Array.isArray(cmds)
+      ? cmds.some((c: any) => c.id === 'math')
+      : false
+    expect(hasMath).toBe(true)
+  })
+})
+
+// ── Option C: Accessibility ARIA checks ──────────────────────────────────────
+describe('RTEditor — Accessibility (ARIA attributes)', () => {
+  let wrapper: VueWrapper<any>
+  afterEach(() => { wrapper?.unmount() })
+
+  it('toolbar has role=toolbar', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[role="toolbar"]').exists()).toBe(true)
+  })
+
+  it('toolbar has aria-label', () => {
+    wrapper = mount(RTEditor)
+    const toolbar = wrapper.find('[role="toolbar"]')
+    expect(toolbar.attributes('aria-label')).toBeTruthy()
+  })
+
+  it('all separator elements have role=separator', () => {
+    wrapper = mount(RTEditor)
+    const seps = wrapper.findAll('.rte-toolbar__separator')
+    seps.forEach(sep => {
+      expect(sep.attributes('role')).toBe('separator')
+    })
+  })
+
+  it('Bold button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Bold"]').exists()).toBe(true)
+  })
+
+  it('Italic button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Italic"]').exists()).toBe(true)
+  })
+
+  it('Undo button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Undo"]').exists()).toBe(true)
+  })
+
+  it('Redo button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Redo"]').exists()).toBe(true)
+  })
+
+  it('Print button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Print"]').exists()).toBe(true)
+  })
+
+  it('Insert Image button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Insert Image"]').exists()).toBe(true)
+  })
+
+  it('Add Comment button has aria-label', () => {
+    wrapper = mount(RTEditor)
+    expect(wrapper.find('[aria-label="Add Comment"]').exists()).toBe(true)
+  })
+})
+

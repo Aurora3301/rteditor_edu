@@ -46,7 +46,9 @@
   .rte-export-menu__list,
   .rte-status-bar,
   .rte-remark-popover,
-  .rte-table-mini-toolbar {
+  .rte-table-mini-toolbar,
+  .rte-footer,
+  .rte-drag-overlay {
     display: none !important;
   }
 

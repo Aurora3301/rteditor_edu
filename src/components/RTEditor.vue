@@ -12,16 +12,41 @@
       @math-open="mathModalRef?.open()"
       @emoji-open="showEmojiPicker = true"
       @add-remark="onAddRemark"
+      @print-doc="onPrint"
       @spacing-change="onSpacingChange"
     />
     <div class="rte-root__body">
-      <div class="rte-editor-wrapper">
+      <div
+        class="rte-editor-wrapper"
+        :class="{ 'rte-editor-wrapper--drag-over': isDraggingOver }"
+        @dragenter="onDragEnter"
+        @dragover.prevent="onDragOver"
+        @dragleave="onDragLeave"
+        @drop.prevent="onDrop"
+      >
+        <!-- Drag-and-drop image overlay -->
+        <div v-if="isDraggingOver" class="rte-drag-overlay" aria-hidden="true">
+          <span class="rte-drag-overlay__icon">🖼</span>
+          <span class="rte-drag-overlay__text">Drop image to insert</span>
+        </div>
         <div
           ref="editorRef"
           class="rte-editor"
         />
       </div>
     </div>
+    <!-- Word count footer (opt-in via showWordCountFooter prop) -->
+    <div v-if="showWordCountFooter" class="rte-footer" aria-label="Document statistics">
+      <span class="rte-footer__wordcount">{{ liveWordCount }} words</span>
+    </div>
+    <!-- Hidden file input triggered by slash-menu Image command -->
+    <input
+      ref="slashImageInput"
+      type="file"
+      accept="image/*"
+      style="display:none"
+      @change="onSlashImageSelect"
+    />
     <RTBubbleMenu
       ref="bubbleMenuRef"
       :view="view"
@@ -136,6 +161,8 @@ export interface RTEditorProps {
   onImageUpload?: (file: File) => Promise<string>
   /** Maximum word count. Shows warning when exceeded. 0 = no limit. */
   wordLimit?: number
+  /** Show a live word-count footer bar at the bottom of the editor (opt-in) */
+  showWordCountFooter?: boolean
 }
 
 const props = withDefaults(defineProps<RTEditorProps>(), {
@@ -145,6 +172,7 @@ const props = withDefaults(defineProps<RTEditorProps>(), {
   theme: 'light',
   locale: 'en',
   wordLimit: 0,
+  showWordCountFooter: false,
 })
 
 // ── Spacing state (controlled by line-spacing picker in toolbar) ──
@@ -184,9 +212,14 @@ const bubbleMenuRef = ref<InstanceType<typeof RTBubbleMenu> | null>(null)
 const tableMiniToolbarRef = ref<InstanceType<typeof RTTableMiniToolbar> | null>(null)
 const remarkPopoverRef = ref<InstanceType<typeof RTRemarkPopover> | null>(null)
 const mathModalRef = ref<InstanceType<typeof RTMathModal> | null>(null)
+const slashImageInput = ref<HTMLInputElement | null>(null)
 
 // Comment tooltip — driven by hover; rendered via Teleport into <body>
 const commentTooltip = ref<{ text: string; x: number; y: number } | null>(null)
+
+// Drag-and-drop overlay state
+const isDraggingOver = ref(false)
+let dragCounter = 0
 
 const {
   view,
@@ -283,6 +316,7 @@ const slashMenuVisible = ref(false)
 const slashMenuPos = ref({ top: 0, left: 0 })
 const docStats = computed(() => getStats()?.docStats ?? { words: 0, chars: 0, charsNoSpaces: 0, paragraphs: 0 })
 const selStats = computed(() => getStats()?.selStats ?? null)
+const liveWordCount = computed(() => docStats.value.words)
 
 // ── Slash commands ──
 const slashCommands = computed(() => [
@@ -296,6 +330,8 @@ const slashCommands = computed(() => [
   { id: 'tb', icon: '⊞', label: 'Table', action: () => { showTableDialog.value = true; closeSlash() } },
   { id: 'hr', icon: '—', label: 'Divider', action: () => { commands.insertHorizontalRule(); closeSlash() } },
   { id: 'em', icon: '😊', label: 'Emoji', action: () => { showEmojiPicker.value = true; closeSlash() } },
+  { id: 'img', icon: '🖼', label: 'Image', action: () => { slashImageInput.value?.click(); closeSlash() } },
+  { id: 'math', icon: '∑', label: 'Math Formula', action: () => { mathModalRef.value?.open(); closeSlash() } },
 ])
 
 function closeSlash() {
@@ -333,6 +369,36 @@ function onInsertMath(latex: string) {
   commands.insertMath(latex)
   view.value?.focus()
 }
+
+// ── Image drag-and-drop ──
+function onDragEnter(e: DragEvent) {
+  if (!e.dataTransfer?.types.includes('Files')) return
+  e.preventDefault()
+  dragCounter++
+  isDraggingOver.value = true
+}
+function onDragOver(e: DragEvent) {
+  if (e.dataTransfer?.types.includes('Files')) e.dataTransfer.dropEffect = 'copy'
+}
+function onDragLeave() {
+  dragCounter--
+  if (dragCounter <= 0) { dragCounter = 0; isDraggingOver.value = false }
+}
+async function onDrop(e: DragEvent) {
+  dragCounter = 0
+  isDraggingOver.value = false
+  const file = e.dataTransfer?.files[0]
+  if (!file || !file.type.startsWith('image/')) return
+  await handleImageSelect(file)
+}
+// Slash-menu image command — triggered by hidden <input>
+async function onSlashImageSelect(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file) { await handleImageSelect(file); input.value = '' }
+}
+// Print
+function onPrint() { window.print() }
 
 function onAddRemark() {
   const v = view.value
