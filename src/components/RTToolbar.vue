@@ -288,6 +288,17 @@
       >
         ―
       </button>
+      <button
+        type="button"
+        class="rte-toolbar__button"
+        :class="{ 'rte-toolbar__button--active': activeState.dragActive }"
+        :aria-pressed="activeState.dragActive"
+        aria-label="Drag Content"
+        title="Drag Content (select text first)"
+        @click="commands.toggleDrag()"
+      >
+        ✥
+      </button>
     </div>
 
     <div class="rte-toolbar__separator" role="separator"></div>
@@ -361,6 +372,7 @@ defineProps<{
     clearFormatting: () => void
     undo: () => void
     redo: () => void
+    toggleDrag: () => void
   }
 }>()
 

@@ -28,6 +28,7 @@ export const en = {
     link: 'Link',
     editLink: 'Edit Link',
     removeLink: 'Remove Link',
+    dragContent: 'Drag Content',
   },
   shortcuts: {
     bold: 'Ctrl+B',

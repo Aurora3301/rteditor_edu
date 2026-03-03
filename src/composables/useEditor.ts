@@ -14,6 +14,7 @@ import {
   isMarkActive, isBlockActive, canUndo, canRedo,
   getTextAlign, getActiveFontFamily, getActiveFontSize,
 } from '../core/commands'
+import { activateDrag, deactivateDrag, isDragActive } from '../core/plugins/dragHandle'
 
 /**
  * Options for the {@link useEditor} composable.
@@ -70,6 +71,7 @@ export interface EditorActiveState {
   fontSize: string | null
   link: boolean
   linkAttrs: { href: string; title: string | null; target: string } | null
+  dragActive: boolean
 }
 
 /**
@@ -111,6 +113,7 @@ export function useEditor(options: UseEditorOptions) {
     fontSize: null,
     link: false,
     linkAttrs: null,
+    dragActive: false,
   })
 
   // ── Debounced serialization ──
@@ -147,6 +150,7 @@ export function useEditor(options: UseEditorOptions) {
     activeState.fontSize = getActiveFontSize(state)
     activeState.link = isMarkActive(schema.marks.link)(state)
     activeState.linkAttrs = getActiveLinkAttrs(state)
+    activeState.dragActive = isDragActive(state)
   }
 
   // ── Lifecycle ──
@@ -233,6 +237,17 @@ export function useEditor(options: UseEditorOptions) {
     setLink: (href: string, title?: string) => execCommand(setLink(href, title)),
     removeLink: () => execCommand(removeLink),
     insertImage: (attrs: { src: string; alt?: string; title?: string }) => execCommand(insertImage(attrs)),
+    activateDrag: () => execCommand(activateDrag),
+    deactivateDrag: () => execCommand(deactivateDrag),
+    toggleDrag: () => {
+      const v = view.value
+      if (!v) return
+      if (isDragActive(v.state)) {
+        execCommand(deactivateDrag)
+      } else {
+        execCommand(activateDrag)
+      }
+    },
   }
 
   // ── Set content programmatically ──

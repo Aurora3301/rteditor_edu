@@ -7,6 +7,7 @@ export type { EditorOptions } from './editor'
 
 // Plugins
 export { createPlugins } from './plugins'
+export { activateDrag, deactivateDrag, isDragActive, dragHandleKey } from './plugins/dragHandle'
 
 // Commands
 export {

@@ -51,3 +51,6 @@ export {
   getActiveFontFamily,
   getActiveFontSize,
 } from './formatting'
+
+// Drag & Drop
+export { activateDrag, deactivateDrag, isDragActive } from '../plugins/dragHandle'

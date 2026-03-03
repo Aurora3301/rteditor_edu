@@ -3,6 +3,7 @@ import { history } from 'prosemirror-history'
 import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
 import { dropCursor } from 'prosemirror-dropcursor'
+import { createDragHandlePlugin } from './dragHandle'
 import { gapCursor } from 'prosemirror-gapcursor'
 import { buildKeymap } from './keymap'
 import { buildInputRules } from './inputRules'
@@ -14,8 +15,9 @@ import { buildInputRules } from './inputRules'
  *   2. Custom keymap (our shortcuts)
  *   3. Base keymap (ProseMirror defaults — Enter, Backspace, etc.)
  *   4. Drop cursor (shows blue line when dragging)
- *   5. Gap cursor (allows cursor in empty spaces between nodes)
- *   6. History (undo/redo — must be last so it captures all changes)
+ *   5. Drag handle (drag & drop selected content)
+ *   6. Gap cursor (allows cursor in empty spaces between nodes)
+ *   7. History (undo/redo — must be last so it captures all changes)
  */
 export function createPlugins(): Plugin[] {
   return [
@@ -23,6 +25,7 @@ export function createPlugins(): Plugin[] {
     buildKeymap(),
     keymap(baseKeymap),
     dropCursor(),
+    createDragHandlePlugin(),
     gapCursor(),
     history(),
   ]

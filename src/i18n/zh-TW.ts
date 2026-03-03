@@ -30,6 +30,7 @@ export const zhTW: Messages = {
     link: '連結',
     editLink: '編輯連結',
     removeLink: '移除連結',
+    dragContent: '拖曳內容',
   },
   shortcuts: {
     bold: 'Ctrl+B',
