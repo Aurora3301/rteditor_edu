@@ -123,7 +123,6 @@
     <div class="rte-toolbar__group">
       <!-- Text Color trigger -->
       <button
-        ref="textColorBtnRef"
         type="button"
         class="rte-toolbar__button"
         aria-label="Text Color"
@@ -138,7 +137,6 @@
 
       <!-- Highlight Color trigger -->
       <button
-        ref="highlightBtnRef"
         type="button"
         class="rte-toolbar__button"
         aria-label="Highlight Color"
@@ -152,14 +150,20 @@
       </button>
     </div>
 
-    <!-- Text Color picker — Teleported to body, always above every layer -->
+    <!-- Text Color — centered modal (same pattern as Math Formula) -->
     <Teleport to="body">
-      <template v-if="showTextColorPicker">
-        <div class="rte-picker-backdrop" aria-hidden="true" @mousedown.prevent="closeAllPickers" />
-        <div
-          ref="textColorPickerRef"
-          :style="{ position: 'fixed', top: textColorPos.top + 'px', left: textColorPos.left + 'px', zIndex: 2147483645 }"
-        >
+      <div
+        v-if="showTextColorPicker"
+        class="rte-dialog-overlay"
+        role="presentation"
+        @mousedown.self="showTextColorPicker = false"
+        @keydown.esc="showTextColorPicker = false"
+      >
+        <div class="rte-dialog rte-color-dialog" role="dialog" aria-modal="true" aria-label="Text Color">
+          <div class="rte-math-modal__header">
+            <h3 class="rte-math-modal__title">Text Color</h3>
+            <button class="rte-math-modal__close" aria-label="Close" @click="showTextColorPicker = false">✕</button>
+          </div>
           <RTColorPicker
             :model-value="activeTextColor"
             label="Text Color"
@@ -167,17 +171,23 @@
             @remove="commands.removeTextColor(); showTextColorPicker = false"
           />
         </div>
-      </template>
+      </div>
     </Teleport>
 
-    <!-- Highlight picker — Teleported to body, always above every layer -->
+    <!-- Highlight Color — centered modal (same pattern as Math Formula) -->
     <Teleport to="body">
-      <template v-if="showHighlightPicker">
-        <div class="rte-picker-backdrop" aria-hidden="true" @mousedown.prevent="closeAllPickers" />
-        <div
-          ref="highlightPickerRef"
-          :style="{ position: 'fixed', top: highlightPos.top + 'px', left: highlightPos.left + 'px', zIndex: 2147483645 }"
-        >
+      <div
+        v-if="showHighlightPicker"
+        class="rte-dialog-overlay"
+        role="presentation"
+        @mousedown.self="showHighlightPicker = false"
+        @keydown.esc="showHighlightPicker = false"
+      >
+        <div class="rte-dialog rte-color-dialog" role="dialog" aria-modal="true" aria-label="Highlight Color">
+          <div class="rte-math-modal__header">
+            <h3 class="rte-math-modal__title">Highlight Color</h3>
+            <button class="rte-math-modal__close" aria-label="Close" @click="showHighlightPicker = false">✕</button>
+          </div>
           <RTColorPicker
             :model-value="activeHighlight"
             label="Highlight Color"
@@ -185,7 +195,7 @@
             @remove="commands.removeHighlight(); showHighlightPicker = false"
           />
         </div>
-      </template>
+      </div>
     </Teleport>
 
     <!-- Row break -->
@@ -486,7 +496,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import RTColorPicker from './RTColorPicker.vue'
 import RTExportMenu from './RTExportMenu.vue'
 import type { EditorActiveState } from '../composables/useEditor'
@@ -541,52 +551,17 @@ const showHighlightPicker = ref(false)
 const activeTextColor = computed(() => props.activeState.textColor)
 const activeHighlight = computed(() => props.activeState.highlight)
 
-// Refs to the trigger buttons — used for getBoundingClientRect when opening pickers
-const textColorBtnRef  = ref<HTMLElement | null>(null)
-const highlightBtnRef  = ref<HTMLElement | null>(null)
-// Refs to the picker panels — used by the outside-click guard
-const textColorPickerRef = ref<HTMLElement | null>(null)
-const highlightPickerRef = ref<HTMLElement | null>(null)
-
-// Computed fixed positions for each picker (set when the picker opens)
-const textColorPos  = ref({ top: 0, left: 0 })
-const highlightPos  = ref({ top: 0, left: 0 })
-
+// Toggle helpers — pickers are now centered modals (dialog-overlay pattern).
+// The overlay's @mousedown.self and @keydown.esc handle closing; no position
+// calculation or outside-click listeners needed.
 function openTextColorPicker() {
-  const rect = textColorBtnRef.value?.getBoundingClientRect()
-  if (rect) textColorPos.value = { top: rect.bottom + 4, left: rect.left }
   showTextColorPicker.value = !showTextColorPicker.value
   showHighlightPicker.value = false
 }
 function openHighlightPicker() {
-  const rect = highlightBtnRef.value?.getBoundingClientRect()
-  if (rect) highlightPos.value = { top: rect.bottom + 4, left: rect.left }
   showHighlightPicker.value = !showHighlightPicker.value
   showTextColorPicker.value = false
 }
-function closeAllPickers() {
-  showTextColorPicker.value = false
-  showHighlightPicker.value = false
-}
-
-// Close all pickers on any outside click
-function onDocMouseDown(e: MouseEvent) {
-  const t = e.target as Node
-  const insideText      = textColorBtnRef.value?.contains(t)  || textColorPickerRef.value?.contains(t)
-  const insideHighlight = highlightBtnRef.value?.contains(t)  || highlightPickerRef.value?.contains(t)
-  if (!insideText && !insideHighlight) closeAllPickers()
-}
-// Close all pickers on any scroll (same pattern as comment tooltip)
-function onScrollClosePickers() { closeAllPickers() }
-
-onMounted(() => {
-  document.addEventListener('mousedown', onDocMouseDown)
-  window.addEventListener('scroll', onScrollClosePickers, true)
-})
-onUnmounted(() => {
-  document.removeEventListener('mousedown', onDocMouseDown)
-  window.removeEventListener('scroll', onScrollClosePickers, true)
-})
 
 // Line spacing: maps preset value → [lineHeight, paragraphGap]
 const spacingPresets: Record<string, [string, string]> = {

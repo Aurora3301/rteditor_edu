@@ -60,21 +60,23 @@
       @close="showWordCount = false"
     />
 
-    <!-- Emoji Picker — Teleported to <body> so it is above every layer.
-         The backdrop closes it when the user clicks anywhere outside. -->
+    <!-- Emoji Picker — centered modal (same pattern as Math Formula) -->
     <Teleport to="body">
-      <template v-if="showEmojiPicker">
-        <div
-          class="rte-picker-backdrop"
-          aria-hidden="true"
-          @mousedown.prevent="showEmojiPicker = false"
-        />
-        <RTEmojiPicker
-          ref="emojiPickerRef"
-          style="position: fixed; z-index: 2147483644; top: 50%; left: 50%; transform: translate(-50%, -50%)"
-          @select="onEmojiSelect"
-        />
-      </template>
+      <div
+        v-if="showEmojiPicker"
+        class="rte-dialog-overlay"
+        role="presentation"
+        @mousedown.self="showEmojiPicker = false"
+        @keydown.esc="showEmojiPicker = false"
+      >
+        <div class="rte-dialog rte-emoji-dialog" role="dialog" aria-modal="true" aria-label="Emoji Picker">
+          <div class="rte-math-modal__header">
+            <h3 class="rte-math-modal__title">Emoji</h3>
+            <button class="rte-math-modal__close" aria-label="Close" @click="showEmojiPicker = false">✕</button>
+          </div>
+          <RTEmojiPicker @select="onEmojiSelect" />
+        </div>
+      </div>
     </Teleport>
 
     <!-- Table Mini-Toolbar -->
@@ -276,7 +278,6 @@ function fileToDataURL(file: File): Promise<string> {
 const showTableDialog = ref(false)
 const showWordCount = ref(false)
 const showEmojiPicker = ref(false)
-const emojiPickerRef = ref<InstanceType<typeof RTEmojiPicker> | null>(null)
 
 const slashMenuVisible = ref(false)
 const slashMenuPos = ref({ top: 0, left: 0 })
