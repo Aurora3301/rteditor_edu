@@ -181,3 +181,108 @@ describe('Marks', () => {
     expect(p.firstChild?.marks[0].type.name).toBe('bold')
   })
 })
+
+describe('Phase 2 Nodes', () => {
+  it('should have task_list and task_item nodes', () => {
+    expect(schema.nodes.task_list).toBeDefined()
+    expect(schema.nodes.task_item).toBeDefined()
+  })
+
+  it('task_list should contain task_items', () => {
+    const item = schema.node('task_item', { checked: false }, [
+      schema.node('paragraph', null, [schema.text('Do something')])
+    ])
+    const list = schema.node('task_list', null, [item])
+    expect(list.type.name).toBe('task_list')
+    expect(list.childCount).toBe(1)
+  })
+
+  it('task_item should default checked to false', () => {
+    const item = schema.node('task_item', null, [
+      schema.node('paragraph', null, [schema.text('Task')])
+    ])
+    expect(item.attrs.checked).toBe(false)
+  })
+
+  it('task_item should accept checked=true', () => {
+    const item = schema.node('task_item', { checked: true }, [
+      schema.node('paragraph', null, [schema.text('Done')])
+    ])
+    expect(item.attrs.checked).toBe(true)
+  })
+
+  it('should have table, table_row, table_cell, table_header nodes', () => {
+    expect(schema.nodes.table).toBeDefined()
+    expect(schema.nodes.table_row).toBeDefined()
+    expect(schema.nodes.table_cell).toBeDefined()
+    expect(schema.nodes.table_header).toBeDefined()
+  })
+
+  it('should create a basic 2x2 table', () => {
+    const cell = (text: string) => schema.node('table_cell', null, [
+      schema.node('paragraph', null, [schema.text(text)])
+    ])
+    const row = (cells: ReturnType<typeof cell>[]) => schema.node('table_row', null, cells)
+    const table = schema.node('table', null, [
+      row([cell('A'), cell('B')]),
+      row([cell('C'), cell('D')]),
+    ])
+    expect(table.type.name).toBe('table')
+    expect(table.childCount).toBe(2)
+  })
+
+  it('table_cell should have colspan/rowspan attrs defaulting to 1', () => {
+    const cell = schema.node('table_cell', null, [schema.node('paragraph')])
+    expect(cell.attrs.colspan).toBe(1)
+    expect(cell.attrs.rowspan).toBe(1)
+  })
+
+  it('table_header should have tableRole header_cell', () => {
+    expect(schema.nodes.table_header.spec.tableRole).toBe('header_cell')
+  })
+})
+
+describe('Phase 2 Marks', () => {
+  it('should have textColor and highlight marks', () => {
+    expect(schema.marks.textColor).toBeDefined()
+    expect(schema.marks.highlight).toBeDefined()
+  })
+
+  it('textColor mark should have a color attr', () => {
+    const mark = schema.mark('textColor', { color: '#ff0000' })
+    expect(mark.attrs.color).toBe('#ff0000')
+  })
+
+  it('highlight mark should have a color attr', () => {
+    const mark = schema.mark('highlight', { color: '#ffff00' })
+    expect(mark.attrs.color).toBe('#ffff00')
+  })
+
+  it('textColor toDOM should produce color style', () => {
+    const mark = schema.mark('textColor', { color: '#ff0000' })
+    const [tag, attrs] = mark.type.spec.toDOM!(mark, false) as [string, any, any]
+    expect(tag).toBe('span')
+    expect(attrs.style).toContain('color: #ff0000')
+  })
+
+  it('highlight toDOM should produce background-color style', () => {
+    const mark = schema.mark('highlight', { color: '#ffff00' })
+    const [tag, attrs] = mark.type.spec.toDOM!(mark, false) as [string, any, any]
+    expect(tag).toBe('span')
+    expect(attrs.style).toContain('background-color: #ffff00')
+  })
+
+  it('textColor should sanitize dangerous CSS values', () => {
+    const mark = schema.mark('textColor', { color: 'red; font-size: 100px' })
+    const [, attrs] = mark.type.spec.toDOM!(mark, false) as [string, any, any]
+    expect(attrs.style).not.toContain(';')
+  })
+
+  it('should apply textColor mark to text in a paragraph', () => {
+    const colorMark = schema.mark('textColor', { color: '#0000ff' })
+    const text = schema.text('Blue text', [colorMark])
+    const p = schema.node('paragraph', null, [text])
+    expect(p.firstChild?.marks[0].type.name).toBe('textColor')
+    expect(p.firstChild?.marks[0].attrs.color).toBe('#0000ff')
+  })
+})

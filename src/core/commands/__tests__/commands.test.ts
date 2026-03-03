@@ -6,6 +6,10 @@ import {
   setHeading, setParagraph, toggleBlockquote, insertHorizontalRule,
   isMarkActive, isBlockActive, canUndo, canRedo,
   undo, redo,
+  toggleChecklist, toggleChecklistItem,
+  setTextColor, removeTextColor, getActiveTextColor,
+  setHighlight, removeHighlight, getActiveHighlight,
+  insertTable,
 } from '../formatting'
 
 // Helper: create a state with simple text content
@@ -153,3 +157,188 @@ describe('State Check Helpers', () => {
   })
 })
 
+describe('Checklist Commands', () => {
+  it('toggleChecklist should return true (always executable)', () => {
+    const state = createState('Task')
+    expect(toggleChecklist(state)).toBe(true)
+  })
+
+  it('toggleChecklist should detect task_item and toggle back', () => {
+    // When already inside a task_item, toggleChecklist detects inTaskList=true
+    const item = schema.node('task_item', { checked: false }, [
+      schema.node('paragraph', null, [schema.text('Task')])
+    ])
+    const list = schema.node('task_list', null, [item])
+    const doc = schema.node('doc', null, [list])
+    const state = EditorState.create({
+      doc, schema, plugins: [],
+      selection: TextSelection.create(doc, 3),
+    })
+    // Should return true (always executable)
+    expect(toggleChecklist(state)).toBe(true)
+  })
+
+  it('toggleChecklistItem should return false if not in task_item', () => {
+    const state = createState('Regular text')
+    expect(toggleChecklistItem(state)).toBe(false)
+  })
+
+  it('toggleChecklistItem should toggle checked state', () => {
+    // Build a state with a task_item
+    const item = schema.node('task_item', { checked: false }, [
+      schema.node('paragraph', null, [schema.text('Task')])
+    ])
+    const list = schema.node('task_list', null, [item])
+    const doc = schema.node('doc', null, [list])
+    // Place cursor inside the task_item paragraph (pos 3 = inside paragraph inside task_item)
+    const state = EditorState.create({
+      doc,
+      schema,
+      plugins: [],
+      selection: TextSelection.create(doc, 3),
+    })
+    let newState: EditorState | null = null
+    toggleChecklistItem(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    expect(newState).not.toBeNull()
+    // Find the task_item and check it is now checked
+    let checkedValue: boolean | null = null
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'task_item') checkedValue = node.attrs.checked
+    })
+    expect(checkedValue).toBe(true)
+  })
+})
+
+describe('Color Commands', () => {
+  it('setTextColor should return false on empty selection', () => {
+    const state = createState('Hello')
+    expect(setTextColor('#ff0000')(state)).toBe(false)
+  })
+
+  it('setTextColor should apply textColor mark on selection', () => {
+    const state = createStateWithSelection('Hello')
+    let newState: EditorState | null = null
+    setTextColor('#ff0000')(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    expect(newState).not.toBeNull()
+    let hasColorMark = false
+    newState!.doc.descendants(node => {
+      if (node.isText && node.marks.some(m => m.type.name === 'textColor')) {
+        hasColorMark = true
+      }
+    })
+    expect(hasColorMark).toBe(true)
+  })
+
+  it('getActiveTextColor should return null on plain text', () => {
+    const state = createState('Hello')
+    expect(getActiveTextColor(state)).toBeNull()
+  })
+
+  it('getActiveTextColor should return color on colored text', () => {
+    const colorMark = schema.mark('textColor', { color: '#ff0000' })
+    const doc = schema.node('doc', null, [
+      schema.node('paragraph', null, [schema.text('Red', [colorMark])])
+    ])
+    const state = EditorState.create({
+      doc, schema, plugins: [],
+      selection: TextSelection.create(doc, 1, 4),
+    })
+    expect(getActiveTextColor(state)).toBe('#ff0000')
+  })
+
+  it('removeTextColor should return false on empty selection', () => {
+    const state = createState('Hello')
+    expect(removeTextColor(state)).toBe(false)
+  })
+
+  it('removeTextColor should remove textColor mark', () => {
+    const colorMark = schema.mark('textColor', { color: '#ff0000' })
+    const doc = schema.node('doc', null, [
+      schema.node('paragraph', null, [schema.text('Red', [colorMark])])
+    ])
+    const state = EditorState.create({
+      doc, schema, plugins: [],
+      selection: TextSelection.create(doc, 1, 4),
+    })
+    let newState: EditorState | null = null
+    removeTextColor(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    let hasColorMark = false
+    newState!.doc.descendants(node => {
+      if (node.isText && node.marks.some(m => m.type.name === 'textColor')) hasColorMark = true
+    })
+    expect(hasColorMark).toBe(false)
+  })
+
+  it('setHighlight should apply highlight mark on selection', () => {
+    const state = createStateWithSelection('Hello')
+    let newState: EditorState | null = null
+    setHighlight('#ffff00')(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    expect(newState).not.toBeNull()
+    let hasHighlight = false
+    newState!.doc.descendants(node => {
+      if (node.isText && node.marks.some(m => m.type.name === 'highlight')) hasHighlight = true
+    })
+    expect(hasHighlight).toBe(true)
+  })
+
+  it('getActiveHighlight should return null on plain text', () => {
+    const state = createState('Hello')
+    expect(getActiveHighlight(state)).toBeNull()
+  })
+})
+
+describe('Table Commands', () => {
+  it('insertTable should insert a table node', () => {
+    const state = createState('Before table')
+    let newState: EditorState | null = null
+    insertTable(2, 3, false)(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    expect(newState).not.toBeNull()
+    let hasTable = false
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'table') hasTable = true
+    })
+    expect(hasTable).toBe(true)
+  })
+
+  it('insertTable should create correct number of rows', () => {
+    const state = createState('Text')
+    let newState: EditorState | null = null
+    insertTable(3, 2, false)(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    let tableNode: any = null
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'table') tableNode = node
+    })
+    expect(tableNode).not.toBeNull()
+    expect(tableNode.childCount).toBe(3) // 3 rows
+  })
+
+  it('insertTable with header should create table_header in first row', () => {
+    const state = createState('Text')
+    let newState: EditorState | null = null
+    insertTable(2, 2, true)(state, (tr: Transaction) => {
+      newState = state.apply(tr)
+    })
+    let firstRowHasHeaders = false
+    newState!.doc.descendants(node => {
+      if (node.type.name === 'table') {
+        const firstRow = node.firstChild!
+        if (firstRow.firstChild?.type.name === 'table_header') {
+          firstRowHasHeaders = true
+        }
+      }
+    })
+    expect(firstRowHasHeaders).toBe(true)
+  })
+})
