@@ -27,6 +27,18 @@ export class MathNodeView implements NodeView {
     this.renderKatex(node.attrs.latex)
   }
 
+  private lastRenderedLatex = ''
+
+  private katexOptions: Parameters<typeof katex.render>[2] = {
+    throwOnError: false,
+    displayMode: false,
+    output: 'html',
+    trust: false,      // Disallow \url, \href, \includegraphics
+    strict: 'ignore',  // Non-standard LaTeX is silently ignored
+    maxSize: 10,       // Prevent giant font sizes
+    maxExpand: 1000,   // Cap macro expansion loops
+  }
+
   private renderKatex(latex: string) {
     this.inner.innerHTML = ''
     if (!latex.trim()) {
@@ -34,14 +46,12 @@ export class MathNodeView implements NodeView {
       placeholder.className = 'rte-math-inline-placeholder'
       placeholder.textContent = 'ƒ(x)'
       this.inner.appendChild(placeholder)
+      this.lastRenderedLatex = ''
       return
     }
     try {
-      katex.render(latex, this.inner, {
-        throwOnError: false,
-        displayMode: false,
-        output: 'html',
-      })
+      katex.render(latex, this.inner, this.katexOptions)
+      this.lastRenderedLatex = latex
     } catch {
       this.inner.textContent = latex
     }
@@ -79,7 +89,7 @@ export class MathNodeView implements NodeView {
   private renderPreview(el: HTMLElement, latex: string) {
     if (!latex.trim()) { el.textContent = ''; return }
     try {
-      katex.render(latex, el, { throwOnError: false, displayMode: false, output: 'html' })
+      katex.render(latex, el, this.katexOptions)
     } catch {
       el.textContent = latex
     }
@@ -104,7 +114,9 @@ export class MathNodeView implements NodeView {
   update(node: ProseMirrorNode): boolean {
     if (node.type !== this.node.type) return false
     this.node = node
-    if (!this.editing) this.renderKatex(node.attrs.latex)
+    if (!this.editing && node.attrs.latex !== this.lastRenderedLatex) {
+      this.renderKatex(node.attrs.latex)
+    }
     return true
   }
 

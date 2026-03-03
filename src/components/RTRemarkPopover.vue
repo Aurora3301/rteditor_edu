@@ -6,8 +6,10 @@
       class="rte-remark-popover"
       :style="style"
       role="dialog"
+      aria-modal="true"
       aria-label="Add remark"
       @mousedown.stop
+      @keydown.esc="close"
     >
       <div class="rte-remark-popover__header">
         <span>{{ editingId ? 'Edit Remark' : 'Add Remark' }}</span>
@@ -66,7 +68,7 @@ function close() {
 
 function save() {
   const v = props.view
-  if (!v || !text.value.trim()) return
+  if (!v || !(v.dom as HTMLElement).isConnected || !text.value.trim()) return
   const { state, dispatch } = v
   const { from, to } = state.selection
 
@@ -85,7 +87,7 @@ function save() {
     })
     dispatch(tr)
   } else {
-    const id = `c_${Date.now()}`
+    const id = `c_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
     const mark = schema.marks.comment.create({
       id, text: text.value.trim(), author: 'Teacher',
       timestamp: new Date().toISOString(),

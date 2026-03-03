@@ -43,12 +43,19 @@ export class ImageNodeView implements NodeView {
       const btn = document.createElement('button')
       btn.type = 'button'
       btn.textContent = f === 'left' ? '◀' : f === 'right' ? '▶' : '■'
-      btn.title = f === 'none' ? 'No float' : `Float ${f}`
+      const label = f === 'none' ? 'No float' : `Float ${f}`
+      btn.title = label
+      btn.setAttribute('aria-label', label)
+      btn.tabIndex = 0
       btn.className = 'rte-image-floatbar__btn'
       if ((node.attrs.float || 'none') === f) btn.classList.add('rte-image-floatbar__btn--active')
-      btn.addEventListener('mousedown', (e) => {
+      const applyFloat = (e: Event) => {
         e.preventDefault()
         this.updateAttr('float', f === 'none' ? null : f)
+      }
+      btn.addEventListener('mousedown', applyFloat)
+      btn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') applyFloat(e)
       })
       this.floatBar.appendChild(btn)
     })
@@ -60,8 +67,15 @@ export class ImageNodeView implements NodeView {
     this.captionEl.contentEditable = 'true'
     this.captionEl.textContent = node.attrs.caption || ''
     this.captionEl.setAttribute('placeholder', 'Add caption…')
+    this.captionEl.setAttribute('aria-label', 'Image caption')
+    this.captionEl.setAttribute('role', 'textbox')
+    this.captionEl.setAttribute('aria-multiline', 'false')
     this.captionEl.addEventListener('input', () => {
       this.updateAttr('caption', this.captionEl.textContent || '')
+    })
+    // Prevent Enter from bubbling into ProseMirror as a paragraph-break
+    this.captionEl.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') e.preventDefault()
     })
     this.dom.appendChild(this.captionEl)
 
@@ -108,7 +122,8 @@ export class ImageNodeView implements NodeView {
   }
 
   stopEvent(event: Event): boolean {
-    return this.captionEl.contains(event.target as Node)
+    // Block all events from the caption area so ProseMirror doesn't intercept them
+    return this.captionEl.contains(event.target as Node) || this.floatBar.contains(event.target as Node)
   }
 }
 

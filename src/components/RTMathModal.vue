@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="rte-dialog-overlay" @mousedown.self="cancel">
+    <div v-if="visible" class="rte-dialog-overlay" @mousedown.self="cancel" @keydown.esc="cancel">
       <div class="rte-dialog rte-math-modal" role="dialog" aria-modal="true" aria-label="Insert Math Formula">
         <div class="rte-dialog__header">
           <h3 class="rte-dialog__title">Math Formula (LaTeX)</h3>
@@ -91,12 +91,22 @@ function insert(code: string) {
   })
 }
 
+const katexOptions = {
+  throwOnError: false,
+  displayMode: true,
+  output: 'html' as const,
+  trust: false,
+  strict: 'ignore' as const,
+  maxSize: 10,
+  maxExpand: 1000,
+}
+
 function updatePreview() {
   const el = previewEl.value
   if (!el) return
   if (!latex.value.trim()) { el.innerHTML = ''; return }
   try {
-    katex.render(latex.value, el, { throwOnError: false, displayMode: true, output: 'html' })
+    katex.render(latex.value, el, katexOptions)
   } catch {
     el.textContent = latex.value
   }

@@ -7,28 +7,28 @@
       role="toolbar"
       aria-label="Table options"
     >
-      <button type="button" class="rte-tmt__btn" title="Insert row above" @click="commands.insertRowBefore()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M12 7V3m-3 4l3-4 3 4"/></svg>
+      <button type="button" class="rte-tmt__btn" title="Insert row above" aria-label="Insert row above" @click="commands.insertRowBefore()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M12 7V3m-3 4l3-4 3 4"/></svg>
       </button>
-      <button type="button" class="rte-tmt__btn" title="Insert row below" @click="commands.insertRowAfter()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="10" rx="1"/><path d="M12 17v4m-3-4l3 4 3-4"/></svg>
+      <button type="button" class="rte-tmt__btn" title="Insert row below" aria-label="Insert row below" @click="commands.insertRowAfter()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="10" rx="1"/><path d="M12 17v4m-3-4l3 4 3-4"/></svg>
       </button>
-      <button type="button" class="rte-tmt__btn rte-tmt__btn--danger" title="Delete row" @click="commands.deleteRow()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="10" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+      <button type="button" class="rte-tmt__btn rte-tmt__btn--danger" title="Delete row" aria-label="Delete row" @click="commands.deleteRow()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
       </button>
-      <div class="rte-tmt__sep"></div>
-      <button type="button" class="rte-tmt__btn" title="Insert column left" @click="commands.insertColBefore()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="11" y="3" width="10" height="18" rx="1"/><path d="M7 12H3m4-3L3 12l4 3"/></svg>
+      <div class="rte-tmt__sep" role="separator"></div>
+      <button type="button" class="rte-tmt__btn" title="Insert column left" aria-label="Insert column left" @click="commands.insertColBefore()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="11" y="3" width="10" height="18" rx="1"/><path d="M7 12H3m4-3L3 12l4 3"/></svg>
       </button>
-      <button type="button" class="rte-tmt__btn" title="Insert column right" @click="commands.insertColAfter()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="10" height="18" rx="1"/><path d="M17 12h4m-4-3l4 3-4 3"/></svg>
+      <button type="button" class="rte-tmt__btn" title="Insert column right" aria-label="Insert column right" @click="commands.insertColAfter()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="10" height="18" rx="1"/><path d="M17 12h4m-4-3l4 3-4 3"/></svg>
       </button>
-      <button type="button" class="rte-tmt__btn rte-tmt__btn--danger" title="Delete column" @click="commands.deleteColumn()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="3" width="10" height="18" rx="1"/><line x1="12" y1="9" x2="12" y2="15"/></svg>
+      <button type="button" class="rte-tmt__btn rte-tmt__btn--danger" title="Delete column" aria-label="Delete column" @click="commands.deleteColumn()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="1"/><line x1="12" y1="9" x2="12" y2="15"/></svg>
       </button>
-      <div class="rte-tmt__sep"></div>
-      <button type="button" class="rte-tmt__btn rte-tmt__btn--danger" title="Delete table" @click="commands.deleteTable()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      <div class="rte-tmt__sep" role="separator"></div>
+      <button type="button" class="rte-tmt__btn rte-tmt__btn--danger" title="Delete table" aria-label="Delete table" @click="commands.deleteTable()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       </button>
     </div>
   </Teleport>
@@ -58,7 +58,10 @@ const toolbarStyle = computed(() => {
 })
 
 function updatePosition() {
-  if (!props.view || !props.inTable) { coords.value = null; return }
+  if (!props.view || !props.inTable || !(props.view.dom as HTMLElement).isConnected) {
+    coords.value = null
+    return
+  }
   const { state, dom } = props.view
   const { $from } = state.selection
   // Walk up to find table node

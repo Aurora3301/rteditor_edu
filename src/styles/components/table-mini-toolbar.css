@@ -33,7 +33,7 @@
 }
 
 .rte-tmt__btn--danger:hover {
-  background: #fef2f2;
+  background: var(--rte-color-danger-surface, #fef2f2);
 }
 
 .rte-tmt__sep {
