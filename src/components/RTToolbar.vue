@@ -12,7 +12,7 @@
         title="Bold (Ctrl+B)"
         @click="commands.toggleBold()"
       >
-        <strong>B</strong>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h8a4 4 0 0 1 0 8H6V4zm0 8h9a4 4 0 0 1 0 8H6v-8z"/></svg>
       </button>
       <button
         type="button"
@@ -23,7 +23,7 @@
         title="Italic (Ctrl+I)"
         @click="commands.toggleItalic()"
       >
-        <em>I</em>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
       </button>
       <button
         type="button"
@@ -34,7 +34,7 @@
         title="Underline (Ctrl+U)"
         @click="commands.toggleUnderline()"
       >
-        <u>U</u>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
       </button>
       <button
         type="button"
@@ -45,7 +45,7 @@
         title="Strikethrough (Ctrl+Shift+X)"
         @click="commands.toggleStrike()"
       >
-        <s>S</s>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 20H9.5a3.5 3.5 0 0 1 0-7h5"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
       </button>
       <button
         type="button"
@@ -56,7 +56,7 @@
         title="Code (Ctrl+E)"
         @click="commands.toggleCode()"
       >
-        &lt;/&gt;
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       </button>
       <button
         type="button"
@@ -67,7 +67,7 @@
         title="Subscript"
         @click="commands.toggleSubscript()"
       >
-        X₂
+        X<sub style="font-size:9px">2</sub>
       </button>
       <button
         type="button"
@@ -78,7 +78,7 @@
         title="Superscript"
         @click="commands.toggleSuperscript()"
       >
-        X²
+        X<sup style="font-size:9px">2</sup>
       </button>
     </div>
 
@@ -137,10 +137,12 @@
         class="rte-toolbar__button"
         aria-label="Text Color"
         title="Text Color"
-        :style="activeTextColor ? `border-bottom: 3px solid ${activeTextColor}` : ''"
         @click="showTextColorPicker = !showTextColorPicker; showHighlightPicker = false"
       >
-        A
+        <span style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <strong style="font-size:13px;line-height:1">A</strong>
+          <span :style="activeTextColor ? `background:${activeTextColor}` : 'background:currentColor'" style="width:14px;height:3px;border-radius:1px;display:block"></span>
+        </span>
       </button>
       <RTColorPicker
         v-if="showTextColorPicker"
@@ -155,10 +157,12 @@
         class="rte-toolbar__button"
         aria-label="Highlight Color"
         title="Highlight Color"
-        :style="activeHighlight ? `border-bottom: 3px solid ${activeHighlight}` : ''"
         @click="showHighlightPicker = !showHighlightPicker; showTextColorPicker = false"
       >
-        H
+        <span style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l-6 6v3h3l6-6"/><path d="M22 5.5a2.121 2.121 0 0 0-3-3l-6.5 6.5 3 3L22 5.5z"/></svg>
+          <span :style="activeHighlight ? `background:${activeHighlight}` : 'background:#ffff00'" style="width:14px;height:3px;border-radius:1px;display:block"></span>
+        </span>
       </button>
       <RTColorPicker
         v-if="showHighlightPicker"
@@ -175,41 +179,20 @@
 
     <!-- ═══ ROW 2 ═══ -->
 
-    <!-- Group 2: Block type -->
+    <!-- Block type dropdown (Google Docs style) -->
     <div class="rte-toolbar__group">
-      <button
-        type="button"
-        class="rte-toolbar__button"
-        :class="{ 'rte-toolbar__button--active': activeState.heading1 }"
-        :aria-pressed="activeState.heading1"
-        aria-label="Heading 1"
-        title="Heading 1"
-        @click="commands.setHeading(1)"
+      <select
+        class="rte-toolbar__block-select"
+        :value="activeState.blockType"
+        aria-label="Text style"
+        title="Text style"
+        @change="onBlockTypeChange"
       >
-        H1
-      </button>
-      <button
-        type="button"
-        class="rte-toolbar__button"
-        :class="{ 'rte-toolbar__button--active': activeState.heading2 }"
-        :aria-pressed="activeState.heading2"
-        aria-label="Heading 2"
-        title="Heading 2"
-        @click="commands.setHeading(2)"
-      >
-        H2
-      </button>
-      <button
-        type="button"
-        class="rte-toolbar__button"
-        :class="{ 'rte-toolbar__button--active': activeState.heading3 }"
-        :aria-pressed="activeState.heading3"
-        aria-label="Heading 3"
-        title="Heading 3"
-        @click="commands.setHeading(3)"
-      >
-        H3
-      </button>
+        <option value="paragraph">Normal text</option>
+        <option value="h1">Heading 1</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+      </select>
     </div>
 
     <div class="rte-toolbar__separator" role="separator"></div>
@@ -225,7 +208,7 @@
         title="Checklist (Ctrl+Shift+9)"
         @click="commands.toggleChecklist()"
       >
-        ☐
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="6" height="6" rx="1"/><polyline points="5 8 6.5 9.5 9 7" stroke-width="2"/><line x1="13" y1="8" x2="21" y2="8"/><rect x="3" y="13" width="6" height="6" rx="1"/><line x1="13" y1="16" x2="21" y2="16"/></svg>
       </button>
       <button
         type="button"
@@ -234,7 +217,7 @@
         title="Insert Table"
         @click="$emit('insert-table')"
       >
-        ⊞
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
       </button>
     </div>
 
@@ -251,7 +234,7 @@
         title="Align Left"
         @click="commands.setTextAlign(null)"
       >
-        ≡←
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
       </button>
       <button
         type="button"
@@ -262,7 +245,7 @@
         title="Align Center"
         @click="commands.setTextAlign('center')"
       >
-        ≡↔
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
       </button>
       <button
         type="button"
@@ -273,7 +256,7 @@
         title="Align Right"
         @click="commands.setTextAlign('right')"
       >
-        ≡→
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
       </button>
       <button
         type="button"
@@ -284,7 +267,7 @@
         title="Justify"
         @click="commands.setTextAlign('justify')"
       >
-        ≡≡
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
 
@@ -301,7 +284,7 @@
         title="Bullet List"
         @click="commands.toggleBulletList()"
       >
-        •≡
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
       </button>
       <button
         type="button"
@@ -312,7 +295,7 @@
         title="Ordered List"
         @click="commands.toggleOrderedList()"
       >
-        1.
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><text x="2" y="8" font-size="7" fill="currentColor" stroke="none" font-weight="bold">1</text><text x="2" y="14" font-size="7" fill="currentColor" stroke="none" font-weight="bold">2</text><text x="2" y="20" font-size="7" fill="currentColor" stroke="none" font-weight="bold">3</text></svg>
       </button>
       <button
         type="button"
@@ -323,7 +306,7 @@
         title="Blockquote"
         @click="commands.toggleBlockquote()"
       >
-        ❝
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
       </button>
     </div>
 
@@ -338,7 +321,7 @@
         title="Insert Image"
         @click="imageInput?.click()"
       >
-        🖼️
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       </button>
       <input
         ref="imageInput"
@@ -354,7 +337,7 @@
         title="Horizontal Rule"
         @click="commands.insertHorizontalRule()"
       >
-        ―
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/></svg>
       </button>
       <button
         type="button"
@@ -365,7 +348,7 @@
         title="Drag Content (select text first)"
         @click="commands.toggleDrag()"
       >
-        ✥
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
       </button>
     </div>
 
@@ -380,7 +363,7 @@
         title="Clear Formatting"
         @click="commands.clearFormatting()"
       >
-        T̶ₓ
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/><line x1="20" y1="16" x2="14" y2="22" stroke-width="2"/><line x1="14" y1="16" x2="20" y2="22" stroke-width="2"/></svg>
       </button>
     </div>
 
@@ -395,7 +378,7 @@
         title="Word Count"
         @click="$emit('word-count')"
       >
-        ≡#
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="14" y2="18"/><text x="17" y="20" font-size="7" fill="currentColor" stroke="none" font-weight="bold">#</text></svg>
       </button>
       <RTExportMenu
         @export-pdf="$emit('export-pdf')"
@@ -408,7 +391,7 @@
         title="Insert Emoji"
         @click="$emit('emoji-open')"
       >
-        😊
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
       </button>
     </div>
 
@@ -424,7 +407,7 @@
         title="Undo (Ctrl+Z)"
         @click="commands.undo()"
       >
-        ↩
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7v6h6"/><path d="M3 13C5 7 10 3 16 3a9 9 0 0 1 5 16.5"/></svg>
       </button>
       <button
         type="button"
@@ -434,7 +417,7 @@
         title="Redo (Ctrl+Shift+Z)"
         @click="commands.redo()"
       >
-        ↪
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 7v6h-6"/><path d="M21 13C19 7 14 3 8 3a9 9 0 0 0-5 16.5"/></svg>
       </button>
     </div>
   </div>
@@ -477,15 +460,6 @@ const props = defineProps<{
     setHighlight: (color: string) => void
     removeHighlight: () => void
     insertTable: (rows: number, cols: number, hasHeader: boolean) => void
-    addRowBefore: () => void
-    addRowAfter: () => void
-    deleteRow: () => void
-    addColumnBefore: () => void
-    addColumnAfter: () => void
-    deleteColumn: () => void
-    mergeCells: () => void
-    splitCell: () => void
-    toggleHeaderRow: () => void
   }
 }>()
 
@@ -504,6 +478,19 @@ const activeTextColor = computed(() => props.activeState.textColor)
 const activeHighlight = computed(() => props.activeState.highlight)
 
 const imageInput = ref<HTMLInputElement | null>(null)
+
+function onBlockTypeChange(e: Event) {
+  const val = (e.target as HTMLSelectElement).value
+  if (val === 'paragraph') {
+    props.commands.setParagraph()
+  } else if (val === 'h1') {
+    props.commands.setHeading(1)
+  } else if (val === 'h2') {
+    props.commands.setHeading(2)
+  } else if (val === 'h3') {
+    props.commands.setHeading(3)
+  }
+}
 
 function onImageSelect(event: Event) {
   const input = event.target as HTMLInputElement

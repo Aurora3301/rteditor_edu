@@ -17,9 +17,6 @@ import {
   setTextColor, removeTextColor, getActiveTextColor,
   setHighlight, removeHighlight, getActiveHighlight,
   insertTable,
-  addRowBefore, addRowAfter, deleteRow,
-  addColumnBefore, addColumnAfter, deleteColumn,
-  mergeCells, splitCell, toggleHeaderRow,
 } from '../core/commands'
 import { activateDrag, deactivateDrag, isDragActive } from '../core/plugins/dragHandle'
 import { getDocStats, getSelectionStats } from '../core/utils/wordCount'
@@ -71,6 +68,7 @@ export interface EditorActiveState {
   heading1: boolean
   heading2: boolean
   heading3: boolean
+  blockType: 'paragraph' | 'h1' | 'h2' | 'h3'
   bulletList: boolean
   orderedList: boolean
   blockquote: boolean
@@ -117,6 +115,7 @@ export function useEditor(options: UseEditorOptions) {
     heading1: false,
     heading2: false,
     heading3: false,
+    blockType: 'paragraph',
     bulletList: false,
     orderedList: false,
     blockquote: false,
@@ -156,6 +155,15 @@ export function useEditor(options: UseEditorOptions) {
     activeState.heading1 = isBlockActive(schema.nodes.heading, { level: 1 })(state)
     activeState.heading2 = isBlockActive(schema.nodes.heading, { level: 2 })(state)
     activeState.heading3 = isBlockActive(schema.nodes.heading, { level: 3 })(state)
+    // Determine current block type
+    const { $from } = state.selection
+    const parentType = $from.parent.type
+    if (parentType === schema.nodes.heading) {
+      const level = $from.parent.attrs.level
+      activeState.blockType = `h${level}` as 'h1' | 'h2' | 'h3'
+    } else {
+      activeState.blockType = 'paragraph'
+    }
     activeState.bulletList = isBlockActive(schema.nodes.bullet_list)(state)
     activeState.orderedList = isBlockActive(schema.nodes.ordered_list)(state)
     activeState.blockquote = isBlockActive(schema.nodes.blockquote)(state)
@@ -285,15 +293,6 @@ export function useEditor(options: UseEditorOptions) {
     setHighlight: (color: string) => execCommand(setHighlight(color)),
     removeHighlight: () => execCommand(removeHighlight),
     insertTable: (rows: number, cols: number, hasHeader: boolean) => execCommand(insertTable(rows, cols, hasHeader)),
-    addRowBefore: () => execCommand(addRowBefore),
-    addRowAfter: () => execCommand(addRowAfter),
-    deleteRow: () => execCommand(deleteRow),
-    addColumnBefore: () => execCommand(addColumnBefore),
-    addColumnAfter: () => execCommand(addColumnAfter),
-    deleteColumn: () => execCommand(deleteColumn),
-    mergeCells: () => execCommand(mergeCells),
-    splitCell: () => execCommand(splitCell),
-    toggleHeaderRow: () => execCommand(toggleHeaderRow),
   }
 
   // ── Set content programmatically ──

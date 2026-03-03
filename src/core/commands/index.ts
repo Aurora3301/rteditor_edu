@@ -56,15 +56,6 @@ export {
 
   // Table
   insertTable,
-  addColumnAfter,
-  addColumnBefore,
-  deleteColumn,
-  addRowAfter,
-  addRowBefore,
-  deleteRow,
-  mergeCells,
-  splitCell,
-  toggleHeaderRow,
 
   // State checks
   isMarkActive,

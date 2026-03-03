@@ -3,6 +3,7 @@ import { EditorView } from 'prosemirror-view'
 import { Node as ProseMirrorNode } from 'prosemirror-model'
 import { createPlugins } from './plugins'
 import { fromHTML, fromJSON, createEmptyDoc } from './serializers'
+import { ChecklistItemNodeView } from './plugins/checklistNodeView'
 
 /**
  * Options for creating an editor instance.
@@ -69,6 +70,10 @@ export function createEditor(options: EditorOptions): EditorView {
     state,
 
     editable: () => options.editable !== false,
+
+    nodeViews: {
+      task_item: (node, view, getPos) => new ChecklistItemNodeView(node, view, getPos),
+    },
 
     dispatchTransaction(this: EditorView, tr: Transaction) {
       const newState = this.state.apply(tr)

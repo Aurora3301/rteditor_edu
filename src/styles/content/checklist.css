@@ -1,5 +1,5 @@
 /* ================================================================
-   CHECKLIST — Task list / checkbox styles
+   CHECKLIST — Task list with real interactive checkboxes (NodeView)
    ================================================================ */
 
 .rte-editor ul.rte-checklist {
@@ -8,46 +8,36 @@
   margin: var(--rte-sp-2) 0;
 }
 
-.rte-editor ul.rte-checklist li {
+.rte-checklist__item {
   display: flex;
   align-items: flex-start;
   gap: var(--rte-sp-2);
   padding: 2px 0;
-  position: relative;
+  list-style: none;
 }
 
-.rte-editor ul.rte-checklist li::before {
-  content: '';
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  border: 2px solid var(--rte-border);
-  border-radius: 3px;
-  margin-top: 3px;
+.rte-checklist__checkbox {
+  margin-top: 4px;
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
   cursor: pointer;
-  background: var(--rte-bg);
-  transition: background 0.15s, border-color 0.15s;
+  accent-color: var(--rte-accent, #6366f1);
+  flex-shrink: 0;
 }
 
-.rte-editor ul.rte-checklist li[data-checked="true"]::before {
-  background: var(--rte-accent);
-  border-color: var(--rte-accent);
-  content: '✓';
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
+.rte-checklist__content {
+  flex: 1;
+  min-width: 0;
 }
 
-.rte-editor ul.rte-checklist li[data-checked="true"] > p {
+.rte-checklist__content > p {
+  margin: 0;
+}
+
+/* Checked state — strikethrough + muted text */
+.rte-checklist__item[data-checked="true"] .rte-checklist__content > p {
   color: var(--rte-text-muted);
   text-decoration: line-through;
-}
-
-.rte-editor ul.rte-checklist li > p {
-  margin: 0;
-  flex: 1;
 }
 

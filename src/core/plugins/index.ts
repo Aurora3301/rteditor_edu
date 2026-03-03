@@ -7,7 +7,7 @@ import { createDragHandlePlugin } from './dragHandle'
 import { gapCursor } from 'prosemirror-gapcursor'
 import { buildKeymap } from './keymap'
 import { buildInputRules } from './inputRules'
-import { tableEditing, columnResizing } from 'prosemirror-tables'
+import { tableEditing } from 'prosemirror-tables'
 import { createSlashMenuPlugin } from './slashMenu'
 
 /**
@@ -27,7 +27,6 @@ export function createPlugins(): Plugin[] {
     buildKeymap(),
     keymap(baseKeymap),
     tableEditing(),
-    columnResizing(),
     createSlashMenuPlugin(),
     dropCursor(),
     createDragHandlePlugin(),

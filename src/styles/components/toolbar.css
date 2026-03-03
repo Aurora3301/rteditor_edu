@@ -54,3 +54,26 @@
   padding: 0;
 }
 
+/* ── Block type dropdown (Google Docs style) ── */
+.rte-toolbar__block-select {
+  height: 28px;
+  padding: 0 var(--rte-sp-2);
+  min-width: 120px;
+  border: 1px solid var(--rte-border);
+  border-radius: var(--rte-radius-sm);
+  background: var(--rte-bg);
+  color: var(--rte-text);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  appearance: auto;
+}
+
+.rte-toolbar__block-select:focus {
+  border-color: var(--rte-accent);
+}
+
+.rte-toolbar__block-select:hover {
+  background: var(--rte-bg-subtle);
+}
+

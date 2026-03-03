@@ -5,12 +5,7 @@ import { undo, redo } from 'prosemirror-history'
 import { wrapInList, liftListItem, sinkListItem } from 'prosemirror-schema-list'
 import { EditorState, Transaction, Command } from 'prosemirror-state'
 import { NodeType, MarkType, Mark } from 'prosemirror-model'
-import {
-  addColumnAfter, addColumnBefore, deleteColumn,
-  addRowAfter, addRowBefore, deleteRow,
-  mergeCells, splitCell, toggleHeaderRow,
-  CellSelection,
-} from 'prosemirror-tables'
+
 import { schema } from '../schema'
 
 /** Validate that a URL is safe (no javascript:, vbscript:, data: protocols) */
@@ -469,51 +464,100 @@ export function getActiveFontSize(state: EditorState): string | null {
 
 /** Toggle the current block to/from a task_list / task_item */
 export function toggleChecklist(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
-  const { from, to } = state.selection
+  const { $from, $to } = state.selection
   const inTaskList = isBlockActive(schema.nodes.task_item)(state)
 
-  if (dispatch) {
-    const tr = state.tr
-    if (inTaskList) {
-      // Convert task_items back to paragraphs inside a bullet_list structure
+  if (inTaskList) {
+    // Lift out of task_list → becomes plain paragraph
+    const range = $from.blockRange($to)
+    if (!range) return false
+    // Find the task_list ancestor
+    let taskListDepth = -1
+    for (let i = range.depth; i >= 0; i--) {
+      if ($from.node(i).type === schema.nodes.task_list) {
+        taskListDepth = i
+        break
+      }
+    }
+    if (taskListDepth < 0) return false
+    if (dispatch) {
+      const tr = state.tr
+      // Convert each task_item → paragraph, remove task_list wrapper
+      const from = range.start
+      const to = range.end
+      // Collect all task_items in range
+      const items: { pos: number; node: any }[] = []
       state.doc.nodesBetween(from, to, (node, pos) => {
         if (node.type === schema.nodes.task_item) {
-          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.list_item)
-        }
-        if (node.type === schema.nodes.task_list) {
-          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.bullet_list)
+          items.push({ pos, node })
         }
       })
-    } else {
-      // Wrap selection in task_list
+      // Process in reverse to preserve positions
+      for (const { pos, node } of items.reverse()) {
+        tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.list_item)
+      }
+      // Change task_list → bullet_list
+      const listPos = $from.before(taskListDepth)
+      tr.setNodeMarkup(tr.mapping.map(listPos), schema.nodes.bullet_list)
+      dispatch(tr.scrollIntoView())
+    }
+    return true
+  } else {
+    // Convert current paragraph(s) → task_list > task_item
+    // Expand selection to cover full blocks
+    const from = $from.start($from.depth - 1) > 0 ? $from.before($from.depth) : $from.pos
+    const to = $to.end($to.depth - 1) > 0 ? $to.after($to.depth) : $to.pos
+
+    if (dispatch) {
+      const tr = state.tr
+      // Collect paragraphs in the affected range
+      const paragraphs: { pos: number; node: any }[] = []
       state.doc.nodesBetween(from, to, (node, pos) => {
         if (node.type === schema.nodes.paragraph) {
-          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.task_item, { checked: false })
-        }
-        if (node.type === schema.nodes.bullet_list || node.type === schema.nodes.ordered_list) {
-          tr.setNodeMarkup(tr.mapping.map(pos), schema.nodes.task_list)
+          paragraphs.push({ pos, node })
+          return false // don't recurse into paragraph
         }
       })
+
+      if (paragraphs.length === 0) {
+        // Cursor in empty paragraph or edge case — just insert an empty task_list
+        const taskItem = schema.nodes.task_item.createAndFill({ checked: false })!
+        const taskList = schema.nodes.task_list.create(null, taskItem)
+        tr.replaceSelectionWith(taskList)
+      } else {
+        // Wrap each paragraph into a task_item, then wrap group into task_list
+        // Build the task_items from the paragraphs' content
+        const taskItems = paragraphs.map(({ node }) =>
+          schema.nodes.task_item.create(
+            { checked: false },
+            node.content
+          )
+        )
+        const taskList = schema.nodes.task_list.create(null, taskItems)
+
+        // Replace from start of first paragraph to end of last paragraph
+        const startPos = paragraphs[0].pos
+        const endPos = paragraphs[paragraphs.length - 1].pos + paragraphs[paragraphs.length - 1].node.nodeSize
+        tr.replaceWith(startPos, endPos, taskList)
+      }
+      dispatch(tr.scrollIntoView())
     }
-    dispatch(tr.scrollIntoView())
+    return true
   }
-  return true
 }
 
 /** Toggle the checked state of the task_item at cursor */
 export function toggleChecklistItem(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
   const { $from } = state.selection
-  // Find the task_item ancestor
   for (let depth = $from.depth; depth >= 0; depth--) {
     const node = $from.node(depth)
     if (node.type === schema.nodes.task_item) {
       if (dispatch) {
         const pos = $from.before(depth)
-        const tr = state.tr.setNodeMarkup(pos, undefined, {
+        dispatch(state.tr.setNodeMarkup(pos, undefined, {
           ...node.attrs,
           checked: !node.attrs.checked,
-        })
-        dispatch(tr)
+        }))
       }
       return true
     }
@@ -616,10 +660,6 @@ export function getActiveHighlight(state: EditorState): string | null {
 }
 
 // ── Table commands ──────────────────────────────────────────────────────
-
-export { addColumnAfter, addColumnBefore, deleteColumn }
-export { addRowAfter, addRowBefore, deleteRow }
-export { mergeCells, splitCell, toggleHeaderRow }
 
 /** Insert a table at the cursor position */
 export function insertTable(rows: number, cols: number, hasHeader: boolean): Command {

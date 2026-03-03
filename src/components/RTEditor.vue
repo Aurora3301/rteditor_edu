@@ -32,22 +32,6 @@
       @cancel="showTableDialog = false"
     />
 
-    <!-- Table contextual toolbar -->
-    <RTTableToolbar
-      :visible="activeState.inTable"
-      :top="tableToolbarPos.top"
-      :left="tableToolbarPos.left"
-      @add-row-before="commands.addRowBefore()"
-      @add-row-after="commands.addRowAfter()"
-      @add-col-before="commands.addColumnBefore()"
-      @add-col-after="commands.addColumnAfter()"
-      @delete-row="commands.deleteRow()"
-      @delete-col="commands.deleteColumn()"
-      @merge-cells="commands.mergeCells()"
-      @split-cell="commands.splitCell()"
-      @toggle-header="commands.toggleHeaderRow()"
-    />
-
     <!-- Slash command menu -->
     <RTSlashMenu
       :visible="slashMenuVisible"
@@ -79,7 +63,6 @@ import { ref, computed, watch } from 'vue'
 import RTToolbar from './RTToolbar.vue'
 import RTBubbleMenu from './RTBubbleMenu.vue'
 import RTTableInsertDialog from './RTTableInsertDialog.vue'
-import RTTableToolbar from './RTTableToolbar.vue'
 import RTSlashMenu from './RTSlashMenu.vue'
 import RTWordCountModal from './RTWordCountModal.vue'
 import RTEmojiPicker from './RTEmojiPicker.vue'
@@ -224,8 +207,7 @@ function fileToDataURL(file: File): Promise<string> {
 const showTableDialog = ref(false)
 const showWordCount = ref(false)
 const showEmojiPicker = ref(false)
-const tableToolbarVisible = ref(false)
-const tableToolbarPos = ref({ top: 0, left: 0 })
+
 const slashMenuVisible = ref(false)
 const slashMenuPos = ref({ top: 0, left: 0 })
 const docStats = computed(() => getStats()?.docStats ?? { words: 0, chars: 0, charsNoSpaces: 0, paragraphs: 0 })

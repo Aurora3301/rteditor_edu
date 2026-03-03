@@ -1,5 +1,5 @@
 import { keymap } from 'prosemirror-keymap'
-import { Plugin } from 'prosemirror-state'
+import { EditorState, Plugin, Transaction } from 'prosemirror-state'
 import {
   chainCommands, exitCode, joinBackward, selectNodeBackward,
   joinForward, selectNodeForward, deleteSelection,
@@ -13,6 +13,56 @@ import {
   toggleChecklistItem,
   undo, redo
 } from '../commands/formatting'
+
+/** If cursor is at the very start of a block and the previous sibling is a table, delete the table */
+function deleteTableBefore(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { $from, empty } = state.selection
+  if (!empty) return false
+
+  // Must be at the very start of a text block
+  if ($from.parentOffset !== 0) return false
+
+  // Check the node before the current block
+  const before = $from.before($from.depth)
+  if (before <= 0) return false
+
+  const $before = state.doc.resolve(before)
+  const nodeBefore = $before.nodeBefore
+
+  if (!nodeBefore || nodeBefore.type.name !== 'table') return false
+
+  if (dispatch) {
+    // Delete the table node
+    const tableStart = before - nodeBefore.nodeSize
+    const tr = state.tr.delete(tableStart, before)
+    dispatch(tr.scrollIntoView())
+  }
+  return true
+}
+
+/** If cursor is at the very end of a block and the next sibling is a table, delete the table */
+function deleteTableAfter(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const { $to, empty } = state.selection
+  if (!empty) return false
+
+  // Must be at the very end of a text block
+  if ($to.parentOffset !== $to.parent.content.size) return false
+
+  const after = $to.after($to.depth)
+  if (after >= state.doc.content.size) return false
+
+  const $after = state.doc.resolve(after)
+  const nodeAfter = $after.nodeAfter
+
+  if (!nodeAfter || nodeAfter.type.name !== 'table') return false
+
+  if (dispatch) {
+    const tableEnd = after + nodeAfter.nodeSize
+    const tr = state.tr.delete(after, tableEnd)
+    dispatch(tr.scrollIntoView())
+  }
+  return true
+}
 
 export function buildKeymap(): Plugin {
   const bindings: Record<string, any> = {}
@@ -41,16 +91,18 @@ export function buildKeymap(): Plugin {
     splitBlock,
   )
 
-  // ── Backspace: undo input rule first, then normal delete ──
+  // ── Backspace: delete table before cursor, then undo input rule, then normal delete ──
   bindings['Backspace'] = chainCommands(
+    deleteTableBefore,
     undoInputRule,
     deleteSelection,
     joinBackward,
     selectNodeBackward,
   )
 
-  // ── Delete (forward) ──
+  // ── Delete (forward): delete table after cursor, then normal delete ──
   bindings['Delete'] = chainCommands(
+    deleteTableAfter,
     deleteSelection,
     joinForward,
     selectNodeForward,

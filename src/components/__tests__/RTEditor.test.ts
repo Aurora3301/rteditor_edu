@@ -75,11 +75,14 @@ describe('RTEditor Component', () => {
     expect(wrapper.find('[aria-label="Underline"]').exists()).toBe(true)
   })
 
-  it('should render Heading buttons', () => {
+  it('should render block-type dropdown with heading options', () => {
     wrapper = mount(RTEditor)
-    expect(wrapper.find('[aria-label="Heading 1"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="Heading 2"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="Heading 3"]').exists()).toBe(true)
+    const select = wrapper.find('.rte-toolbar__block-select')
+    expect(select.exists()).toBe(true)
+    expect(select.find('option[value="h1"]').exists()).toBe(true)
+    expect(select.find('option[value="h2"]').exists()).toBe(true)
+    expect(select.find('option[value="h3"]').exists()).toBe(true)
+    expect(select.find('option[value="paragraph"]').exists()).toBe(true)
   })
 
   it('should render Undo/Redo buttons', () => {
