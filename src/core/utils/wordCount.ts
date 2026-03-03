@@ -14,7 +14,7 @@ export function getDocStats(doc: ProseMirrorNode): DocStats {
 
   doc.descendants(node => {
     if (node.type.name === 'paragraph' || node.type.name === 'heading' ||
-        node.type.name === 'task_item' || node.type.name === 'list_item') {
+        node.type.name === 'list_item') {
       paragraphs++
       text += node.textContent + '\n'
     }
