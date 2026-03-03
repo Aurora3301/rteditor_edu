@@ -46,6 +46,27 @@
 
 .rte-image-rotbar__btn:hover { background: rgba(255,255,255,0.2); }
 
+/* Degree input field inside the rotation bar */
+.rte-image-rotbar__input {
+  width: 44px;
+  padding: 1px 4px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 3px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 12px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.rte-image-rotbar__input::-webkit-inner-spin-button,
+.rte-image-rotbar__input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.rte-image-rotbar__input:focus {
+  border-color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.22);
+}
+
 /* Resize handle */
 .rte-image-resize-handle {
   position: absolute;

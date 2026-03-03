@@ -36,30 +36,58 @@ export class ImageNodeView implements NodeView {
     this.rotationBar = document.createElement('div')
     this.rotationBar.className = 'rte-image-rotbar'
 
-    const rotBtns: { label: string; title: string; delta: number }[] = [
-      { label: '↺', title: 'Rotate left 90°',  delta: -90 },
-      { label: '↻', title: 'Rotate right 90°', delta:  90 },
-    ]
-    rotBtns.forEach(({ label, title, delta }) => {
-      const btn = document.createElement('button')
-      btn.type = 'button'
-      btn.textContent = label
-      btn.title = title
-      btn.setAttribute('aria-label', title)
-      btn.tabIndex = 0
-      btn.className = 'rte-image-rotbar__btn'
-      const apply = (e: Event) => {
-        e.preventDefault()
-        const current = this.node.attrs.rotation ?? 0
-        const next = ((current + delta) % 360 + 360) % 360
-        this.updateAttr('rotation', next)
-      }
-      btn.addEventListener('mousedown', apply)
-      btn.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') apply(e)
-      })
-      this.rotationBar.appendChild(btn)
-    })
+    // ↺ rotate-left button
+    const btnLeft = document.createElement('button')
+    btnLeft.type = 'button'; btnLeft.textContent = '↺'
+    btnLeft.title = 'Rotate left 90°'; btnLeft.setAttribute('aria-label', 'Rotate left 90°')
+    btnLeft.tabIndex = 0; btnLeft.className = 'rte-image-rotbar__btn'
+    const applyLeft = (e: Event) => {
+      e.preventDefault()
+      const next = ((( this.node.attrs.rotation ?? 0) - 90) % 360 + 360) % 360
+      this.updateAttr('rotation', next)
+      degInput.value = String(next)
+    }
+    btnLeft.addEventListener('mousedown', applyLeft)
+    btnLeft.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') applyLeft(e) })
+    this.rotationBar.appendChild(btnLeft)
+
+    // Degree text input (0-360)
+    const degInput = document.createElement('input')
+    degInput.type = 'number'
+    degInput.min = '0'; degInput.max = '360'; degInput.step = '1'
+    degInput.value = String(node.attrs.rotation ?? 0)
+    degInput.className = 'rte-image-rotbar__input'
+    degInput.title = 'Rotation (0–360°)'
+    degInput.setAttribute('aria-label', 'Rotation degrees')
+    // Apply on Enter or blur
+    const applyDeg = () => {
+      let deg = parseInt(degInput.value, 10)
+      if (isNaN(deg)) deg = 0
+      deg = ((deg % 360) + 360) % 360
+      degInput.value = String(deg)
+      this.updateAttr('rotation', deg)
+    }
+    degInput.addEventListener('change', applyDeg)
+    degInput.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Enter') { e.preventDefault(); applyDeg() } })
+    // Stop PM from swallowing the keystrokes
+    degInput.addEventListener('keypress', (e) => e.stopPropagation())
+    degInput.addEventListener('keyup', (e) => e.stopPropagation())
+    this.rotationBar.appendChild(degInput)
+
+    // ↻ rotate-right button
+    const btnRight = document.createElement('button')
+    btnRight.type = 'button'; btnRight.textContent = '↻'
+    btnRight.title = 'Rotate right 90°'; btnRight.setAttribute('aria-label', 'Rotate right 90°')
+    btnRight.tabIndex = 0; btnRight.className = 'rte-image-rotbar__btn'
+    const applyRight = (e: Event) => {
+      e.preventDefault()
+      const next = (( this.node.attrs.rotation ?? 0) + 90) % 360
+      this.updateAttr('rotation', next)
+      degInput.value = String(next)
+    }
+    btnRight.addEventListener('mousedown', applyRight)
+    btnRight.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') applyRight(e) })
+    this.rotationBar.appendChild(btnRight)
     this.dom.appendChild(this.rotationBar)
 
     // Resize handle (bottom-right corner)
@@ -107,7 +135,11 @@ export class ImageNodeView implements NodeView {
     this.node = node
     this.img.src = node.attrs.src
     if (node.attrs.width) this.img.style.width = `${node.attrs.width}px`
-    this.applyRotation(node.attrs.rotation ?? 0)
+    const deg = node.attrs.rotation ?? 0
+    this.applyRotation(deg)
+    // Keep the input field in sync (e.g., after undo)
+    const input = this.rotationBar.querySelector<HTMLInputElement>('.rte-image-rotbar__input')
+    if (input) input.value = String(deg)
     return true
   }
 

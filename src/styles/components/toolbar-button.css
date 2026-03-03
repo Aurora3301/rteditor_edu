@@ -165,3 +165,22 @@
   color: var(--rte-text);
   background: var(--rte-bg);
 }
+
+/* ── Comment button — icon + colour swatch below it ── */
+.rte-toolbar__comment-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  line-height: 1;
+}
+.rte-toolbar__comment-swatch {
+  width: 14px;
+  height: 3px;
+  border-radius: 1px;
+  display: block;
+}
+/* Slight tint when hovered so the purple swatch is recognisable */
+.rte-toolbar__button--comment:hover {
+  background: rgba(205, 189, 235, 0.22);
+}

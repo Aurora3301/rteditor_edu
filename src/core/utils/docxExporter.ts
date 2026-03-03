@@ -5,7 +5,7 @@
 import {
   Document, Packer, Paragraph, TextRun, HeadingLevel,
   Table, TableRow, TableCell, WidthType, AlignmentType,
-  ExternalHyperlink, ImageRun,
+  ExternalHyperlink, ImageRun, ThematicBreak,
 } from 'docx'
 import type { Node as ProseMirrorNode, Mark } from 'prosemirror-model'
 
@@ -99,7 +99,8 @@ function nodeToDocxChild(node: ProseMirrorNode): any {
     return new Table({ rows: tableRows, width: { size: 100, type: WidthType.PERCENTAGE } })
   }
   if (name === 'horizontal_rule') {
-    return new Paragraph({ thematicBreak: true })
+    // docx v9: ThematicBreak must be a child inside a Paragraph
+    return new Paragraph({ children: [new ThematicBreak()] })
   }
   return new Paragraph({})
 }

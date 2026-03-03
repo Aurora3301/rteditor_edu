@@ -409,6 +409,27 @@
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
       </button>
+
+      <!-- Comment button — distinct from highlight, uses fixed #CDBDEB colour -->
+      <div class="rte-toolbar__separator" role="separator"></div>
+      <button
+        type="button"
+        class="rte-toolbar__button rte-toolbar__button--comment"
+        aria-label="Add Comment"
+        title="Add Comment (select text first)"
+        @click="$emit('add-remark')"
+      >
+        <span class="rte-toolbar__comment-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <!-- small colour swatch showing the comment colour -->
+          <span
+            class="rte-toolbar__comment-swatch"
+            style="background:#CDBDEB"
+          ></span>
+        </span>
+      </button>
     </div>
 
     <div class="rte-toolbar__separator" role="separator"></div>
@@ -486,6 +507,7 @@ const emit = defineEmits<{
   'export-pdf': []
   'export-docx': []
   'emoji-open': []
+  'add-remark': []
   'spacing-change': [lineHeight: string, paraSpacing: string]
 }>()
 

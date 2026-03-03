@@ -11,6 +11,7 @@
       @export-docx="onExportDocx"
       @math-open="mathModalRef?.open()"
       @emoji-open="showEmojiPicker = true"
+      @add-remark="onAddRemark"
       @spacing-change="onSpacingChange"
     />
     <div class="rte-root__body">

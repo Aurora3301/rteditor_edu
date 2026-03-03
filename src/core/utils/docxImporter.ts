@@ -52,29 +52,41 @@ const ALLOWED_ATTR = [
 
 // ── Post-processing: catch separator patterns mammoth misses ──────────────────
 /**
- * Mammoth sometimes cannot map Word paragraph-border separators to <hr> even
- * with a style map, because those borders live in paragraph XML (<w:pBdr>),
- * not in a named style. We catch the most common patterns here.
+ * When Word's AutoFormat converts *** / --- / ___ / === / ~~~ + Enter into a
+ * paragraph border (dotted / solid / double line), mammoth outputs one of:
  *
- * Patterns that Word's AutoFormat converts to a border:
- *   ***   → triple wavy line
- *   ---   → single line
- *   ___   → single line
- *   ===   → double line
- *   ~~~   → wavy line
+ *   a) <p>***</p>          — if mammoth preserved the original text
+ *   b) <p></p>             — if the border is on an empty paragraph
+ *   c) <p class="..."></p> — with a style class that has a bottom border
+ *
+ * Strategy:
+ *   1. Convert explicit separator tokens (*** etc.) inside <p> → <hr>
+ *   2. Convert paragraphs whose sole inline style has a border-bottom → <hr>
+ *   3. Do NOT blindly remove all empty <p> — they are valid spacing in Word
+ *      documents. Only remove runs of 3+ consecutive empty paragraphs, which
+ *      are almost certainly artefacts rather than content.
  */
 function postProcess(html: string): string {
-  // Replace paragraphs whose only content is a separator token with <hr>
-  // Handles: <p>***</p>, <p>---</p>, <p>___</p>, <p>===</p>, <p>~~~</p>
-  // and variants with leading/trailing spaces or <br>
-  let out = html.replace(
+  let out = html
+
+  // 1. Explicit separator token → <hr>
+  //    Catches: <p>***</p>, <p>---</p>, <p>___</p>, <p>===</p>, <p>~~~</p>
+  out = out.replace(
     /<p[^>]*>\s*(?:<br\s*\/?>)?\s*(\*{3,}|-{3,}|_{3,}|={3,}|~{3,})\s*(?:<br\s*\/?>)?\s*<\/p>/gi,
-    '<hr />'
+    '<hr />',
   )
 
-  // Also collapse completely empty paragraphs that carry no semantic meaning
-  // (Word often emits these between sections)
-  out = out.replace(/<p[^>]*>\s*(?:<br\s*\/?>\s*)*<\/p>/gi, '')
+  // 2. Paragraph with an inline border-bottom style (mammoth sometimes emits
+  //    these for Word paragraph borders created via *** / --- AutoFormat)
+  //    Only match empty-content paragraphs to avoid stripping real content
+  out = out.replace(
+    /<p([^>]*style="[^"]*border-bottom[^"]*"[^>]*)>\s*(?:<br\s*\/?>)?\s*<\/p>/gi,
+    '<hr />',
+  )
+
+  // 3. Remove only RUNS of 3 or more consecutive empty paragraphs (artefacts),
+  //    keeping 1–2 empties that the author may have intentionally left in.
+  out = out.replace(/(<p[^>]*>\s*(?:<br\s*\/?>\s*)*<\/p>\s*){3,}/gi, '')
 
   return out
 }
