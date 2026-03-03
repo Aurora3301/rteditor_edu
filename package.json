@@ -1,6 +1,6 @@
 {
   "name": "rteditor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Rich Text Editor — Vue 3 plugin built on ProseMirror",
   "type": "module",
   "license": "MIT",
