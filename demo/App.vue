@@ -1,7 +1,7 @@
 <template>
   <div class="demo-app">
     <header class="demo-header">
-      <h1>rteditor <span class="demo-version">v0.1.0</span></h1>
+      <h1>rteditor <span class="demo-version">v0.4.0</span></h1>
       <p>Vue 3 Rich Text Editor built on ProseMirror</p>
     </header>
 
