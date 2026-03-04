@@ -12,7 +12,7 @@
         title="Bold (Ctrl+B)"
         @click="commands.toggleBold()"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h8a4 4 0 0 1 0 8H6V4zm0 8h9a4 4 0 0 1 0 8H6v-8z"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h8a4 4 0 0 1 0 8H6z"/><path d="M6 12h9a4 4 0 0 1 0 8H6z"/></svg>
       </button>
       <button
         type="button"
@@ -45,7 +45,7 @@
         title="Strikethrough (Ctrl+Shift+X)"
         @click="commands.toggleStrike()"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 20H9.5a3.5 3.5 0 0 1 0-7h5"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 5h8a3 3 0 0 1 0 6H8"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M8 19h5a3 3 0 0 0 0-6H8"/></svg>
       </button>
       <button
         type="button"
@@ -56,7 +56,7 @@
         title="Subscript"
         @click="commands.toggleSubscript()"
       >
-        X<sub style="font-size:9px">2</sub>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><text x="0" y="12" font-size="11" font-weight="700" font-family="Georgia,serif" fill="currentColor">A</text><text x="9" y="15" font-size="7" font-family="Georgia,serif" fill="currentColor">2</text></svg>
       </button>
       <button
         type="button"
@@ -67,7 +67,7 @@
         title="Superscript"
         @click="commands.toggleSuperscript()"
       >
-        X<sup style="font-size:9px">2</sup>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><text x="0" y="13" font-size="11" font-weight="700" font-family="Georgia,serif" fill="currentColor">A</text><text x="9" y="6" font-size="7" font-family="Georgia,serif" fill="currentColor">2</text></svg>
       </button>
     </div>
 
@@ -409,7 +409,7 @@
         title="Insert Math Formula (LaTeX)"
         @click="$emit('math-open')"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4l4 16"/><path d="M12 4l4 16"/><path d="M3 12h18"/><path d="M9 8h6"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><text x="1" y="13" font-size="14" font-family="Georgia,serif" fill="currentColor">∑</text></svg>
       </button>
       <button
         type="button"
@@ -489,7 +489,7 @@
         title="Undo (Ctrl+Z)"
         @click="commands.undo()"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7v6h6"/><path d="M3 13C5 7 10 3 16 3a9 9 0 0 1 5 16.5"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
       </button>
       <button
         type="button"
@@ -499,7 +499,7 @@
         title="Redo (Ctrl+Shift+Z)"
         @click="commands.redo()"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 7v6h-6"/><path d="M21 13C19 7 14 3 8 3a9 9 0 0 0-5 16.5"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
       </button>
     </div>
   </div>

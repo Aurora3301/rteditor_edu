@@ -314,8 +314,17 @@ const showEmojiPicker = ref(false)
 
 const slashMenuVisible = ref(false)
 const slashMenuPos = ref({ top: 0, left: 0 })
-const docStats = computed(() => getStats()?.docStats ?? { words: 0, chars: 0, charsNoSpaces: 0, paragraphs: 0 })
-const selStats = computed(() => getStats()?.selStats ?? null)
+// html.value changes on every document transaction — referencing it here makes
+// these computeds re-run whenever content changes (ProseMirror state is not
+// Vue-reactive on its own, so without this dependency the stats would be stale).
+const docStats = computed(() => {
+  void html.value // reactive dependency on content changes
+  return getStats()?.docStats ?? { words: 0, chars: 0, charsNoSpaces: 0, paragraphs: 0 }
+})
+const selStats = computed(() => {
+  void html.value
+  return getStats()?.selStats ?? null
+})
 const liveWordCount = computed(() => docStats.value.words)
 
 // ── Slash commands ──
