@@ -13,6 +13,59 @@ import {
 const OL_REF = 'rte-ordered-list'
 import type { Node as ProseMirrorNode, Mark } from 'prosemirror-model'
 
+// ── Image dimension cache (populated by preloadImageDimensions before export) ──
+// Stores [naturalWidth, naturalHeight] for each data-URL image src.
+let _imageDims: Map<string, [number, number]> = new Map()
+
+/**
+ * Walks the document and pre-loads natural dimensions for every data-URL image.
+ * Must be awaited before building docx children so that buildImageRun() has
+ * the correct proportions available synchronously.
+ */
+async function preloadImageDimensions(doc: ProseMirrorNode): Promise<Map<string, [number, number]>> {
+  const map = new Map<string, [number, number]>()
+  const srcs = new Set<string>()
+  doc.descendants(node => {
+    if (node.type.name === 'image' && node.attrs.src?.startsWith('data:image/')) {
+      srcs.add(node.attrs.src as string)
+    }
+  })
+  await Promise.all(Array.from(srcs).map(src =>
+    new Promise<void>(resolve => {
+      const img = new window.Image()
+      img.onload  = () => { map.set(src, [img.naturalWidth, img.naturalHeight]); resolve() }
+      img.onerror = () => { map.set(src, [300, 200]); resolve() }
+      img.src = src
+    })
+  ))
+  return map
+}
+
+/**
+ * Builds a docx ImageRun for an image node's attrs.
+ * Returns null for non-data-URL images (external URLs can't be embedded without fetch).
+ */
+function buildImageRun(attrs: Record<string, any>): ImageRun | null {
+  const { src, width, rotation } = attrs
+  if (!src?.startsWith('data:image/')) return null
+  const m = src.match(/^data:image\/([a-z+]+);base64,/)
+  if (!m) return null
+  const format = m[1] === 'jpeg' ? 'jpg' : m[1]          // 'png' | 'jpg' | 'gif' | 'bmp'
+  const base64 = src.split(',')[1]
+  const [naturalW, naturalH] = _imageDims.get(src) ?? [300, 200]
+  const displayW = Math.round(width ?? naturalW)
+  const displayH = Math.round((displayW / naturalW) * naturalH)
+  return new ImageRun({
+    data: base64,
+    transformation: {
+      width:  displayW,
+      height: displayH,
+      ...(rotation ? { rotation } : {}),
+    },
+    type: format as any,
+  })
+}
+
 function alignmentType(align: string | null): typeof AlignmentType[keyof typeof AlignmentType] | undefined {
   const map: Record<string, typeof AlignmentType[keyof typeof AlignmentType]> = {
     left: AlignmentType.LEFT,
@@ -39,8 +92,8 @@ function marksToRunProps(marks: readonly Mark[]): Record<string, any> {
   return props
 }
 
-function inlineToRuns(node: ProseMirrorNode): (TextRun | ExternalHyperlink)[] {
-  const runs: (TextRun | ExternalHyperlink)[] = []
+function inlineToRuns(node: ProseMirrorNode): (TextRun | ExternalHyperlink | ImageRun)[] {
+  const runs: (TextRun | ExternalHyperlink | ImageRun)[] = []
   node.forEach(child => {
     if (child.type.name === 'text') {
       const linkMark = child.marks.find(m => m.type.name === 'link')
@@ -53,6 +106,10 @@ function inlineToRuns(node: ProseMirrorNode): (TextRun | ExternalHyperlink)[] {
       }
     } else if (child.type.name === 'hard_break') {
       runs.push(new TextRun({ text: '', break: 1 }))
+    } else if (child.type.name === 'image') {
+      // Inline image — embed using stored dimensions (preloaded before export)
+      const run = buildImageRun(child.attrs)
+      if (run) runs.push(run)
     }
   })
   return runs
@@ -115,6 +172,9 @@ function nodeToDocxChildren(node: ProseMirrorNode): any[] {
 }
 
 export async function exportToDocx(doc: ProseMirrorNode, filename = 'document.docx'): Promise<void> {
+  // Pre-load image natural dimensions so buildImageRun() can scale proportionally
+  _imageDims = await preloadImageDimensions(doc)
+
   const children: any[] = []
   doc.forEach(node => children.push(...nodeToDocxChildren(node)))
 

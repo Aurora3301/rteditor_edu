@@ -178,4 +178,24 @@ body {
   white-space: pre-wrap;
   word-break: break-all;
 }
+
+/* ── Print / Export PDF ────────────────────────────────────────────────────
+   Hide all demo chrome so only the editor content appears in the printout.
+   The library's own print.css hides the toolbar/sidebar/overlays.
+   ─────────────────────────────────────────────────────────────────────── */
+@media print {
+  body { background: white !important; }
+
+  .demo-header,
+  .demo-controls,
+  .demo-output { display: none !important; }
+
+  .demo-app {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .demo-main { gap: 0; }
+}
 </style>

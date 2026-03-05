@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(99, 102, 241, 0.07);
+  background: transparent;
   border: 2px dashed var(--rte-accent, #6366f1);
   border-radius: 4px;
   pointer-events: none;
