@@ -293,7 +293,13 @@ function collectRuns(
     if (!(child instanceof Element)) continue
     const n = child.localName
     if (n === 'r') {
-      parts.push(convertRun(child))
+      // Image runs: <w:r><w:drawing> or <w:r><w:pict> — must be handled before text-run path
+      const drawing = wEl(child, 'drawing') ?? wEl(child, 'pict')
+      if (drawing) {
+        parts.push(convertDrawing(drawing, relMap, mediaMap))
+      } else {
+        parts.push(convertRun(child))
+      }
     } else if (n === 'hyperlink') {
       const rId   = child.getAttributeNS(R, 'id') ?? child.getAttribute('r:id') ?? ''
       const href  = relMap.get(rId) ?? ''
@@ -355,10 +361,16 @@ function convertParagraph(
   const pStyle = wVal(wEl(pPr, 'pStyle'))
 
   // ── Horizontal rule via paragraph border ─────────────────────────────────
-  const pBdr = wEl(pPr, 'pBdr')
-  if (pBdr) {
-    const btm = wEl(pBdr, 'bottom')
-    if (btm && wVal(btm) !== 'none') return '<hr />'
+  // Only an EMPTY paragraph with a bottom border is a divider.
+  // Word commonly applies decorative bottom borders to paragraphs that still
+  // contain text (e.g. underline-style headings) — those must NOT become <hr>.
+  const hasText = wEls(p, 't').some(t => (t.textContent ?? '').trim() !== '')
+  if (!hasText) {
+    const pBdr = wEl(pPr, 'pBdr')
+    if (pBdr) {
+      const btm = wEl(pBdr, 'bottom')
+      if (btm && wVal(btm) !== 'none') return '<hr />'
+    }
   }
   // Horizontal rule via explicit Word style
   if (styleMap.get(pStyle) === 'hr') return '<hr />'
