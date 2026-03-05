@@ -1,5 +1,5 @@
 .rte-table-mini-toolbar {
-  display: flex;
+  display: none !important; /* hidden — re-enable by removing this line */
   align-items: center;
   gap: 2px;
   padding: 4px 6px;
