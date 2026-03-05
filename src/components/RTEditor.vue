@@ -25,10 +25,7 @@
         @drop.prevent="onDrop"
       >
         <!-- Drag-and-drop image overlay -->
-        <div v-if="isDraggingOver" class="rte-drag-overlay" aria-hidden="true">
-          <span class="rte-drag-overlay__icon">🖼</span>
-          <span class="rte-drag-overlay__text">Drop image to insert</span>
-        </div>
+        <div v-if="isDraggingOver" class="rte-drag-overlay" aria-hidden="true" />
         <div
           ref="editorRef"
           class="rte-editor"
