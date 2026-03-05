@@ -3,8 +3,10 @@ import type { EditorView, NodeView } from 'prosemirror-view'
 
 export class ImageNodeView implements NodeView {
   dom: HTMLElement
+  private inner: HTMLElement        // rotating container — border + handles live here
   private img: HTMLImageElement
   private rotHandle: HTMLElement
+  private resizeHandle: HTMLElement
   private node: ProseMirrorNode
   private view: EditorView
   private getPos: () => number | undefined
@@ -14,27 +16,27 @@ export class ImageNodeView implements NodeView {
     this.view = view
     this.getPos = getPos
 
-    // ── Wrapper ──────────────────────────────────────────────────────────────
+    // ── Wrapper (never rotates — just anchors the inner block) ───────────────
     this.dom = document.createElement('span')
     this.dom.className = 'rte-image-wrapper'
     this.dom.contentEditable = 'false'
-    this.dom.style.display = 'inline-block'
-    this.dom.style.position = 'relative'
 
-    // ── Image ─────────────────────────────────────────────────────────────────
+    // ── Inner (THIS rotates; border + handles are children so they orbit too) ─
+    this.inner = document.createElement('div')
+    this.inner.className = 'rte-image-inner'
+    this.dom.appendChild(this.inner)
+
+    // ── Image (no transform — inner rotates instead) ─────────────────────────
     this.img = document.createElement('img')
     this.img.src = node.attrs.src
     this.img.alt = node.attrs.alt || ''
     this.img.className = 'rte-image'
-    this.img.style.display = 'block'
-    this.img.style.maxWidth = '100%'
     if (node.attrs.width) this.img.style.width = `${node.attrs.width}px`
-    this.applyRotation(node.attrs.rotation ?? 0)
-    this.dom.appendChild(this.img)
+    this.inner.appendChild(this.img)
 
-    // ── Rotation handle ───────────────────────────────────────────────────────
-    // A draggable knob + stem that sits above the image center.
-    // Dragging calculates the angle from the image's center to the cursor.
+    // ── Rotation handle (child of inner → orbits with rotation) ──────────────
+    // transform is managed entirely in applyRotation():
+    //   translateX(-50%) rotate(-Ndeg)  — centres handle + keeps knob upright
     this.rotHandle = document.createElement('div')
     this.rotHandle.className = 'rte-image-rot-handle'
     this.rotHandle.title = 'Drag to rotate'
@@ -49,16 +51,11 @@ export class ImageNodeView implements NodeView {
 
     this.rotHandle.addEventListener('mousedown', (e: MouseEvent) => {
       if (e.button !== 0) return
-      e.preventDefault()
-      e.stopPropagation()
-      // Disable CSS transition so rotation tracks cursor instantly
+      e.preventDefault(); e.stopPropagation()
       this.dom.classList.add('rte-image-wrapper--rotating')
       this.rotHandle.style.cursor = 'grabbing'
-
-      const onMove = (ev: MouseEvent) => {
-        this.applyRotation(this.angleFromCenter(ev))
-      }
-      const onUp = (ev: MouseEvent) => {
+      const onMove = (ev: MouseEvent) => { this.applyRotation(this.angleFromCenter(ev)) }
+      const onUp   = (ev: MouseEvent) => {
         const deg = this.angleFromCenter(ev)
         this.applyRotation(deg)
         this.updateAttr('rotation', deg)
@@ -70,52 +67,58 @@ export class ImageNodeView implements NodeView {
       document.addEventListener('mousemove', onMove)
       document.addEventListener('mouseup', onUp)
     })
-    this.dom.appendChild(this.rotHandle)
+    this.inner.appendChild(this.rotHandle)
 
-    // ── Resize handle (bottom-right corner) ───────────────────────────────────
-    const handle = document.createElement('div')
-    handle.className = 'rte-image-resize-handle'
-    let startX = 0, startW = 0
-    handle.addEventListener('mousedown', (e) => {
-      e.preventDefault()
-      startX = e.clientX
+    // ── Resize handle (child of inner → orbits with rotation) ────────────────
+    // Drag delta is projected onto the image's rotated axis so enlarging /
+    // shrinking always works correctly at any angle.
+    this.resizeHandle = document.createElement('div')
+    this.resizeHandle.className = 'rte-image-resize-handle'
+    let startX = 0, startY = 0, startW = 0
+    this.resizeHandle.addEventListener('mousedown', (e: MouseEvent) => {
+      e.preventDefault(); e.stopPropagation()
+      startX = e.clientX; startY = e.clientY
       startW = this.img.offsetWidth
+      const rad = (this.node.attrs.rotation ?? 0) * Math.PI / 180
       const onMove = (ev: MouseEvent) => {
-        this.img.style.width = `${Math.max(40, startW + ev.clientX - startX)}px`
+        const delta = (ev.clientX - startX) * Math.cos(rad) + (ev.clientY - startY) * Math.sin(rad)
+        this.img.style.width = `${Math.max(40, startW + delta)}px`
       }
       const onUp = (ev: MouseEvent) => {
-        this.updateAttr('width', Math.max(40, startW + ev.clientX - startX))
+        const delta = (ev.clientX - startX) * Math.cos(rad) + (ev.clientY - startY) * Math.sin(rad)
+        this.updateAttr('width', Math.max(40, startW + delta))
         document.removeEventListener('mousemove', onMove)
         document.removeEventListener('mouseup', onUp)
       }
       document.addEventListener('mousemove', onMove)
       document.addEventListener('mouseup', onUp)
     })
-    this.dom.appendChild(handle)
+    this.inner.appendChild(this.resizeHandle)
+
+    // Apply initial rotation / counter-rotations
+    this.applyRotation(node.attrs.rotation ?? 0)
   }
 
   /**
-   * Calculates the rotation angle (0–359°) from the image's center
-   * to the current mouse position.
-   * 0° = mouse directly above center (12 o'clock).
-   * Increases clockwise.
+   * Angle (0–359°, clockwise, 0 = directly above) from the inner container's
+   * visual centre to the mouse cursor.
+   * Uses inner.getBoundingClientRect() so the centre is always correct even
+   * after CSS transform has been applied (getBoundingClientRect is post-transform).
    */
   private angleFromCenter(ev: MouseEvent): number {
-    const rect = this.dom.getBoundingClientRect()
-    const cx = rect.left + rect.width  / 2
-    const cy = rect.top  + rect.height / 2
-    const dx = ev.clientX - cx
-    const dy = ev.clientY - cy
-    // atan2 returns angle from east; +90 shifts origin to north (top)
-    return Math.round((Math.atan2(dy, dx) * 180 / Math.PI + 90 + 360) % 360)
+    const r  = this.inner.getBoundingClientRect()
+    const cx = r.left + r.width  / 2
+    const cy = r.top  + r.height / 2
+    return Math.round((Math.atan2(ev.clientY - cy, ev.clientX - cx) * 180 / Math.PI + 90 + 360) % 360)
   }
 
   private applyRotation(deg: number) {
-    this.img.style.transform = deg ? `rotate(${deg}deg)` : ''
-    // For 90°/270° compensate margins so wrapper stays compact
-    const sideways = deg === 90 || deg === 270
-    this.img.style.marginTop  = sideways ? `${(this.img.offsetWidth  - this.img.offsetHeight) / 2}px` : ''
-    this.img.style.marginLeft = sideways ? `${(this.img.offsetHeight - this.img.offsetWidth)  / 2}px` : ''
+    // 1. Rotate the inner container — image + handles orbit together
+    this.inner.style.transform = deg ? `rotate(${deg}deg)` : ''
+    // 2. Counter-rotate handles so they appear upright on screen
+    //    rotHandle: preserve translateX(-50%) for horizontal centering
+    this.rotHandle.style.transform    = `translateX(-50%) rotate(${-deg}deg)`
+    this.resizeHandle.style.transform = deg ? `rotate(${-deg}deg)` : ''
   }
 
   private updateAttr(key: string, value: unknown) {
@@ -136,7 +139,8 @@ export class ImageNodeView implements NodeView {
   }
 
   stopEvent(event: Event): boolean {
-    return this.rotHandle.contains(event.target as Node)
+    return this.rotHandle.contains(event.target as Node) ||
+           this.resizeHandle.contains(event.target as Node)
   }
 }
 

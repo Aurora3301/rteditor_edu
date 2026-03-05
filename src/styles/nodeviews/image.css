@@ -1,35 +1,52 @@
+/* ── Wrapper (never rotates) ─────────────────────────────────────────────── */
 .rte-image-wrapper {
-  position: relative;
   display: inline-block;
   line-height: 0;
   cursor: default;
 }
 
+/* ── Inner rotating container ────────────────────────────────────────────── */
+/* The border, rotation handle, and resize handle are all children of inner,  */
+/* so they orbit with the image automatically as inner rotates.               */
+.rte-image-inner {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  transition: transform 0.15s ease;
+}
+
+/* Disable transition while the user drags so rotation tracks cursor instantly */
+.rte-image-wrapper--rotating .rte-image-inner {
+  transition: none;
+}
+
+/* Dashed border that follows the rotated image exactly */
+.rte-image-wrapper:hover .rte-image-inner {
+  outline: 1.5px dashed #3b82f6;
+  outline-offset: 3px;
+}
+
+/* Show handles on hover */
 .rte-image-wrapper:hover .rte-image-rot-handle,
 .rte-image-wrapper:hover .rte-image-resize-handle {
   opacity: 1;
 }
 
+/* ── Image (no transform — inner rotates instead) ────────────────────────── */
 .rte-image {
   display: block;
   max-width: 100%;
   border-radius: 2px;
-  transition: transform 0.15s ease;
 }
 
-/* Disable transition while the user is actively dragging to rotate */
-.rte-image-wrapper--rotating .rte-image {
-  transition: none;
-}
-
-/* ── Rotation handle ───────────────────────────────────────────────────────── */
-/* Knob (circle) + stem (line) positioned above the image center.             */
-/* Drag the knob to rotate; angle is calculated via atan2 from image center.  */
+/* ── Rotation handle ─────────────────────────────────────────────────────── */
+/* Positioned relative to inner (rotated coord system).                       */
+/* JS sets: transform = translateX(-50%) rotate(-Ndeg) to keep knob upright.  */
 .rte-image-rot-handle {
   position: absolute;
-  top: -42px;            /* knob(14px) + gap(4px) + stem(20px) + gap(4px) */
+  top: -42px;          /* knob 14px + gap 4px + stem 20px + gap 4px */
   left: 50%;
-  transform: translateX(-50%);
+  /* transform managed in JS — do NOT set translateX here */
   width: 20px;
   height: 38px;
   display: flex;
@@ -43,9 +60,7 @@
   z-index: 10;
 }
 
-.rte-image-rot-handle:active {
-  cursor: grabbing;
-}
+.rte-image-rot-handle:active { cursor: grabbing; }
 
 /* The circular knob */
 .rte-image-rot-handle__knob {
@@ -70,11 +85,14 @@
   pointer-events: none;
 }
 
-/* ── Resize handle (bottom-right corner) ────────────────────────────────────  */
+/* ── Resize handle ────────────────────────────────────────────────────────── */
+/* Positioned relative to inner (rotated coord system).                       */
+/* JS sets: transform = rotate(-Ndeg) to keep the square visually upright.    */
+/* Drag delta is projected onto the image axis via cos/sin in the TS code.    */
 .rte-image-resize-handle {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
+  bottom: -5px;
+  right: -5px;
   width: 10px;
   height: 10px;
   background: #3b82f6;
