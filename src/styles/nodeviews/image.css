@@ -5,7 +5,7 @@
   cursor: default;
 }
 
-.rte-image-wrapper:hover .rte-image-rotbar,
+.rte-image-wrapper:hover .rte-image-rot-handle,
 .rte-image-wrapper:hover .rte-image-resize-handle {
   opacity: 1;
 }
@@ -14,60 +14,63 @@
   display: block;
   max-width: 100%;
   border-radius: 2px;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease;
 }
 
-/* Rotation controls bar */
-.rte-image-rotbar {
+/* Disable transition while the user is actively dragging to rotate */
+.rte-image-wrapper--rotating .rte-image {
+  transition: none;
+}
+
+/* ── Rotation handle ───────────────────────────────────────────────────────── */
+/* Knob (circle) + stem (line) positioned above the image center.             */
+/* Drag the knob to rotate; angle is calculated via atan2 from image center.  */
+.rte-image-rot-handle {
   position: absolute;
-  top: 4px;
+  top: -42px;            /* knob(14px) + gap(4px) + stem(20px) + gap(4px) */
   left: 50%;
   transform: translateX(-50%);
+  width: 20px;
+  height: 38px;
   display: flex;
-  gap: 2px;
-  background: rgba(0,0,0,0.6);
-  border-radius: 4px;
-  padding: 2px 4px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
   opacity: 0;
   transition: opacity 0.15s;
-  white-space: nowrap;
+  user-select: none;
+  z-index: 10;
 }
 
-.rte-image-rotbar__btn {
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  cursor: pointer;
-  line-height: 1.4;
+.rte-image-rot-handle:active {
+  cursor: grabbing;
 }
 
-.rte-image-rotbar__btn:hover { background: rgba(255,255,255,0.2); }
-
-/* Degree input field inside the rotation bar */
-.rte-image-rotbar__input {
-  width: 44px;
-  padding: 1px 4px;
-  border: 1px solid rgba(255,255,255,0.4);
-  border-radius: 3px;
-  background: rgba(255,255,255,0.12);
-  color: #fff;
-  font-size: 12px;
-  font-family: inherit;
-  text-align: center;
-  outline: none;
-  -moz-appearance: textfield;
-}
-.rte-image-rotbar__input::-webkit-inner-spin-button,
-.rte-image-rotbar__input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-.rte-image-rotbar__input:focus {
-  border-color: rgba(255,255,255,0.85);
-  background: rgba(255,255,255,0.22);
+/* The circular knob */
+.rte-image-rot-handle__knob {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  display: block;
+  pointer-events: none;
 }
 
-/* Resize handle */
+/* The stem connecting knob to image edge */
+.rte-image-rot-handle__stem {
+  width: 2px;
+  flex: 1;
+  background: #3b82f6;
+  border-radius: 1px;
+  display: block;
+  pointer-events: none;
+}
+
+/* ── Resize handle (bottom-right corner) ────────────────────────────────────  */
 .rte-image-resize-handle {
   position: absolute;
   bottom: 4px;
