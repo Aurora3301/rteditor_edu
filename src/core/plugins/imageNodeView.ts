@@ -42,12 +42,25 @@ export class ImageNodeView implements NodeView {
     this.rotHandle.title = 'Drag to rotate'
     this.rotHandle.setAttribute('aria-label', 'Rotation handle – drag to rotate image')
 
-    const knob = document.createElement('span')
-    knob.className = 'rte-image-rot-handle__knob'
-    const stem = document.createElement('span')
-    stem.className = 'rte-image-rot-handle__stem'
-    this.rotHandle.appendChild(knob)
-    this.rotHandle.appendChild(stem)
+    // SVG rotation icon (circular arrow) — no knob circle, no stem line
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('width', '20')
+    svg.setAttribute('height', '20')
+    svg.setAttribute('viewBox', '0 0 24 24')
+    svg.setAttribute('fill', 'none')
+    svg.setAttribute('stroke', 'currentColor')
+    svg.setAttribute('stroke-width', '2.5')
+    svg.setAttribute('stroke-linecap', 'round')
+    svg.setAttribute('stroke-linejoin', 'round')
+    svg.setAttribute('aria-hidden', 'true')
+    svg.style.pointerEvents = 'none'
+    const p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    p1.setAttribute('d', 'M21 2v6h-6')
+    const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    p2.setAttribute('d', 'M21 8A10 10 0 1 1 11 2')
+    svg.appendChild(p1)
+    svg.appendChild(p2)
+    this.rotHandle.appendChild(svg)
 
     this.rotHandle.addEventListener('mousedown', (e: MouseEvent) => {
       if (e.button !== 0) return

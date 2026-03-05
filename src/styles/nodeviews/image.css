@@ -40,50 +40,29 @@
 }
 
 /* ── Rotation handle ─────────────────────────────────────────────────────── */
+/* A bare SVG rotation icon — no knob circle, no stem, no background.        */
 /* Positioned relative to inner (rotated coord system).                       */
-/* JS sets: transform = translateX(-50%) rotate(-Ndeg) to keep knob upright.  */
+/* JS sets: transform = translateX(-50%) rotate(-Ndeg) to stay upright.      */
 .rte-image-rot-handle {
   position: absolute;
-  top: -42px;          /* knob 14px + gap 4px + stem 20px + gap 4px */
+  top: -30px;          /* icon 20px + gap 10px */
   left: 50%;
   /* transform managed in JS — do NOT set translateX here */
   width: 20px;
-  height: 38px;
+  height: 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
   cursor: grab;
   opacity: 0;
   transition: opacity 0.15s;
   user-select: none;
   z-index: 10;
+  color: #fff;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.65));
 }
 
 .rte-image-rot-handle:active { cursor: grabbing; }
-
-/* The circular knob */
-.rte-image-rot-handle__knob {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #3b82f6;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-  display: block;
-  pointer-events: none;
-}
-
-/* The stem connecting knob to image edge */
-.rte-image-rot-handle__stem {
-  width: 2px;
-  flex: 1;
-  background: #3b82f6;
-  border-radius: 1px;
-  display: block;
-  pointer-events: none;
-}
 
 /* ── Resize handle ────────────────────────────────────────────────────────── */
 /* Positioned relative to inner (rotated coord system).                       */
